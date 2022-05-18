@@ -1,30 +1,62 @@
-import { cliExecute, myAdventures } from "kolmafia";
+import {
+  cliExecute,
+  myAdventures,
+  mySign,
+  numericModifier,
+  retrieveItem,
+  retrievePrice,
+  use,
+  useFamiliar,
+  visitUrl,
+} from "kolmafia";
 import {
   $class,
   $effect,
+  $familiar,
   $item,
   ascend,
   AsdonMartin,
   get,
+  haveInCampground,
   Lifestyle,
   Paths,
   prepareAscension,
   withProperty,
 } from "libram";
 import { kingFreed } from "./kingfreed";
-import {
-  ascensionsToday,
-  canAscendCasual,
-  canAscendNoncasual,
-  clockworkMaid,
-  organsFull,
-  tryUse,
-} from "./lib";
+import { ascensionsToday, canAscendCasual, canAscendNoncasual, organsFull, tryUse } from "./lib";
+
+function harvestSeaJelly() {
+  if (!get("_seaJellyHarvested")) {
+    useFamiliar($familiar`Space Jellyfish`);
+    visitUrl("place.php?whichplace=thesea&action=thesea_left2");
+  }
+}
+
+function tuneMoon(moon: string) {
+  if (!get("moonTuned") && mySign().toLowerCase() !== moon.toLowerCase()) {
+    cliExecute(`spoon ${moon}`);
+  }
+}
+
+function considerClockworkMaid(): void {
+  if (
+    !haveInCampground($item`clockwork maid`) &&
+    numericModifier($item`clockwork maid`, "Adventures") * get("valueOfAdventure") >
+      retrievePrice($item`clockwork maid`)
+  ) {
+    retrieveItem($item`clockwork maid`);
+    use($item`clockwork maid`);
+  }
+}
 
 function garbo(ascend: boolean) {
   kingFreed();
   cliExecute("breakfast");
+  cliExecute("Detective Solver.ash");
+  harvestSeaJelly();
   if (ascend) {
+    tuneMoon("Platypus");
     cliExecute("garbo ascend");
     withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP VALUE 3500"));
     cliExecute("garbo ascend");
@@ -35,7 +67,7 @@ function garbo(ascend: boolean) {
     cliExecute("garbo");
     withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP"));
     cliExecute("maximize +adv +switch tot");
-    clockworkMaid();
+    considerClockworkMaid();
   }
 }
 

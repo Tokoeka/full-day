@@ -9,14 +9,11 @@ import {
   myInebriety,
   myName,
   mySpleenUse,
-  numericModifier,
-  retrieveItem,
-  retrievePrice,
   spleenLimit,
   todayToString,
   use,
 } from "kolmafia";
-import { $familiar, $item, get, have, haveInCampground } from "libram";
+import { $familiar, have } from "libram";
 
 export const globalOptions: {
   confirmTasks: boolean;
@@ -48,17 +45,6 @@ export function isDMTDuplicable(item: Item): boolean {
 //   }
 //   return mapValue;
 // }
-
-export function clockworkMaid(): void {
-  if (
-    !haveInCampground($item`clockwork maid`) &&
-    numericModifier($item`clockwork maid`, "Adventures") * get("valueOfAdventure") >
-      retrievePrice($item`clockwork maid`)
-  ) {
-    retrieveItem($item`clockwork maid`);
-    use($item`clockwork maid`);
-  }
-}
 
 export function organsFull(): boolean {
   return (

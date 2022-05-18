@@ -20,7 +20,7 @@ export function main(argString = ""): void {
     if (!task.completed()) {
       if (globalOptions.confirmTasks)
         if (!userConfirm(`Executing task ${task.name}. Should we continue?`))
-          throw "Script execution canceled by user";
+          throw `User rejected execution of task ${task.name}`;
       task.do();
       if (!task.completed()) throw `Failed to completed task ${task.name}`;
       Snapshot.current().toFile(task.name);
