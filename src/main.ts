@@ -1,4 +1,4 @@
-import { mallPrice, print, userConfirm } from "kolmafia";
+import { historicalPrice, print, userConfirm } from "kolmafia";
 import { globalOptions } from "./lib";
 import { Snapshot } from "./snapshot";
 import { tasks } from "./tasks";
@@ -33,7 +33,7 @@ export function main(argString = ""): void {
   tasks.forEach((task) => {
     print(`${task.name} Results:`);
     const snapshot = Snapshot.fromFile(task.name);
-    const result = snapshot.diff(prevSnapshot).value(mallPrice);
+    const result = snapshot.diff(prevSnapshot).value(historicalPrice);
     print(`* Meat: ${numberWithCommas(result.meat)}`);
     print(`* Items: ${numberWithCommas(result.items)}`);
     print(`* Total: ${numberWithCommas(result.total)}`);
@@ -41,7 +41,7 @@ export function main(argString = ""): void {
   });
 
   const fullSnapshot = finalSnapshot.diff(initialSnapshot);
-  const fullResult = fullSnapshot.value(mallPrice);
+  const fullResult = fullSnapshot.value(historicalPrice);
 
   print("Full Results:");
   print(`* Meat: ${numberWithCommas(fullResult.meat)}`);
