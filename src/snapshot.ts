@@ -4,6 +4,7 @@ import {
   getCloset,
   getInventory,
   getShop,
+  getStorage,
   Item,
   myClosetMeat,
   myMeat,
@@ -22,11 +23,12 @@ function myItems(): Map<Item, number> {
   const inv = getInventory();
   const shop = getShop();
   const closet = getCloset();
+  const storage = getStorage();
   const overall = new Map<Item, number>();
-  for (const itemName in { ...inv, ...shop, ...closet }) {
+  for (const itemName in { ...inv, ...shop, ...closet, ...storage }) {
     overall.set(
       toItem(itemName),
-      [inv, shop, closet].reduce((a, b) => a + (b[itemName] ?? 0), 0)
+      [inv, shop, closet, storage].reduce((a, b) => a + (b[itemName] ?? 0), 0)
     );
   }
   return overall;
