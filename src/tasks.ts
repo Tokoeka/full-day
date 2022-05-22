@@ -1,6 +1,8 @@
 import {
   cliExecute,
+  inebrietyLimit,
   myAdventures,
+  myInebriety,
   mySign,
   numericModifier,
   retrieveItem,
@@ -54,6 +56,8 @@ function garbo(ascend: boolean) {
   if (ascend) {
     tuneMoon("Platypus");
     cliExecute("garbo ascend");
+    if (myInebriety() <= inebrietyLimit() && myAdventures() > 0)
+      throw "Not ready to overdrink; organ space and/or adventures remaining";
     withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP VALUE 3500"));
     cliExecute("garbo ascend");
     cliExecute("swagger");
@@ -61,6 +65,8 @@ function garbo(ascend: boolean) {
     AsdonMartin.drive($effect`Driving Observantly`, 1000);
     tryUse($item`cold medicine cabinet`);
     cliExecute("garbo");
+    if (myInebriety() <= inebrietyLimit() && myAdventures() > 0)
+      throw "Not ready to overdrink; organ space and/or adventures remaining";
     withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP"));
     cliExecute("maximize +adv +switch tot");
     considerClockworkMaid();

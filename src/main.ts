@@ -55,7 +55,7 @@ export function main(argString = ""): void {
   snapshots.slice(1).forEach((snapshot, index) => {
     const taskSnapshot = snapshot.diff(snapshots[index]);
     const taskResult = taskSnapshot.value(historicalPrice);
-    message(`* ${tasks[index].name} generated`, taskResult.meat, taskResult.items, "gray");
+    message(`* ${tasks[index].name} generated`, taskResult.meat, taskResult.items);
   });
 
   // list the top 3 gaining and top 3 losing items
@@ -64,8 +64,7 @@ export function main(argString = ""): void {
   print("Extreme items:", "purple");
   for (const detail of [...winners, ...losers.reverse()]) {
     print(
-      `${formatNumber(detail.quantity)} ${detail.item} worth ${formatNumber(detail.value)} total`,
-      "gray"
+      `${formatNumber(detail.quantity)} ${detail.item} worth ${formatNumber(detail.value)} total`
     );
   }
 }
