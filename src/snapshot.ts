@@ -1,34 +1,80 @@
 import {
   bufferToFile,
+  cliExecute,
+  equippedAmount,
+  equippedItem,
+  Familiar,
+  familiarEquippedEquipment,
   fileToBuffer,
+  getCampground,
   getCloset,
   getInventory,
   getShop,
   getStorage,
   Item,
   myClosetMeat,
+  myFamiliar,
   myMeat,
   myName,
   myStorageMeat,
+  Slot,
   todayToString,
   toItem,
 } from "kolmafia";
-import { $item, $items, getFoldGroup, sumNumbers } from "libram";
+import { $item, $items, getFoldGroup, have, sumNumbers } from "libram";
+import { gardens, worksheds } from "./lib";
 
-/**
- * Return a map where each key is an item in your posession, with the integer value its quantity; excludes display case
- * @returns a map of all items and their quantities in your possession
- */
+function getEquipment(): { [item: string]: number } {
+  const items = [...new Set(Slot.all().map((slot) => equippedItem(slot)))];
+  return items.reduce((obj, item) => {
+    if (equippedAmount(item) > 0) obj[item.name] = equippedAmount(item);
+    return obj;
+  }, {} as { [item: string]: number });
+}
+
+function getTerrariumEquipment(): { [item: string]: number } {
+  const items = Familiar.all()
+    .filter((fam) => have(fam) && myFamiliar() !== fam)
+    .map((fam) => familiarEquippedEquipment(fam))
+    .filter((item) => item !== $item`none`);
+  return items.reduce(
+    (obj, item) => ({ ...obj, [item.name]: obj[item.name] + 1 }),
+    {} as { [item: string]: number }
+  );
+}
+
+function getTradeableCampground(): { [item: string]: number } {
+  const itemNames = Object.keys(getCampground()).filter((x) =>
+    [...worksheds, ...gardens].includes(x)
+  );
+  return itemNames.reduce((obj, itemName) => ({ ...obj, [itemName]: 1 }), {});
+}
+
 function myItems(): Map<Item, number> {
+  cliExecute("refresh all");
   const inv = getInventory();
+  const equips = getEquipment();
   const shop = getShop();
   const closet = getCloset();
   const storage = getStorage();
+  const camp = getTradeableCampground();
+  const terrarium = getTerrariumEquipment();
   const overall = new Map<Item, number>();
-  for (const itemName in { ...inv, ...shop, ...closet, ...storage }) {
+  for (const itemName in {
+    ...inv,
+    ...equips,
+    ...shop,
+    ...closet,
+    ...storage,
+    ...camp,
+    ...terrarium,
+  }) {
     overall.set(
       toItem(itemName),
-      [inv, shop, closet, storage].reduce((a, b) => a + (b[itemName] ?? 0), 0)
+      [inv, equips, shop, closet, storage, camp, terrarium].reduce(
+        (a, b) => a + (b[itemName] ?? 0),
+        0
+      )
     );
   }
   return overall;
@@ -96,28 +142,18 @@ export function myItemsWrapper(): Map<Item, number> {
  * @param a The LHS inventory to perform the operation on
  * @param b The RHS inventory to perform the operation on
  * @param op an operator to compute between the sets
- * @param commutative if true use the value of b for any items not in a. if false, ignore values not in a
  * @returns a new map representing the combined inventories
  */
 function inventoryOperation(
   a: Map<Item, number>,
   b: Map<Item, number>,
-  op: (aPart: number, bPart: number) => number,
-  commutative: boolean
+  op: (aPart: number, bPart: number) => number
 ): Map<Item, number> {
-  // return every entry that is in a and not in b
   const difference = new Map<Item, number>();
 
-  for (const [item, quantity] of a.entries()) {
-    const combinedQuantity = op(quantity, b.get(item) ?? 0);
-    difference.set(item, combinedQuantity);
-  }
-  if (commutative) {
-    for (const [item, quantity] of b.entries()) {
-      if (!a.has(item)) {
-        difference.set(item, quantity);
-      }
-    }
+  for (const item of [...a.keys(), ...b.keys()]) {
+    const quantity = op(a.get(item) ?? 0, b.get(item) ?? 0);
+    difference.set(item, quantity);
   }
   const diffEntries: [Item, number][] = [...difference.entries()];
 
@@ -178,19 +214,17 @@ export class Snapshot {
 
   /**
    * Subtract the contents of another snapshot from this one, removing any items that have a resulting quantity of 0
-   *  (this will ignore elements in b but not in a)
    * @param other the snapshot from which to pull values to remove from this snapshot
    * @returns a new snapshot representing the difference between this snapshot and the other snapshot
    */
   diff(other: Snapshot): Snapshot {
     return new Snapshot(
       this.meat - other.meat,
-      inventoryOperation(this.items, other.items, (a: number, b: number) => a - b, false)
+      inventoryOperation(this.items, other.items, (a: number, b: number) => a - b)
     );
   }
   /**
    * Subtract the contents of snasphot b from snapshot a, removing any items that have a resulting quantity of 0
-   *  (this will ignore elements in b but not in a)
    * @param a the snapshot from which to subtract elements
    * @param b the snapshot from which to add elements
    * @returns a new snapshot representing the difference between a and b
@@ -207,7 +241,7 @@ export class Snapshot {
   add(other: Snapshot): Snapshot {
     return new Snapshot(
       this.meat + other.meat,
-      inventoryOperation(this.items, other.items, (a: number, b: number) => a + b, true)
+      inventoryOperation(this.items, other.items, (a: number, b: number) => a + b)
     );
   }
 

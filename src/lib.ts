@@ -17,9 +17,40 @@ import { $familiar, have } from "libram";
 
 export const globalOptions: {
   confirmTasks: boolean;
+  noCasual: boolean;
+  debugSnapshot: boolean;
 } = {
   confirmTasks: false,
+  noCasual: false,
+  debugSnapshot: false,
 };
+
+export const worksheds = [
+  "warbear LP-ROM burner",
+  "warbear jackhammer drill press",
+  "warbear induction oven",
+  "warbear high-efficiency still",
+  "warbear chemistry lab",
+  "warbear auto-anvil",
+  "spinning wheel",
+  "snow machine",
+  "Little Geneticist DNA-Splicing Lab",
+  "portable Mayo Clinic",
+  "Asdon Martin keyfob",
+  "diabolic pizza cube",
+  "cold medicine cabinet",
+];
+
+export const gardens = [
+  "packet of pumpkin seeds",
+  "Peppermint Pip Packet",
+  "packet of dragon's teeth",
+  "packet of beer seeds",
+  "packet of winter seeds",
+  "packet of thanksgarden seeds",
+  "packet of tall grass seeds",
+  "packet of mushroom spores",
+];
 
 export function tryUse(item: Item, quantity = 1): boolean {
   return have(item, quantity) && use(quantity, item);
@@ -32,19 +63,6 @@ export function isStealable(item: Item): boolean {
 export function isDMTDuplicable(item: Item): boolean {
   return isStealable(item) && ["food", "booze", "spleen item", "potion"].includes(itemType(item));
 }
-
-// function getDisplay(): { [item: string]: number } {
-//   const mapValue: { [item: string]: number } = {};
-//   const pattern = /<td valign=center><b>(.+?)<\/b>(?: \(([\d,]+)\))?<\/td>/g;
-//   const page = visitUrl(`displaycollection.php?who=${myId()}`);
-//   let result;
-//   while ((result = pattern.exec(page))) {
-//     const name = result[1];
-//     const amount = parseInt(result[2].replace(/,/g, ""));
-//     mapValue[name] = amount;
-//   }
-//   return mapValue;
-// }
 
 export function organsFull(): boolean {
   return (
@@ -67,4 +85,8 @@ export function canAscendCasual(): boolean {
 export function ascensionsToday(): number {
   const sessionLog = fileToBuffer(`${myName()}_${todayToString()}.txt`);
   return (sessionLog.match(/Ascend as a .+? banking \d+ Karma./g) || []).length;
+}
+
+export function formatNumber(num: number): string {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 }

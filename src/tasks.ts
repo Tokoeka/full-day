@@ -6,13 +6,10 @@ import {
   retrieveItem,
   retrievePrice,
   use,
-  useFamiliar,
-  visitUrl,
 } from "kolmafia";
 import {
   $class,
   $effect,
-  $familiar,
   $item,
   ascend,
   AsdonMartin,
@@ -24,14 +21,14 @@ import {
   withProperty,
 } from "libram";
 import { kingFreed } from "./kingfreed";
-import { ascensionsToday, canAscendCasual, canAscendNoncasual, organsFull, tryUse } from "./lib";
-
-function harvestSeaJelly() {
-  if (!get("_seaJellyHarvested")) {
-    useFamiliar($familiar`Space Jellyfish`);
-    visitUrl("place.php?whichplace=thesea&action=thesea_left2");
-  }
-}
+import {
+  ascensionsToday,
+  canAscendCasual,
+  canAscendNoncasual,
+  globalOptions,
+  organsFull,
+  tryUse,
+} from "./lib";
 
 function tuneMoon(moon: string) {
   if (!get("moonTuned") && mySign().toLowerCase() !== moon.toLowerCase()) {
@@ -54,7 +51,6 @@ function garbo(ascend: boolean) {
   kingFreed();
   cliExecute("breakfast");
   cliExecute("Detective Solver.ash");
-  harvestSeaJelly();
   if (ascend) {
     tuneMoon("Platypus");
     cliExecute("garbo ascend");
@@ -69,6 +65,7 @@ function garbo(ascend: boolean) {
     cliExecute("maximize +adv +switch tot");
     considerClockworkMaid();
   }
+  cliExecute("breakfast"); // harvest sea jelly after garbo unlocks the sea
 }
 
 export type Task = {
@@ -93,20 +90,21 @@ export const tasks: Task[] = [
       //     garden: "Peppermint Pip Packet",
       //     eudora: "New-You Club Membership Form",
       //     chateau: {
-      //       desk: "Swiss piggy bank",
+      //       desk: "continental juice bar",
       //       nightstand: "foreign language tapes",
       //       ceiling: "ceiling fan",
       //     },
       //   });
       //   ascend(
       //     Paths.CommunityService,
-      //     $class`Sauceror`,
+      //     $class`Pastamancer`,
       //     Lifestyle.softcore,
       //     "knoll",
       //     $item`astral six-pack`,
       //     $item`astral chapeau`
       //   );
       // }
+      // cliExecute("loopcs");
       cliExecute("fizz-sccs.ash");
     },
   },
@@ -117,7 +115,7 @@ export const tasks: Task[] = [
   },
   {
     name: "Casual",
-    completed: () => !canAscendCasual() && get("kingLiberated"),
+    completed: () => globalOptions.noCasual || (!canAscendCasual() && get("kingLiberated")),
     do: (): void => {
       if (canAscendCasual()) {
         prepareAscension({
@@ -140,7 +138,7 @@ export const tasks: Task[] = [
   },
   {
     name: "Third Garbo",
-    completed: () => organsFull(),
+    completed: () => globalOptions.noCasual || organsFull(),
     do: () => garbo(false),
   },
 ];

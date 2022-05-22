@@ -62,7 +62,8 @@ export function kingFreed(): void {
   cliExecute("backupcamera reverser on");
   cliExecute(`closet put ${myMeat() - 2000000} meat`);
   uneffect($effect`Feeling Lost`);
-  $items`can of Rain-Doh, astral six-pack`.forEach(tryUse);
+  tryUse($item`can of Rain-Doh`);
+  tryUse($item`astral six-pack`);
   $effects`A Few Extra Pounds, Big, Feeling Excited, Feeling Peaceful`.forEach(ensureEffect);
   new Requirement(["mainstat"], {
     forceEquip: $items`Fourth of May Cosplay Saber, Mr. Screege's spectacles, mafia thumb ring, lucky gold ring`,
