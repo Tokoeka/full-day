@@ -1,4 +1,5 @@
 import {
+  cliExecute,
   fileToBuffer,
   fullnessLimit,
   inebrietyLimit,
@@ -89,4 +90,10 @@ export function ascensionsToday(): number {
 
 export function formatNumber(num: number): string {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+}
+
+export function cliExecuteThrow(command: string): void {
+  if (!cliExecute(command)) {
+    throw "";
+  }
 }

@@ -1,5 +1,4 @@
 import {
-  cliExecute,
   inebrietyLimit,
   myAdventures,
   myInebriety,
@@ -27,6 +26,7 @@ import {
   ascensionsToday,
   canAscendCasual,
   canAscendNoncasual,
+  cliExecuteThrow,
   globalOptions,
   organsFull,
   tryUse,
@@ -34,7 +34,7 @@ import {
 
 function tuneMoon(moon: string) {
   if (!get("moonTuned") && mySign().toLowerCase() !== moon.toLowerCase()) {
-    cliExecute(`spoon ${moon}`);
+    cliExecuteThrow(`spoon ${moon}`);
   }
 }
 
@@ -51,27 +51,27 @@ function considerClockworkMaid(): void {
 
 function garbo(ascend: boolean) {
   kingFreed();
-  cliExecute("breakfast");
-  cliExecute("Detective Solver.ash");
+  cliExecuteThrow("breakfast");
+  cliExecuteThrow("Detective Solver.ash");
+  tuneMoon("Platypus");
   if (ascend) {
-    tuneMoon("Platypus");
-    cliExecute("garbo ascend");
+    cliExecuteThrow("garbo ascend");
     if (myInebriety() <= inebrietyLimit() && myAdventures() > 0)
       throw "Not ready to overdrink; organ space and/or adventures remaining";
-    withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP VALUE 3500"));
-    cliExecute("garbo ascend");
-    cliExecute("swagger");
+    withProperty("spiceMelangeUsed", true, () => cliExecuteThrow("CONSUME NIGHTCAP VALUE 3500"));
+    cliExecuteThrow("garbo ascend");
+    cliExecuteThrow("swagger");
   } else {
     AsdonMartin.drive($effect`Driving Observantly`, 1000);
     tryUse($item`cold medicine cabinet`);
-    cliExecute("garbo");
+    cliExecuteThrow("garbo");
     if (myInebriety() <= inebrietyLimit() && myAdventures() > 0)
       throw "Not ready to overdrink; organ space and/or adventures remaining";
-    withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP"));
-    cliExecute("maximize +adv +switch tot");
+    withProperty("spiceMelangeUsed", true, () => cliExecuteThrow("CONSUME NIGHTCAP"));
+    cliExecuteThrow("maximize +adv +switch tot");
     considerClockworkMaid();
   }
-  cliExecute("breakfast"); // harvest sea jelly after garbo unlocks the sea
+  cliExecuteThrow("breakfast"); // harvest sea jelly after garbo unlocks the sea
 }
 
 export type Task = {
@@ -92,9 +92,9 @@ export const tasks: Task[] = [
     do: (): void => {
       // if (canAscendNoncasual()) {
       //   prepareAscension({
-      //     workshed: "Little Geneticist DNA-Splicing Lab",
+      //     workshed: "cold medicine cabinet",
       //     garden: "Peppermint Pip Packet",
-      //     eudora: "New-You Club Membership Form",
+      //     eudora: "Our Daily Candles™ order form",
       //     chateau: {
       //       desk: "continental juice bar",
       //       nightstand: "foreign language tapes",
@@ -110,8 +110,8 @@ export const tasks: Task[] = [
       //     $item`astral chapeau`
       //   );
       // }
-      // cliExecute("loopcs");
-      cliExecute("fizz-sccs.ash");
+      // cliExecuteThrow("loopcs");
+      cliExecuteThrow("fizz-sccs.ash");
     },
   },
   {
@@ -129,6 +129,7 @@ export const tasks: Task[] = [
           chateau: {
             desk: "Swiss piggy bank",
             nightstand: "electric muscle stimulator",
+            ceiling: "ceiling fan",
           },
         });
         ascend(
@@ -139,7 +140,7 @@ export const tasks: Task[] = [
           $item`astral six-pack`
         );
       }
-      cliExecute("loopcasual");
+      cliExecuteThrow("loopcasual");
     },
   },
   {

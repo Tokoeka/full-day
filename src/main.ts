@@ -1,4 +1,5 @@
-import { historicalPrice, isTradeable, print, userConfirm } from "kolmafia";
+import { historicalPrice, isTradeable, print, todayToString, userConfirm } from "kolmafia";
+import { get, Kmail } from "libram";
 import { formatNumber, globalOptions } from "./lib";
 import { Snapshot } from "./snapshot";
 import { tasks } from "./tasks";
@@ -20,7 +21,8 @@ export function main(argString = ""): void {
     const CS = Snapshot.fromFile("Community Service");
     const diff = CS.diff(firstGarbo);
     for (const [item, amount] of diff.items) {
-      if (isTradeable(item)) print(`${item} (${amount}): ${historicalPrice(item)}`);
+      if (isTradeable(item) && historicalPrice(item) * amount > 50_000)
+        print(`${item} (${amount}): ${historicalPrice(item)}`);
     }
     const result = diff.value(historicalPrice);
     print(`meat: ${formatNumber(result.meat)}`);
@@ -40,6 +42,12 @@ export function main(argString = ""): void {
     snapshots.push(Snapshot.createOrImport(task.name));
   }
 
+  Kmail.delete(
+    Kmail.inbox().filter((k) =>
+      ["Lady Spookyraven's Ghost", "The Loathing Postal Service"].includes(k.senderName)
+    )
+  );
+
   const message = (head: string, meat: number, items: number, color = "black") =>
     print(
       `${head} ${formatNumber(meat + items)} meat, with ${formatNumber(
@@ -49,6 +57,13 @@ export function main(argString = ""): void {
     );
 
   print("Full-day complete!", "purple");
+  if (get("garboResultsDate") === todayToString())
+    message(
+      "Garbo thinks it generated",
+      get("garboResultsMeat", 0),
+      get("garboResultsItems", 0),
+      "purple"
+    );
   const fullSnapshot = snapshots[snapshots.length - 1].diff(snapshots[0]);
   const fullResult = fullSnapshot.value(historicalPrice);
   message("You generated a total of", fullResult.meat, fullResult.items, "purple");

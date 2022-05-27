@@ -38,7 +38,7 @@ function getTerrariumEquipment(): { [item: string]: number } {
     .map((fam) => familiarEquippedEquipment(fam))
     .filter((item) => item !== $item`none`);
   return items.reduce(
-    (obj, item) => ({ ...obj, [item.name]: obj[item.name] + 1 }),
+    (obj, item) => ({ ...obj, [item.name]: obj[item.name] ?? 0 + 1 }),
     {} as { [item: string]: number }
   );
 }
