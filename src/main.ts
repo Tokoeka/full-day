@@ -1,5 +1,5 @@
-import { historicalPrice, isTradeable, print, todayToString, userConfirm } from "kolmafia";
-import { get, Kmail } from "libram";
+import { historicalPrice, print, totalTurnsPlayed, userConfirm } from "kolmafia";
+import { get, Kmail, set } from "libram";
 import { formatNumber, globalOptions } from "./lib";
 import { Snapshot } from "./snapshot";
 import { tasks } from "./tasks";
@@ -9,26 +9,15 @@ export function main(argString = ""): void {
   for (const arg of args) {
     if (arg.match(/confirm/)) {
       globalOptions.confirmTasks = true;
+    } else if (arg.match(/details/)) {
+      globalOptions.printDetails = true;
     } else if (arg.match(/nocasual/)) {
       globalOptions.noCasual = true;
-    } else if (arg.match(/debug/)) {
-      globalOptions.debugSnapshot = true;
     }
   }
 
-  if (globalOptions.debugSnapshot) {
-    const firstGarbo = Snapshot.fromFile("First Garbo");
-    const CS = Snapshot.fromFile("Community Service");
-    const diff = CS.diff(firstGarbo);
-    for (const [item, amount] of diff.items) {
-      if (isTradeable(item) && historicalPrice(item) * amount > 50_000)
-        print(`${item} (${amount}): ${historicalPrice(item)}`);
-    }
-    const result = diff.value(historicalPrice);
-    print(`meat: ${formatNumber(result.meat)}`);
-    print(`items: ${formatNumber(result.items)}`);
-    throw "Verify snapshot contents";
-  }
+  const turns_property = "_full_day_initial_turns";
+  if (get(turns_property, -1) === -1) set(turns_property, totalTurnsPlayed());
 
   const snapshots = [Snapshot.createOrImport("Start")];
   for (const task of tasks) {
@@ -48,38 +37,44 @@ export function main(argString = ""): void {
     )
   );
 
-  const message = (head: string, meat: number, items: number, color = "black") =>
-    print(
-      `${head} ${formatNumber(meat + items)} meat, with ${formatNumber(
-        meat
-      )} raw meat and ${formatNumber(items)} from items`,
-      color
-    );
-
-  print("Full-day complete!", "purple");
-  if (get("garboResultsDate") === todayToString())
-    message(
-      "Garbo thinks it generated",
-      get("garboResultsMeat", 0),
-      get("garboResultsItems", 0),
-      "purple"
-    );
   const fullSnapshot = snapshots[snapshots.length - 1].diff(snapshots[0]);
   const fullResult = fullSnapshot.value(historicalPrice);
-  message("You generated a total of", fullResult.meat, fullResult.items, "purple");
-  snapshots.slice(1).forEach((snapshot, index) => {
-    const taskSnapshot = snapshot.diff(snapshots[index]);
-    const taskResult = taskSnapshot.value(historicalPrice);
-    message(`* ${tasks[index].name} generated`, taskResult.meat, taskResult.items);
-  });
 
-  // list the top 3 gaining and top 3 losing items
-  const losers = fullResult.itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
-  const winners = fullResult.itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
-  print("Extreme items:", "purple");
-  for (const detail of [...winners, ...losers.reverse()]) {
-    print(
-      `${formatNumber(detail.quantity)} ${detail.item} worth ${formatNumber(detail.value)} total`
-    );
+  print("Full-day complete!", "purple");
+  print(
+    `Adventures used: ${formatNumber(
+      totalTurnsPlayed() - get(turns_property, totalTurnsPlayed())
+    )}`,
+    "purple"
+  );
+  print(`Profit earned: ${formatNumber(fullResult.total)} meat`, "purple");
+  print("\u266A Toss a coin to Your Witcher \u266A", "purple");
+
+  if (globalOptions.printDetails) {
+    const message = (head: string, meat: number, items: number, color = "black") =>
+      print(
+        `${head} ${formatNumber(meat + items)} meat, with ${formatNumber(
+          meat
+        )} raw meat and ${formatNumber(items)} from items`,
+        color
+      );
+
+    // summarize task results
+    message("You generated a total of", fullResult.meat, fullResult.items, "blue");
+    snapshots.slice(1).forEach((snapshot, index) => {
+      const taskSnapshot = snapshot.diff(snapshots[index]);
+      const taskResult = taskSnapshot.value(historicalPrice);
+      message(`* ${tasks[index].name} generated`, taskResult.meat, taskResult.items);
+    });
+
+    // list the top 3 gaining and top 3 losing items
+    const losers = fullResult.itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
+    const winners = fullResult.itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
+    print("Extreme items:", "blue");
+    for (const detail of [...winners, ...losers.reverse()]) {
+      print(
+        `${formatNumber(detail.quantity)} ${detail.item} worth ${formatNumber(detail.value)} total`
+      );
+    }
   }
 }

@@ -18,12 +18,12 @@ import { $familiar, have } from "libram";
 
 export const globalOptions: {
   confirmTasks: boolean;
+  printDetails: boolean;
   noCasual: boolean;
-  debugSnapshot: boolean;
 } = {
   confirmTasks: false,
+  printDetails: false,
   noCasual: false,
-  debugSnapshot: false,
 };
 
 export const worksheds = [
