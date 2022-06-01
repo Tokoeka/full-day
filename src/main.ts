@@ -1,4 +1,4 @@
-import { historicalPrice, print, totalTurnsPlayed, userConfirm } from "kolmafia";
+import { historicalPrice, print, todayToString, totalTurnsPlayed, userConfirm } from "kolmafia";
 import { get, Kmail, set } from "libram";
 import { formatNumber, globalOptions } from "./lib";
 import { Snapshot } from "./snapshot";
@@ -16,8 +16,13 @@ export function main(argString = ""): void {
     }
   }
 
-  const turns_property = "_full_day_initial_turns";
-  if (get(turns_property, -1) === -1) set(turns_property, totalTurnsPlayed());
+  const date_property = "fulldayRunDate";
+  const turns_property = "fulldayInitialTurns";
+
+  if (get(date_property) !== todayToString()) {
+    set(date_property, todayToString());
+    set(turns_property, totalTurnsPlayed());
+  }
 
   const snapshots = [Snapshot.createOrImport("Start")];
   for (const task of tasks) {
@@ -48,7 +53,6 @@ export function main(argString = ""): void {
     "purple"
   );
   print(`Profit earned: ${formatNumber(fullResult.total)} meat`, "purple");
-  print("\u266A Toss a coin to Your Witcher \u266A", "purple");
 
   if (globalOptions.printDetails) {
     const message = (head: string, meat: number, items: number, color = "black") =>
