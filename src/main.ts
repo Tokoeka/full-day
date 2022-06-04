@@ -1,6 +1,13 @@
-import { historicalPrice, print, todayToString, totalTurnsPlayed, userConfirm } from "kolmafia";
+import {
+  gametimeToInt,
+  historicalPrice,
+  print,
+  todayToString,
+  totalTurnsPlayed,
+  userConfirm,
+} from "kolmafia";
 import { get, Kmail, set } from "libram";
-import { formatNumber, globalOptions } from "./lib";
+import { convertMilliseconds, formatNumber, globalOptions } from "./lib";
 import { Snapshot } from "./snapshot";
 import { tasks } from "./tasks";
 
@@ -18,10 +25,12 @@ export function main(argString = ""): void {
 
   const date_property = "fulldayRunDate";
   const turns_property = "fulldayInitialTurns";
+  const time_property = "fulldayElapsedTime";
 
   if (get(date_property) !== todayToString()) {
     set(date_property, todayToString());
     set(turns_property, totalTurnsPlayed());
+    set(time_property, gametimeToInt());
   }
 
   const snapshots = [Snapshot.createOrImport("Start")];
@@ -50,6 +59,10 @@ export function main(argString = ""): void {
     `Adventures used: ${formatNumber(
       totalTurnsPlayed() - get(turns_property, totalTurnsPlayed())
     )}`,
+    "purple"
+  );
+  print(
+    `Time elapsed: ${convertMilliseconds(gametimeToInt() - get(time_property, gametimeToInt()))}`,
     "purple"
   );
   print(`Profit earned: ${formatNumber(fullResult.total)} meat`, "purple");

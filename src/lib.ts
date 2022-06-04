@@ -92,6 +92,20 @@ export function formatNumber(num: number): string {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 }
 
+// From phccs
+export function convertMilliseconds(milliseconds: number): string {
+  const seconds = milliseconds / 1000;
+  const minutes = Math.floor(seconds / 60);
+  const secondsLeft = Math.round((seconds - minutes * 60) * 1000) / 1000;
+  const hours = Math.floor(minutes / 60);
+  const minutesLeft = Math.round(minutes - hours * 60);
+  return (
+    (hours !== 0 ? `${hours} hours, ` : "") +
+    (minutesLeft !== 0 ? `${minutesLeft} minutes, ` : "") +
+    (secondsLeft !== 0 ? `${secondsLeft} seconds` : "")
+  );
+}
+
 export function cliExecuteThrow(command: string): void {
   if (!cliExecute(command)) {
     throw "";

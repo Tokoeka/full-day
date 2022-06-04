@@ -15,7 +15,6 @@ import {
 } from "kolmafia";
 import {
   $effect,
-  $effects,
   $familiar,
   $item,
   $items,
@@ -60,11 +59,11 @@ export function kingFreed(): void {
   cliExecute("pull all");
   cliExecute("peevpee.php?action=smashstone&confirm=on");
   cliExecute("backupcamera reverser on");
-  cliExecute(`closet put ${myMeat() - 2000000} meat`);
+  cliExecute(`closet put ${Math.max(0, myMeat() - 2000000)} meat`);
   uneffect($effect`Feeling Lost`);
   tryUse($item`can of Rain-Doh`);
   tryUse($item`astral six-pack`);
-  $effects`A Few Extra Pounds, Big, Feeling Excited, Feeling Peaceful`.forEach(ensureEffect);
+  ensureEffect($effect`A Few Extra Pounds`);
   new Requirement(["mainstat"], {
     forceEquip: $items`Fourth of May Cosplay Saber, Mr. Screege's spectacles, mafia thumb ring, lucky gold ring`,
   }).maximize();
