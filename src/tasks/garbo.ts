@@ -118,7 +118,7 @@ export const doghouseVolcoinoTask: Task = {
     equip: {
       weapon: $item`Fourth of May Cosplay Saber`,
       offhand: $item`Drunkula's wineglass`,
-      // TODO bjorn, sweaty pants
+      // TODO bjorn, sweaty pants?
       acc1: $item`Mr. Screege's spectacles`,
       acc2: $item`mafia thumb ring`,
       acc3: $item`lucky gold ring`,
@@ -150,7 +150,7 @@ export const drunkGarboTask: Task = {
 export const pvpTask: Task = {
   name: "PvP",
   completed: () => pvpAttacksLeft() === 0,
-  do: () => cliExecute("swagger"),
+  do: () => cliExecute("UberPvPOptimizer; swagger"),
   freeaction: true,
   noadventures: true,
 };
