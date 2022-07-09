@@ -9,21 +9,22 @@ import {
   myFullness,
   myInebriety,
   myName,
+  mySign,
   mySpleenUse,
   spleenLimit,
   todayToString,
   use,
 } from "kolmafia";
-import { $familiar, have } from "libram";
+import { $familiar, $item, get, have } from "libram";
 
 export const globalOptions: {
   confirmTasks: boolean;
   printDetails: boolean;
-  noCasual: boolean;
+  duplicateItem: Item;
 } = {
   confirmTasks: false,
   printDetails: false,
-  noCasual: false,
+  duplicateItem: $item`none`,
 };
 
 export const worksheds = [
@@ -73,6 +74,11 @@ export function organsFull(): boolean {
   );
 }
 
+export function tuneMoon(moon: string): void {
+  if (!get("moonTuned") && mySign().toLowerCase() !== moon.toLowerCase())
+    cliExecuteThrow(`spoon ${moon}`);
+}
+
 export function canAscendNoncasual(): boolean {
   const sessionLog = fileToBuffer(`${myName()}_${todayToString()}.txt`);
   return !/Ascend as a (?:Normal|Hardcore) .+? banking \d+ Karma./.test(sessionLog);
@@ -86,6 +92,12 @@ export function canAscendCasual(): boolean {
 export function ascensionsToday(): number {
   const sessionLog = fileToBuffer(`${myName()}_${todayToString()}.txt`);
   return (sessionLog.match(/Ascend as a .+? banking \d+ Karma./g) || []).length;
+}
+
+export function commafy(num: number): string {
+  const parts = num.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
 }
 
 export function formatNumber(num: number): string {
@@ -107,7 +119,5 @@ export function convertMilliseconds(milliseconds: number): string {
 }
 
 export function cliExecuteThrow(command: string): void {
-  if (!cliExecute(command)) {
-    throw "";
-  }
+  if (!cliExecute(command)) throw `Failed to execute ${command}`;
 }

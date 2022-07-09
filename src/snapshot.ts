@@ -51,7 +51,7 @@ function getTradeableCampground(): { [item: string]: number } {
 }
 
 function myItems(): Map<Item, number> {
-  cliExecute("refresh all");
+  cliExecute("refresh shop; refresh storage; refresh inv");
   const inv = getInventory();
   const equips = getEquipment();
   const shop = getShop();
@@ -190,7 +190,7 @@ export class Snapshot {
   meat: number;
   items: Map<Item, number>;
 
-  private constructor(meat: number, items: Map<Item, number>) {
+  public constructor(meat: number, items: Map<Item, number>) {
     this.meat = meat;
     this.items = items;
   }
