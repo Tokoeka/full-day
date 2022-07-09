@@ -62,18 +62,10 @@ export const tuneMoonTask: Task = {
   noadventures: true,
 };
 
-export const garboYachtzeeAscendTask: Task = {
-  name: "Garbo Yachtzee Ascend",
-  completed: () => shouldOverdrink() || myInebriety() > inebrietyLimit(),
-  do: () => cliExecute("garbo yachtzeechain ascend"),
-  freeaction: true,
-  noadventures: true,
-};
-
 export const garboAscendTask: Task = {
   name: "Garbo Ascend",
   completed: () => shouldOverdrink() || myInebriety() > inebrietyLimit(),
-  do: () => cliExecute("garbo ascend"),
+  do: () => cliExecute("garbo yachtzeechain ascend"),
   freeaction: true,
   noadventures: true,
 };
@@ -81,7 +73,7 @@ export const garboAscendTask: Task = {
 export const garboTask: Task = {
   name: "Garbo",
   completed: () => shouldOverdrink() || myInebriety() > inebrietyLimit(),
-  do: () => cliExecute("garbo yachtzeechain"),
+  do: () => cliExecute("garbo"),
   freeaction: true,
   noadventures: true,
 };
