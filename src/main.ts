@@ -1,34 +1,65 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { buildTaskList, Engine } from "fizzlib";
+import { Args, Engine, getTasks } from "grimoire-kolmafia";
 import {
+  cliExecute,
   gametimeToInt,
   historicalPrice,
-  myHp,
-  myMaxhp,
+  Item,
   print,
+  setAutoAttack,
   todayToString,
   totalTurnsPlayed,
   userConfirm,
-  useSkill,
 } from "kolmafia";
-import { $skill, get, set } from "libram";
-import { commafy, convertMilliseconds, formatNumber, globalOptions } from "./lib";
+import { $item, get, set } from "libram";
+import { commafy, convertMilliseconds, formatNumber } from "./lib";
 import { Snapshot } from "./snapshot";
-import { quests } from "./quests";
+import { CasualQuest } from "./tasks/casual";
+import { CommunityServiceQuest } from "./tasks/communityservice";
+import { FirstGarboQuest, SecondGarboQuest, ThirdGarboQuest } from "./tasks/garbo";
 
-export function main(argString = ""): void {
-  const args = argString.split(" ");
-  for (const arg of args) {
-    if (arg.match(/confirm/)) {
-      globalOptions.confirmTasks = true;
-    } else if (arg.match(/details/)) {
-      globalOptions.printDetails = true;
-    }
+const dateProperty = "fullday_runDate";
+const turnsProperty = "fullday_initialTurns";
+const timeProperty = "fullday_elapsedTime";
+
+export const args = Args.create("fullday", "A full-day wrapper script.", {
+  confirm: Args.boolean({
+    help: "If the user must confirm execution of each task.",
+    default: false,
+  }),
+  maxmeat: Args.number({
+    help: "Maximum amount of meat to keep in inventory before task execution.",
+    default: 2_000_000,
+  }),
+  duplicate: Args.custom(
+    {
+      help: "Item to duplicate in the Deep Machine Tunnels.",
+      default: $item`bottle of Greedy Dog`,
+    },
+    Item.get,
+    "ITEM"
+  ),
+  spoonsign: Args.string({
+    help: "Which moon sign to tune using the hewn moon-rune spoon.",
+    options: [
+      ["mongoose"],
+      ["wallaby"],
+      ["vole"],
+      ["platypus"],
+      ["opossum"],
+      ["marmot"],
+      ["wombat"],
+      ["blender"],
+      ["packrat"],
+    ],
+  }),
+});
+
+export function main(command?: string): void {
+  Args.fill(args, command);
+  if (args.help) {
+    Args.showHelp(args);
+    return;
   }
-
-  const dateProperty = "fullday_runDate";
-  const turnsProperty = "fullday_initialTurns";
-  const timeProperty = "fullday_elapsedTime";
 
   if (get(dateProperty) !== todayToString()) {
     set(dateProperty, todayToString());
@@ -36,26 +67,25 @@ export function main(argString = ""): void {
     set(timeProperty, gametimeToInt());
   }
 
-  const tasks = buildTaskList(quests);
-  const engine = new Engine(tasks, {
-    ignoredNoncombats: ["Caldera Air", "Aaaaah! Aaaaaaaah!"],
-    recoveryCallback: () => {
-      if (myHp() < myMaxhp() * 0.9) useSkill($skill`Cannelloni Cocoon`);
-    },
-    defaultOutfit: {},
-  });
+  const tasks = getTasks(
+    [FirstGarboQuest, CommunityServiceQuest, SecondGarboQuest, CasualQuest, ThirdGarboQuest],
+    true
+  );
+  const engine = new Engine(tasks);
 
-  let task;
-  while ((task = engine.getNextTask()) !== undefined) {
-    if (
-      !task.completed() &&
-      globalOptions.confirmTasks &&
-      !userConfirm(`Executing task ${task.name}. Should we continue?`)
-    )
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const task = engine.tasks.find((t) => !t.completed());
+    if (task === undefined) break;
+    if (args.confirm && !userConfirm(`Executing task ${task.name}, should we continue?`)) {
       throw `User rejected execution of task ${task.name}`;
+    }
+    if (task.ready !== undefined && !task.ready()) throw `Task ${task.name} is not ready`;
 
     const snapshot = Snapshot.current();
     const questName = task.name.split("/")[0];
+    setAutoAttack(0);
+    cliExecute("ccs fullday");
     try {
       engine.execute(task);
     } finally {
@@ -94,13 +124,13 @@ export function main(argString = ""): void {
     message(`* ${name} generated`, result.meat, result.items);
   }
 
-  // // List the top gaining and losing items
-  // const losers = fullResult.itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
-  // const winners = fullResult.itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
-  // print("Extreme items:", "blue");
-  // for (const detail of [...winners, ...losers.reverse()]) {
-  //   print(
-  //     `${formatNumber(detail.quantity)} ${detail.item} worth ${formatNumber(detail.value)} total`
-  //   );
-  // }
+  // List the top gaining and losing items
+  const losers = fullResult.itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
+  const winners = fullResult.itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
+  print("Extreme items:", "blue");
+  for (const detail of [...winners, ...losers.reverse()]) {
+    print(
+      `${formatNumber(detail.quantity)} ${detail.item} worth ${formatNumber(detail.value)} total`
+    );
+  }
 }

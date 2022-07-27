@@ -5,54 +5,16 @@ import {
   inebrietyLimit,
   Item,
   itemType,
-  myFamiliar,
+  myAdventures,
   myFullness,
   myInebriety,
   myName,
-  mySign,
   mySpleenUse,
   spleenLimit,
   todayToString,
   use,
 } from "kolmafia";
-import { $familiar, $item, get, have } from "libram";
-
-export const globalOptions: {
-  confirmTasks: boolean;
-  printDetails: boolean;
-  duplicateItem: Item;
-} = {
-  confirmTasks: false,
-  printDetails: false,
-  duplicateItem: $item`none`,
-};
-
-export const worksheds = [
-  "warbear LP-ROM burner",
-  "warbear jackhammer drill press",
-  "warbear induction oven",
-  "warbear high-efficiency still",
-  "warbear chemistry lab",
-  "warbear auto-anvil",
-  "spinning wheel",
-  "snow machine",
-  "Little Geneticist DNA-Splicing Lab",
-  "portable Mayo Clinic",
-  "Asdon Martin keyfob",
-  "diabolic pizza cube",
-  "cold medicine cabinet",
-];
-
-export const gardens = [
-  "packet of pumpkin seeds",
-  "Peppermint Pip Packet",
-  "packet of dragon's teeth",
-  "packet of beer seeds",
-  "packet of winter seeds",
-  "packet of thanksgarden seeds",
-  "packet of tall grass seeds",
-  "packet of mushroom spores",
-];
+import { have } from "libram";
 
 export function tryUse(item: Item, quantity = 1): boolean {
   return have(item, quantity) && use(quantity, item);
@@ -66,17 +28,13 @@ export function isDMTDuplicable(item: Item): boolean {
   return isStealable(item) && ["food", "booze", "spleen item", "potion"].includes(itemType(item));
 }
 
-export function organsFull(): boolean {
+export function shouldOverdrink(): boolean {
   return (
     myFullness() >= fullnessLimit() &&
-    myInebriety() > inebrietyLimit() + (myFamiliar() !== $familiar`Stooper` ? 1 : 0) &&
-    mySpleenUse() >= spleenLimit()
+    myInebriety() === inebrietyLimit() &&
+    mySpleenUse() >= spleenLimit() &&
+    myAdventures() === 0
   );
-}
-
-export function tuneMoon(moon: string): void {
-  if (!get("moonTuned") && mySign().toLowerCase() !== moon.toLowerCase())
-    cliExecuteThrow(`spoon ${moon}`);
 }
 
 export function canAscendNoncasual(): boolean {

@@ -1945,15 +1945,6 @@ find-up@^4.0.0:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
 
-fizzlib@^0.1.16:
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/fizzlib/-/fizzlib-0.1.16.tgz#62cf3753605995dcbce3d4371cb6d77a42b2af3f"
-  integrity sha512-bNSDChL5Z8+3Sq5mVYeLoOBRYlJpNqTX5gZvm1woezCKeycP9Ep2T/u6oSfahYwHBEa6bfqozEIEJQFvujjR9Q==
-  dependencies:
-    core-js "^3.16.4"
-    kolmafia ">=1.2.0"
-    libram "^0.6.16"
-
 flat-cache@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-3.0.4.tgz#61b0338302b2fe9f957dcc32fc2a87f1c3048b11"
@@ -2058,6 +2049,15 @@ graceful-fs@^4.1.2, graceful-fs@^4.2.4, graceful-fs@^4.2.9:
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
+
+grimoire-kolmafia@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/grimoire-kolmafia/-/grimoire-kolmafia-0.2.3.tgz#b44c7b92f07a4a63bd7262cc24ad6ee7e9f1f4d3"
+  integrity sha512-vuNsahupZIQGqpKAfLlFCgiPw2pEY3DaQ3R/4jzP9FJy4X/cBlfJXzufGSr1YyZMgGz+Rx8bJurpi0py8esOww==
+  dependencies:
+    core-js "^3.16.4"
+    kolmafia ">=1.2.0"
+    libram ">=0.3.0"
 
 has-flag@^3.0.0:
   version "3.0.0"
@@ -2270,7 +2270,7 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libram@>=0.3.0, libram@^0.6.16:
+libram@>=0.3.0:
   version "0.6.18"
   resolved "https://registry.yarnpkg.com/libram/-/libram-0.6.18.tgz#0650e28a7623bdff279b09689cd1dd579a3697a1"
   integrity sha512-/7RYSQ/V3qcnl5Qz0W33wZjHfziN1/lMdq7xK/TjA2fhSdB3KeMJG3ex6wfYkT3p0/uUp7b+GLUvb1EU9K8uNQ==

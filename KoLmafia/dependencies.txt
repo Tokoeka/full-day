@@ -1,6 +1,7 @@
 https://github.com/Ezandora/Detective-Solver/branches/Release/
 https://github.com/Loathing-Associates-Scripting-Society/garbage-collector/branches/release/
-https://github.com/soolar/CONSUME.ash/trunk/RELEASE/
+https://github.com/Loathing-Associates-Scripting-Society/UberPvPOptimizer/branches/master
 https://github.com/MrFizzyBubbs/fizz-sccs/branches/main/kolmafia
 https://github.com/MrFizzyBubbs/loop-casual/branches/master/KoLmafia
-https://github.com/Loathing-Associates-Scripting-Society/UberPvPOptimizer/branches/master
+https://github.com/MrFizzyBubbs/twiddle/branches/release
+https://github.com/soolar/CONSUME.ash/trunk/RELEASE/

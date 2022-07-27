@@ -22,7 +22,33 @@ import {
   toItem,
 } from "kolmafia";
 import { $item, $items, getFoldGroup, have, sumNumbers } from "libram";
-import { gardens, worksheds } from "./lib";
+
+const worksheds = [
+  "warbear LP-ROM burner",
+  "warbear jackhammer drill press",
+  "warbear induction oven",
+  "warbear high-efficiency still",
+  "warbear chemistry lab",
+  "warbear auto-anvil",
+  "spinning wheel",
+  "snow machine",
+  "Little Geneticist DNA-Splicing Lab",
+  "portable Mayo Clinic",
+  "Asdon Martin keyfob",
+  "diabolic pizza cube",
+  "cold medicine cabinet",
+];
+
+const gardens = [
+  "packet of pumpkin seeds",
+  "Peppermint Pip Packet",
+  "packet of dragon's teeth",
+  "packet of beer seeds",
+  "packet of winter seeds",
+  "packet of thanksgarden seeds",
+  "packet of tall grass seeds",
+  "packet of mushroom spores",
+];
 
 function getEquipment(): { [item: string]: number } {
   const items = [...new Set(Slot.all().map((slot) => equippedItem(slot)))];
