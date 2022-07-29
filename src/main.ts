@@ -27,7 +27,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     default: false,
   }),
   maxmeat: Args.number({
-    help: "Maximum amount of meat to keep in inventory before task execution.",
+    help: "Maximum amount of meat to keep in inventory after breaking the prism.",
     default: 2_000_000,
   }),
   duplicate: Args.custom(
@@ -41,16 +41,17 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
   spoonsign: Args.string({
     help: "Which moon sign to tune using the hewn moon-rune spoon.",
     options: [
-      ["mongoose"],
-      ["wallaby"],
-      ["vole"],
-      ["platypus"],
-      ["opossum"],
-      ["marmot"],
-      ["wombat"],
-      ["blender"],
-      ["packrat"],
+      ["Mongoose", "friendly Degrassi Knoll | Muscle | +20% Physical Damage"],
+      ["Wallaby", "friendly Degrassi Knoll | Mysticality | +20% Spell Damage"],
+      ["Vole", "friendly Degrassi Knoll | Moxie | +20% Combat Initiative and +20 Maximum HP/MP"],
+      ["Platypus", "Little Canadia | Muscle | Familiar Weight +5 lbs."],
+      ["Opossum", "Little Canadia | Mysticality | +5 Adventures per day from Food "],
+      ["Marmot", "Little Canadia 	Moxie | Slight Resistance to All Elements (+1)"],
+      ["Wombat", "The Gnomish Gnomad Camp | Muscle | +20% Meat from Monsters"],
+      ["Blender", "The Gnomish Gnomad Camp | Mysticality | +5 Adventures per day from Booze"],
+      ["Packrat", "The Gnomish Gnomad Camp | Moxie | +10% Items from Monsters"],
     ],
+    default: "Platypus",
   }),
 });
 
@@ -67,10 +68,13 @@ export function main(command?: string): void {
     set(timeProperty, gametimeToInt());
   }
 
-  const tasks = getTasks(
-    [FirstGarboQuest, CommunityServiceQuest, SecondGarboQuest, CasualQuest, ThirdGarboQuest],
-    true
-  );
+  const tasks = getTasks([
+    FirstGarboQuest,
+    CommunityServiceQuest,
+    SecondGarboQuest,
+    CasualQuest,
+    ThirdGarboQuest,
+  ]);
   const engine = new Engine(tasks);
 
   // eslint-disable-next-line no-constant-condition

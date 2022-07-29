@@ -40,6 +40,7 @@ export const CommunityServiceQuest: Quest<Task> = {
           $item`astral chapeau`
         );
       },
+      limit: { tries: 1 },
     },
     {
       name: "Run",
@@ -47,6 +48,7 @@ export const CommunityServiceQuest: Quest<Task> = {
       completed: () => get("kingLiberated"),
       do: () => cliExecute("fizz-sccs"),
       post: () => uneffect($effect`Feeling Lost`),
+      limit: { tries: 1 },
     },
   ],
 };

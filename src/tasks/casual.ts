@@ -38,12 +38,14 @@ export const CasualQuest: Quest<Task> = {
           $item`astral six-pack`
         );
       },
+      limit: { tries: 1 },
     },
     {
       name: "Run",
       ready: () => myPathId() === Paths.Unrestricted.id,
       completed: () => get("kingLiberated") && have($skill`Liver of Steel`),
       do: () => cliExecute("loopcasual"),
+      limit: { tries: 1 },
     },
     {
       name: "Workshed",
@@ -52,6 +54,7 @@ export const CasualQuest: Quest<Task> = {
         AsdonMartin.drive($effect`Driving Observantly`, 1000);
         use($item`cold medicine cabinet`);
       },
+      limit: { tries: 1 },
     },
   ],
 };

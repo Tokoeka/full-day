@@ -19,13 +19,13 @@ export const FirstGarboQuest: Quest<Task> = {
   name: "First Garbo",
   completed: () => ascensionsToday() > 0,
   tasks: [
-    breakfastTask,
-    detectiveSolverTask,
-    garboAscendTask,
-    overdrinkAscendTask,
-    doghouseVolcoinoTask,
-    drunkGarboTask,
-    pvpTask,
+    { ...breakfastTask },
+    { ...detectiveSolverTask },
+    { ...garboAscendTask },
+    { ...overdrinkAscendTask },
+    { ...doghouseVolcoinoTask },
+    { ...drunkGarboTask },
+    { ...pvpTask },
   ],
 };
 
@@ -34,13 +34,13 @@ export const SecondGarboQuest: Quest<Task> = {
   completed: () => ascensionsToday() > 1,
   tasks: [
     ...kingFreed(),
-    breakfastTask,
-    detectiveSolverTask,
-    garboAscendTask,
-    overdrinkAscendTask,
-    doghouseVolcoinoTask,
-    drunkGarboTask,
-    pvpTask,
+    { ...breakfastTask },
+    { ...detectiveSolverTask },
+    { ...garboAscendTask },
+    { ...overdrinkAscendTask },
+    { ...doghouseVolcoinoTask },
+    { ...drunkGarboTask },
+    { ...pvpTask },
   ],
 };
 
@@ -48,10 +48,10 @@ export const ThirdGarboQuest: Quest<Task> = {
   name: "Third Garbo",
   tasks: [
     ...kingFreed(),
-    breakfastTask,
-    detectiveSolverTask,
-    garboTask,
-    overdrinkTask,
+    { ...breakfastTask },
+    { ...detectiveSolverTask },
+    { ...garboTask },
+    { ...overdrinkTask },
     {
       name: "Clockwork Maid",
       completed: () =>
@@ -62,6 +62,7 @@ export const ThirdGarboQuest: Quest<Task> = {
         retrieveItem($item`clockwork maid`);
         use($item`clockwork maid`);
       },
+      limit: { tries: 1 },
     },
     {
       name: "Pajamas",
@@ -69,6 +70,7 @@ export const ThirdGarboQuest: Quest<Task> = {
         maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
         numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
       do: () => maximize("adv, switch tot, switch left-hand man, switch disembodied hand", false),
+      limit: { tries: 1 },
     },
     {
       name: "Clean Inbox",
@@ -82,6 +84,7 @@ export const ThirdGarboQuest: Quest<Task> = {
             ["Lady Spookyraven's Ghost", "The Loathing Postal Service"].includes(k.senderName)
           )
         ),
+      limit: { tries: 1 },
     },
   ],
 };
