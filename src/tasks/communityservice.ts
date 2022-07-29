@@ -6,6 +6,7 @@ import {
   $item,
   ascend,
   get,
+  have,
   Lifestyle,
   Paths,
   prepareAscension,
@@ -47,8 +48,12 @@ export const CommunityServiceQuest: Quest<Task> = {
       ready: () => myPathId() === Paths.CommunityService.id,
       completed: () => get("kingLiberated"),
       do: () => cliExecute("fizz-sccs"),
-      post: () => uneffect($effect`Feeling Lost`),
       limit: { tries: 1 },
+    },
+    {
+      name: "Uneffect Lost",
+      completed: () => !have($effect`Feeling Lost`),
+      do: () => uneffect($effect`Feeling Lost`),
     },
   ],
 };
