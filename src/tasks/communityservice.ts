@@ -23,18 +23,17 @@ export const CommunityServiceQuest: Quest<Task> = {
       completed: () => !canAscendNoncasual(),
       do: (): void => {
         prepareAscension({
-          workshed: "Little Geneticist DNA-Splicing Lab",
           garden: "Peppermint Pip Packet",
-          eudora: "New-You Club Membership Form",
+          eudora: "Our Daily Candles™ order form",
           chateau: {
-            desk: "Swiss piggy bank",
+            desk: "continental juice bar",
             nightstand: "foreign language tapes",
             ceiling: "ceiling fan",
           },
         });
         ascend(
           Paths.CommunityService,
-          $class`Sauceror`,
+          $class`Pastamancer`,
           Lifestyle.softcore,
           "knoll",
           $item`astral six-pack`,
@@ -47,7 +46,7 @@ export const CommunityServiceQuest: Quest<Task> = {
       name: "Run",
       ready: () => myPathId() === Paths.CommunityService.id,
       completed: () => get("kingLiberated"),
-      do: () => cliExecute("fizz-sccs"),
+      do: () => cliExecute("loopcs"),
       limit: { tries: 1 },
     },
     {

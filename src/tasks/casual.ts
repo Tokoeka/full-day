@@ -24,6 +24,7 @@ export const CasualQuest: Quest<Task> = {
       do: (): void => {
         prepareAscension({
           workshed: "Asdon Martin keyfob",
+          eudora: "New-You Club Membership Form",
           chateau: {
             desk: "Swiss piggy bank",
             nightstand: "electric muscle stimulator",
