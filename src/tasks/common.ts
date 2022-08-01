@@ -162,16 +162,14 @@ export const doghouseVolcoinoTask: Task = {
   },
   combat: new CombatStrategy().macro(Macro.attack().repeat()),
   outfit: {
+    weapon: $item`June cleaver`,
+    offhand: $item`Drunkula's wineglass`,
+    back: $item`Buddy Bjorn`,
+    acc1: $item`lucky gold ring`,
+    acc2: $item`mafia thumb ring`,
+    acc3: $item`Mr. Screege's spectacles`,
     familiar: $familiar`Puck Man`,
-    equip: [
-      $item`Fourth of May Cosplay Saber`,
-      $item`Drunkula's wineglass`,
-      $item`Buddy Bjorn`,
-      $item`lucky gold ring`,
-      $item`mafia thumb ring`,
-      $item`Mr. Screege's spectacles`,
-      $item`orange boxing gloves`,
-    ],
+    famequip: $item`orange boxing gloves`,
     modifier: "mainstat",
   },
   effects: [

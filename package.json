@@ -16,7 +16,7 @@
   "license": "Apache",
   "dependencies": {
     "core-js": "^3.16.4",
-    "grimoire-kolmafia": "^0.2.3",
+    "grimoire-kolmafia": "^0.2.5",
     "kolmafia": ">=1.2.0",
     "libram": ">=0.3.0"
   },
