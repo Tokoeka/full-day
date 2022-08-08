@@ -1,7 +1,7 @@
 import {
-  cliExecute,
   fileToBuffer,
   fullnessLimit,
+  getPermedSkills,
   inebrietyLimit,
   Item,
   itemType,
@@ -10,6 +10,7 @@ import {
   myInebriety,
   myName,
   mySpleenUse,
+  Skill,
   spleenLimit,
   todayToString,
   use,
@@ -76,6 +77,8 @@ export function convertMilliseconds(milliseconds: number): string {
   );
 }
 
-export function cliExecuteThrow(command: string): void {
-  if (!cliExecute(command)) throw `Failed to execute ${command}`;
+export function getSkillsToPerm(): Skill[] {
+  return Skill.all().filter(
+    (skill) => have(skill) && skill.permable && getPermedSkills()[skill.name] === undefined
+  );
 }

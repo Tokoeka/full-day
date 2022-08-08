@@ -12,8 +12,7 @@ import {
   prepareAscension,
   uneffect,
 } from "libram";
-import { ascensionsToday, canAscendNoncasual } from "../lib";
-
+import { ascensionsToday, canAscendNoncasual, getSkillsToPerm } from "../lib";
 export const CommunityServiceQuest: Quest<Task> = {
   name: "Community Service",
   completed: () => ascensionsToday() > 1,
@@ -37,7 +36,8 @@ export const CommunityServiceQuest: Quest<Task> = {
           Lifestyle.softcore,
           "knoll",
           $item`astral six-pack`,
-          $item`astral chapeau`
+          $item`astral chapeau`,
+          new Map(getSkillsToPerm().map((skill) => [skill, Lifestyle.hardcore]))
         );
       },
       limit: { tries: 1 },

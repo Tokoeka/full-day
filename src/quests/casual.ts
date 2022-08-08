@@ -13,7 +13,7 @@ import {
   Paths,
   prepareAscension,
 } from "libram";
-import { canAscendCasual } from "../lib";
+import { canAscendCasual, getSkillsToPerm } from "../lib";
 
 export const CasualQuest: Quest<Task> = {
   name: "Casual",
@@ -24,6 +24,7 @@ export const CasualQuest: Quest<Task> = {
       do: (): void => {
         prepareAscension({
           workshed: "Asdon Martin keyfob",
+          garden: "packet of thanksgarden seeds",
           eudora: "New-You Club Membership Form",
           chateau: {
             desk: "Swiss piggy bank",
@@ -36,7 +37,9 @@ export const CasualQuest: Quest<Task> = {
           $class`Seal Clubber`,
           Lifestyle.casual,
           "knoll",
-          $item`astral six-pack`
+          $item`astral six-pack`,
+          undefined,
+          new Map(getSkillsToPerm().map((skill) => [skill, Lifestyle.hardcore]))
         );
       },
       limit: { tries: 1 },
