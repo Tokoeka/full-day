@@ -38,7 +38,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     Item.get,
     "ITEM"
   ),
-  spoonsign: Args.string({
+  tune: Args.string({
     help: "Which moon sign to tune using the hewn moon-rune spoon.",
     options: [
       ["Mongoose", "friendly Degrassi Knoll | Muscle | +20% Physical Damage"],

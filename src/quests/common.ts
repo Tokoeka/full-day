@@ -93,8 +93,8 @@ export function kingFreed(): Task[] {
     },
     {
       name: "Tune Moon",
-      completed: () => mySign() === args.spoonsign || get("moonTuned"),
-      do: () => cliExecute(`spoon ${args.spoonsign}`),
+      completed: () => mySign() === args.tune || get("moonTuned"),
+      do: () => cliExecute(`spoon ${args.tune}`),
       limit: { tries: 1 },
     },
     {
