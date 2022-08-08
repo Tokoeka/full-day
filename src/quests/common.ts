@@ -92,6 +92,11 @@ export function kingFreed(): Task[] {
       limit: { tries: 1 },
     },
     {
+      name: "Every Skill",
+      completed: () => get("_bookOfEverySkillUsed", false),
+      do: () => use($item`The Big Book of Every Skill`),
+    },
+    {
       name: "Tune Moon",
       completed: () => mySign() === args.tune || get("moonTuned"),
       do: () => cliExecute(`spoon ${args.tune}`),
@@ -131,6 +136,7 @@ export function breakfast(): Task[] {
       post: () => {
         if (get("_clanFortuneConsultUses") < 3) wait(10);
       },
+      limit: { tries: 3 },
     },
   ];
 }
@@ -152,7 +158,7 @@ export function garboAscend(): Task[] {
       limit: { tries: 1 },
     },
     {
-      name: "Doghouse Volcoino",
+      name: "Caldera",
       completed: () =>
         $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
         $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs"),
@@ -168,6 +174,7 @@ export function garboAscend(): Task[] {
         )
           uneffect($effect`Drenched in Lava`);
       },
+      acquire: [{ item: $item`heat-resistant sheet metal`, price: 5000, optional: true }],
       combat: new CombatStrategy().macro(Macro.attack().repeat()),
       outfit: {
         weapon: $item`June cleaver`,
@@ -191,7 +198,7 @@ export function garboAscend(): Task[] {
         $effect`Song of Bravado`,
         $effect`Stevedave's Shanty of Superiority`,
       ],
-      limit: { tries: 8 }, // Clear intro adventure
+      limit: { tries: 9 }, // Clear intro adventure
     },
     {
       name: "Drunk Garbo",
@@ -206,11 +213,6 @@ export function garboAscend(): Task[] {
       prepare: () => cliExecute("UberPvPOptimizer"),
       do: () => cliExecute("swagger"),
       limit: { tries: 1 },
-    },
-    {
-      name: "Every Skill",
-      completed: () => get("_bookOfEverySkillUsed", false),
-      do: () => use($item`The Big Book of Every Skill`),
     },
   ];
 }
