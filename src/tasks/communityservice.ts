@@ -37,7 +37,7 @@ export const CommunityServiceQuest: Quest<Task> = {
           "knoll",
           $item`astral six-pack`,
           $item`astral chapeau`,
-          new Map(getSkillsToPerm().map((skill) => [skill, Lifestyle.hardcore]))
+          getSkillsToPerm()
         );
       },
       limit: { tries: 1 },

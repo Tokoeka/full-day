@@ -15,7 +15,7 @@ import {
   todayToString,
   use,
 } from "kolmafia";
-import { have } from "libram";
+import { have, Lifestyle } from "libram";
 
 export function tryUse(item: Item, quantity = 1): boolean {
   return have(item, quantity) && use(quantity, item);
@@ -77,8 +77,12 @@ export function convertMilliseconds(milliseconds: number): string {
   );
 }
 
-export function getSkillsToPerm(): Skill[] {
-  return Skill.all().filter(
-    (skill) => have(skill) && skill.permable && getPermedSkills()[skill.name] === undefined
+export function getSkillsToPerm(): Map<Skill, Lifestyle> {
+  return new Map(
+    Skill.all()
+      .filter(
+        (skill) => have(skill) && skill.permable && getPermedSkills()[skill.name] === undefined
+      )
+      .map((skill) => [skill, Lifestyle.hardcore])
   );
 }

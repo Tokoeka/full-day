@@ -39,7 +39,7 @@ export const CasualQuest: Quest<Task> = {
           "knoll",
           $item`astral six-pack`,
           undefined,
-          new Map(getSkillsToPerm().map((skill) => [skill, Lifestyle.hardcore]))
+          getSkillsToPerm()
         );
       },
       limit: { tries: 1 },

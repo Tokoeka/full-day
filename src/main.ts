@@ -13,9 +13,9 @@ import {
 import { $item, get, set } from "libram";
 import { commafy, convertMilliseconds, formatNumber } from "./lib";
 import { Snapshot } from "./snapshot";
-import { CasualQuest } from "./quests/casual";
-import { CommunityServiceQuest } from "./quests/communityservice";
-import { FirstGarboQuest, SecondGarboQuest, ThirdGarboQuest } from "./quests/garbo";
+import { CasualQuest } from "./tasks/casual";
+import { CommunityServiceQuest } from "./tasks/communityservice";
+import { FirstGarboQuest, SecondGarboQuest, ThirdGarboQuest } from "./tasks/garbo";
 
 const dateProperty = "fullday_runDate";
 const turnsProperty = "fullday_initialTurns";
