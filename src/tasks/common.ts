@@ -138,6 +138,13 @@ export function breakfast(): Task[] {
       },
       limit: { tries: 3 },
     },
+    {
+      name: "Duffo",
+      completed: () =>
+        get("_questPartyFairProgress") !== "" || ["", "finished"].includes(get("_questPartyFair")),
+      do: () => cliExecute(`duffo ${args.duffo}`),
+      limit: { tries: 1 },
+    },
   ];
 }
 

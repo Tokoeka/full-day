@@ -53,6 +53,10 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     ],
     default: "Platypus",
   }),
+  duffo: Args.string({
+    help: "Food and booze items to target for the Neverending Party quest (comma-delimited).",
+    default: "",
+  }),
 });
 
 export function main(command?: string): void {
