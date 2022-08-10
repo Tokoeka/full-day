@@ -1,5 +1,4 @@
-import { Quest, Task } from "grimoire-kolmafia";
-import { cliExecute, myPathId } from "kolmafia";
+import { cliExecute, getStorage, myPathId, myStorageMeat } from "kolmafia";
 import {
   $class,
   $effect,
@@ -12,10 +11,13 @@ import {
   prepareAscension,
   uneffect,
 } from "libram";
-import { ascensionsToday, canAscendNoncasual, getSkillsToPerm } from "../lib";
-export const CommunityServiceQuest: Quest<Task> = {
+import { getCurrentLeg, Leg, Quest } from "../engine/task";
+import { canAscendNoncasual, getSkillsToPerm } from "../lib";
+import { breakfast, duffo, garboAscend, kingFreed } from "./common";
+
+export const CommunityServiceQuest: Quest = {
   name: "Community Service",
-  completed: () => ascensionsToday() > 1,
+  completed: () => getCurrentLeg() > Leg.CommunityService,
   tasks: [
     {
       name: "Ascend",
@@ -48,11 +50,24 @@ export const CommunityServiceQuest: Quest<Task> = {
       completed: () => get("kingLiberated"),
       do: () => cliExecute("loopcs"),
       limit: { tries: 1 },
+      tracking: "Run",
+    },
+    {
+      name: "Pull All",
+      completed: () => Object.keys(getStorage()).length === 0 && myStorageMeat() === 0,
+      do: () => cliExecute("pull all"),
+      post: () => cliExecute("refresh all"),
+      limit: { tries: 1 },
     },
     {
       name: "Uneffect Lost",
       completed: () => !have($effect`Feeling Lost`),
       do: () => uneffect($effect`Feeling Lost`),
+      limit: { tries: 1 },
     },
+    ...kingFreed(),
+    ...breakfast(),
+    duffo(),
+    ...garboAscend(),
   ],
 };

@@ -13,13 +13,8 @@ import {
   Skill,
   spleenLimit,
   todayToString,
-  use,
 } from "kolmafia";
 import { have, Lifestyle } from "libram";
-
-export function tryUse(item: Item, quantity = 1): boolean {
-  return have(item, quantity) && use(quantity, item);
-}
 
 export function isStealable(item: Item): boolean {
   return item.tradeable && item.discardable && !item.gift;
@@ -53,14 +48,10 @@ export function ascensionsToday(): number {
   return (sessionLog.match(/Ascend as a .+? banking \d+ Karma./g) || []).length;
 }
 
-export function commafy(num: number): string {
-  const parts = num.toString().split(".");
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return parts.join(".");
-}
-
-export function formatNumber(num: number): string {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+export function numberWithCommas(x: number): string {
+  const str = x.toString();
+  if (str.includes(".")) return x.toFixed(2);
+  return str.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 // From phccs

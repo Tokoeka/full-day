@@ -1,8 +1,7 @@
-import { CombatStrategy, Task } from "grimoire-kolmafia";
+import { CombatStrategy } from "grimoire-kolmafia";
 import {
   bjornifyFamiliar,
   cliExecute,
-  getStorage,
   hippyStoneBroken,
   inebrietyLimit,
   itemAmount,
@@ -12,7 +11,7 @@ import {
   myInebriety,
   myMeat,
   mySign,
-  myStorageMeat,
+  putCloset,
   pvpAttacksLeft,
   toInt,
   use,
@@ -35,24 +34,51 @@ import {
   uneffect,
   withProperty,
 } from "libram";
-import { shouldOverdrink, tryUse } from "../lib";
 import { args } from "../main";
+import { Task } from "../engine/task";
+import { shouldOverdrink } from "../lib";
+
+const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
 export function kingFreed(): Task[] {
   return [
     {
-      name: "Pull All",
-      completed: () => Object.keys(getStorage()).length === 0 && myStorageMeat() === 0,
-      do: () => {
-        cliExecute("pull all");
-        cliExecute("refresh all");
-      },
-      limit: { tries: 1 },
-    },
-    {
       name: "Closet Meat",
       completed: () => myMeat() <= args.maxmeat || myClosetMeat() > 0,
       do: () => cliExecute(`closet put ${myMeat() - args.maxmeat} meat`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Rain-Doh",
+      completed: () => !have($item`can of Rain-Doh`),
+      do: () => use($item`can of Rain-Doh`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Astral Constainer",
+      completed: () => astralContainers.every((item) => !have(item)),
+      do: () =>
+        astralContainers.forEach((item) => {
+          if (have(item)) use(item);
+        }),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Every Skill",
+      completed: () => get("_bookOfEverySkillUsed", false),
+      do: () => use($item`The Big Book of Every Skill`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Enable Reverser",
+      completed: () => get("backupCameraReverserEnabled"),
+      do: () => cliExecute("backupcamera reverser on"),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Tune Moon",
+      completed: () => mySign() === args.tune || get("moonTuned"),
+      do: () => cliExecute(`spoon ${args.tune}`),
       limit: { tries: 1 },
     },
     {
@@ -68,46 +94,13 @@ export function kingFreed(): Task[] {
       limit: { tries: 1 },
     },
     {
-      name: "Enable Reverser",
-      completed: () => get("backupCameraReverserEnabled"),
-      do: () => cliExecute("backupcamera reverser on"),
-      limit: { tries: 1 },
-    },
-    {
-      name: "Rain-Doh",
-      completed: () => !have($item`can of Rain-Doh`),
-      do: () => use($item`can of Rain-Doh`),
-      limit: { tries: 1 },
-    },
-    {
-      name: "Astral Consumable",
-      completed: () =>
-        $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`.every(
-          (item) => !have(item)
-        ),
-      do: () =>
-        $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`.forEach(
-          (item) => tryUse(item)
-        ),
-      limit: { tries: 1 },
-    },
-    {
-      name: "Every Skill",
-      completed: () => get("_bookOfEverySkillUsed", false),
-      do: () => use($item`The Big Book of Every Skill`),
-    },
-    {
-      name: "Tune Moon",
-      completed: () => mySign() === args.tune || get("moonTuned"),
-      do: () => cliExecute(`spoon ${args.tune}`),
-      limit: { tries: 1 },
-    },
-    {
       name: "Duplicate",
-      ready: () => itemAmount(args.duplicate) > 0 && get("encountersUntilDMTChoice") < 1,
+      ready: () => have(args.duplicate) && get("encountersUntilDMTChoice") < 1,
       completed: () => get("lastDMTDuplication") >= myAscensions(),
       prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
       do: $location`The Deep Machine Tunnels`,
+      post: () => putCloset(itemAmount(args.duplicate), args.duplicate),
+      acquire: () => [{ item: args.duplicate }],
       choices: { 1119: 4 },
       outfit: { familiar: $familiar`Machine Elf` },
       limit: { tries: 1 },
@@ -133,31 +126,33 @@ export function breakfast(): Task[] {
       name: "Clan Fortune",
       completed: () => get("_clanFortuneConsultUses") >= 3,
       do: () => Clan.with("Bonus Adventures from Hell", () => cliExecute("fortune 3038166")),
-      post: () => {
-        if (get("_clanFortuneConsultUses") < 3) wait(10);
-      },
+      post: () => wait(10),
       limit: { tries: 3 },
     },
-    {
-      name: "Duffo",
-      completed: () =>
-        get("_questPartyFairProgress") !== "" || ["", "finished"].includes(get("_questPartyFair")),
-      do: () => cliExecute(`duffo ${args.duffo}`),
-      limit: { tries: 1 },
-    },
   ];
+}
+
+export function duffo(): Task {
+  return {
+    name: "Duffo",
+    completed: () =>
+      get("_questPartyFairProgress") !== "" || ["", "finished"].includes(get("_questPartyFair")),
+    do: () => cliExecute(`duffo ${args.duffo}`),
+    limit: { tries: 1 },
+  };
 }
 
 export function garboAscend(): Task[] {
   return [
     {
-      name: "Garbo Ascend",
+      name: "Garbo",
       completed: () => shouldOverdrink() || myInebriety() > inebrietyLimit(),
       do: () => cliExecute("garbo yachtzeechain ascend"),
       limit: { tries: 1 },
+      tracking: "Garbo",
     },
     {
-      name: "Overdrink Ascend",
+      name: "Overdrink",
       ready: () => shouldOverdrink(),
       completed: () => myInebriety() > inebrietyLimit(),
       do: () =>
@@ -174,26 +169,7 @@ export function garboAscend(): Task[] {
         useSkill($skill`Cannelloni Cocoon`);
       },
       do: $location`The Bubblin' Caldera`,
-      post: () => {
-        if (
-          $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
-          $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs")
-        )
-          uneffect($effect`Drenched in Lava`);
-      },
       acquire: [{ item: $item`heat-resistant sheet metal`, price: 5000, optional: true }],
-      combat: new CombatStrategy().macro(Macro.attack().repeat()),
-      outfit: {
-        weapon: $item`June cleaver`,
-        offhand: $item`Drunkula's wineglass`,
-        back: $item`Buddy Bjorn`,
-        acc1: $item`lucky gold ring`,
-        acc2: $item`mafia thumb ring`,
-        acc3: $item`Mr. Screege's spectacles`,
-        familiar: $familiar`Puck Man`,
-        famequip: $item`orange boxing gloves`,
-        modifier: "mainstat",
-      },
       effects: [
         $effect`A Few Extra Pounds`,
         $effect`Astral Shell`,
@@ -205,7 +181,25 @@ export function garboAscend(): Task[] {
         $effect`Song of Bravado`,
         $effect`Stevedave's Shanty of Superiority`,
       ],
+      outfit: {
+        weapon: $item`June cleaver`,
+        offhand: $item`Drunkula's wineglass`,
+        back: $item`Buddy Bjorn`,
+        acc1: $item`lucky gold ring`,
+        acc2: $item`mafia thumb ring`,
+        acc3: $item`Mr. Screege's spectacles`,
+        familiar: $familiar`Puck Man`,
+        famequip: $item`orange boxing gloves`,
+        modifier: "mainstat",
+      },
+      combat: new CombatStrategy().macro(Macro.attack().repeat()),
       limit: { tries: 9 }, // Clear intro adventure
+    },
+    {
+      name: "Uneffect Lava",
+      completed: () => !have($effect`Drenched in Lava`),
+      do: () => uneffect($effect`Drenched in Lava`),
+      limit: { tries: 1 },
     },
     {
       name: "Drunk Garbo",
