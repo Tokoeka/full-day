@@ -106,14 +106,6 @@ export const CasualQuest: Quest = {
       limit: { tries: 1 },
     },
     {
-      name: "Pajamas",
-      completed: () =>
-        maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
-        numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
-      do: () => maximize("adv, switch tot, switch left-hand man, switch disembodied hand", false),
-      limit: { tries: 1 },
-    },
-    {
       name: "Inbox",
       completed: () =>
         Kmail.inbox().filter((k) =>
@@ -135,6 +127,14 @@ export const CasualQuest: Quest = {
       name: "Raffle",
       completed: () => have($item`raffle ticket`),
       do: () => cliExecute(`raffle ${Math.random() * 10 + 1}`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Pajamas",
+      completed: () =>
+        maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
+        numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
+      do: () => maximize("adv, switch tot, switch left-hand man, switch disembodied hand", false),
       limit: { tries: 1 },
     },
   ],
