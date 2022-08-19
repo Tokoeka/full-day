@@ -2,6 +2,7 @@ import { CombatStrategy } from "grimoire-kolmafia";
 import {
   bjornifyFamiliar,
   cliExecute,
+  familiarWeight,
   hippyStoneBroken,
   inebrietyLimit,
   itemAmount,
@@ -21,10 +22,12 @@ import {
 } from "kolmafia";
 import {
   $effect,
+  $effects,
   $familiar,
   $item,
   $items,
   $location,
+  $monster,
   $skill,
   Clan,
   get,
@@ -36,7 +39,7 @@ import {
 } from "libram";
 import { args } from "../main";
 import { Task } from "../engine/task";
-import { shouldOverdrink } from "../lib";
+import { mapMonster, shouldOverdrink } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -140,6 +143,69 @@ export function duffo(): Task {
     do: () => cliExecute(`duffo ${args.duffo}`),
     limit: { tries: 1 },
   };
+}
+
+export function menagerie(): Task[] {
+  return [
+    {
+      name: "Menagerie Key",
+      ready: () => get("_monstersMapped") < 3 && !have($effect`Everything Looks Yellow`),
+      completed: () => have($item`Cobb's Knob Menagerie key`),
+      do: () =>
+        mapMonster($location`Cobb's Knob Laboratory`, $monster`Knob Goblin Very Mad Scientist`),
+      acquire: [{ item: $item`yellow rocket`, price: 250 }],
+      combat: new CombatStrategy().macro(
+        Macro.item($item`yellow rocket`),
+        $monster`Knob Goblin Very Mad Scientist`
+      ),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Feed Goose",
+      completed: () =>
+        get("_mayflySummons") >= 30 ||
+        get("gooseDronesRemaining") > 0 ||
+        familiarWeight($familiar`Grey Goose`) > 5,
+      do: () => use($item`Ghost Dog Chow`),
+      acquire: [{ item: $item`Ghost Dog Chow`, price: 5000 }],
+      outfit: { familiar: $familiar`Grey Goose` },
+      limit: { tries: 1 },
+    },
+    {
+      name: "Mayfly BASICs",
+      ready: () => get("gooseDronesRemaining") > 0,
+      completed: () => get("_mayflySummons") >= 30,
+      prepare: () => cliExecute("backupcamera init"),
+      do: $location`Cobb's Knob Menagerie, Level 1`,
+      acquire: [
+        { item: $item`Sneaky Pete's leather jacket` },
+        { item: $item`crystal skull`, price: 5000 },
+        { item: $item`tennis ball`, price: 10000 },
+      ],
+      outfit: {
+        hat: $item`biker's hat`,
+        back: $item`Duke Vampire's regal cloak`,
+        weapon: $item`June cleaver`,
+        offhand: $item`tiny black hole`,
+        shirt: $item`Sneaky Pete's leather jacket`,
+        pants: $item`designer sweatpants`,
+        acc1: $item`mayfly bait necklace`,
+        acc2: $item`Lord Soggyraven's Slippers`,
+        acc3: $item`backup camera`,
+        familiar: $familiar`Grey Goose`,
+        famequip: $item`tiny stillsuit`,
+      },
+      effects: $effects`Springy Fusilli, Cletus's Canticle of Celerity`,
+      combat: new CombatStrategy()
+        .macro(Macro.item($item`crystal skull`), $monster`Fruit Golem`)
+        .macro(Macro.item($item`tennis ball`), $monster`Knob Goblin Mutant`)
+        .macro(
+          Macro.step("pickpocket").skill($skill`Summon Mayfly Swarm`),
+          $monster`BASIC Elemental`
+        ),
+      limit: { tries: 40 },
+    },
+  ];
 }
 
 export function garboAscend(): Task[] {

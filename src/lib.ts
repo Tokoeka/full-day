@@ -5,16 +5,24 @@ import {
   inebrietyLimit,
   Item,
   itemType,
+  Location,
+  Monster,
   myAdventures,
   myFullness,
   myInebriety,
   myName,
   mySpleenUse,
+  myTurncount,
+  runChoice,
+  runCombat,
   Skill,
   spleenLimit,
   todayToString,
+  toUrl,
+  useSkill,
+  visitUrl,
 } from "kolmafia";
-import { have, Lifestyle } from "libram";
+import { $skill, get, have, Lifestyle } from "libram";
 
 export function isStealable(item: Item): boolean {
   return item.tradeable && item.discardable && !item.gift;
@@ -54,20 +62,6 @@ export function numberWithCommas(x: number): string {
   return str.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// From phccs
-export function convertMilliseconds(milliseconds: number): string {
-  const seconds = milliseconds / 1000;
-  const minutes = Math.floor(seconds / 60);
-  const secondsLeft = Math.round((seconds - minutes * 60) * 1000) / 1000;
-  const hours = Math.floor(minutes / 60);
-  const minutesLeft = Math.round(minutes - hours * 60);
-  return (
-    (hours !== 0 ? `${hours} hours, ` : "") +
-    (minutesLeft !== 0 ? `${minutesLeft} minutes, ` : "") +
-    (secondsLeft !== 0 ? `${secondsLeft} seconds` : "")
-  );
-}
-
 export function getSkillsToPerm(): Map<Skill, Lifestyle> {
   return new Map(
     Skill.all()
@@ -76,4 +70,20 @@ export function getSkillsToPerm(): Map<Skill, Lifestyle> {
       )
       .map((skill) => [skill, Lifestyle.hardcore])
   );
+}
+
+export function mapMonster(location: Location, monster: Monster): void {
+  useSkill($skill`Map the Monsters`);
+  if (!get("mappingMonsters")) {
+    throw new Error("Failed to setup Map the Monsters.");
+  }
+  const turns = myTurncount();
+  while (get("mappingMonsters")) {
+    if (myTurncount() > turns) {
+      throw new Error("Map the Monsters unsuccessful?");
+    }
+    visitUrl(toUrl(location));
+    runChoice(1, `heyscriptswhatsupwinkwink=${monster.id}`);
+    runCombat();
+  }
 }

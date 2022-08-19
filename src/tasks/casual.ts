@@ -28,7 +28,7 @@ import {
   withProperty,
 } from "libram";
 import { canAscendCasual, getSkillsToPerm, shouldOverdrink } from "../lib";
-import { breakfast, duffo, kingFreed } from "./common";
+import { breakfast, duffo, kingFreed, menagerie } from "./common";
 
 export const CasualQuest: Quest = {
   name: "Casual",
@@ -79,6 +79,7 @@ export const CasualQuest: Quest = {
     },
     ...kingFreed(),
     ...breakfast(),
+    ...menagerie(),
     {
       name: "Garbo",
       completed: () => shouldOverdrink() || myInebriety() > inebrietyLimit(),
