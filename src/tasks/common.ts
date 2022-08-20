@@ -173,7 +173,6 @@ export function menagerie(): Task[] {
     },
     {
       name: "Mayfly BASICs",
-      ready: () => get("gooseDronesRemaining") > 0,
       completed: () => get("_mayflySummons") >= 30,
       prepare: () => cliExecute("backupcamera init"),
       do: $location`Cobb's Knob Menagerie, Level 1`,
@@ -200,7 +199,9 @@ export function menagerie(): Task[] {
         .macro(Macro.item($item`crystal skull`), $monster`Fruit Golem`)
         .macro(Macro.item($item`tennis ball`), $monster`Knob Goblin Mutant`)
         .macro(
-          Macro.step("pickpocket").skill($skill`Summon Mayfly Swarm`),
+          Macro.step("pickpocket")
+            .trySkill($skill`Emit Matter Duplicating Drones`)
+            .skill($skill`Summon Mayfly Swarm`),
           $monster`BASIC Elemental`
         ),
       limit: { tries: 40 },

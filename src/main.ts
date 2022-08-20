@@ -54,7 +54,7 @@ export function main(command?: string): void {
     return;
   }
 
-  const tasks = getTasks([AftercoreQuest, CommunityServiceQuest, CasualQuest], true);
+  const tasks = getTasks([AftercoreQuest, CommunityServiceQuest, CasualQuest]);
 
   // Abort during the prepare() step of the specified task
   if (args.abort) {
