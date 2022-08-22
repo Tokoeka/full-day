@@ -10,6 +10,7 @@ import {
   sellPrice,
   todayToString,
   toInt,
+  toItem,
 } from "kolmafia";
 import { $item, $items, get, getSaleValue, Session, sumNumbers } from "libram";
 
@@ -154,44 +155,44 @@ export function garboAverageValue(...items: Item[]): number {
   return sumNumbers(items.map(garboValue)) / items.length;
 }
 
-class DailySetting<T> {
-  key: string;
+function inventoryOperation(
+  a: Map<Item, number>,
+  b: Map<Item, number>,
+  op: (aPart: number, bPart: number) => number,
+  commutative: boolean
+): Map<Item, number> {
+  // return every entry that is in a and not in b
+  const difference = new Map<Item, number>();
 
-  constructor(key: string) {
-    this.key = key;
+  for (const [item, quantity] of a.entries()) {
+    const combinedQuantity = op(quantity, b.get(item) ?? 0);
+    difference.set(item, combinedQuantity);
   }
+  if (commutative) {
+    for (const [item, quantity] of b.entries()) {
+      if (!a.has(item)) {
+        difference.set(item, quantity);
+      }
+    }
+  }
+  const diffEntries: [Item, number][] = [...difference.entries()];
 
-  get(def: T): T {
-    const saved = fileToBuffer(`profit/${this.key}`);
-    if (saved === "") return def;
-    const json = JSON.parse(saved);
-    if ("day" in json && "value" in json && json["day"] === todayToString()) return json["value"];
-    else return def;
-  }
-
-  set(value: T) {
-    bufferToFile(
-      JSON.stringify({
-        day: todayToString(),
-        value: value,
-      }),
-      `profit/${this.key}`
-    );
-  }
+  return new Map<Item, number>(diffEntries.filter((value) => value[1] !== 0));
 }
 
 export type ProfitRecord = {
   meat: number;
-  items: number;
+  items: Map<Item, number>;
   turns: number;
   hours: number;
 };
+export type EvaluatedProfitRecord = Omit<ProfitRecord, "items"> & { items: number };
 export type Records = {
   [name: string]: ProfitRecord;
 };
 
 export class ProfitTracker {
-  setting: DailySetting<Records>;
+  key: string;
   records: Records;
   session: Session;
   turns: number;
@@ -200,9 +201,8 @@ export class ProfitTracker {
   ascensions: number;
 
   constructor(key: string) {
-    this.setting = new DailySetting<Records>(key);
-
-    this.records = this.setting.get({});
+    this.key = key;
+    this.records = this.load();
     this.session = Session.current();
     this.turns = myTurncount();
     this.hours = gametimeToInt() / (1000 * 60 * 60);
@@ -253,19 +253,18 @@ export class ProfitTracker {
 
     const diff = Session.current().diff(this.session);
     if (!(tag in this.records)) {
-      this.records[tag] = { meat: 0, items: 0, turns: 0, hours: 0 };
+      this.records[tag] = { meat: 0, items: new Map(), turns: 0, hours: 0 };
     }
 
-    const value = diff.value(garboValue);
-    this.records[tag].meat += value.meat;
-    this.records[tag].items += value.items;
+    this.records[tag].meat += diff.meat;
+    this.records[tag].items = inventoryOperation(
+      this.records[tag].items,
+      diff.items,
+      (a: number, b: number) => a + b,
+      true
+    );
     this.records[tag].turns += myTurncount() - this.turns;
     this.records[tag].hours += gametimeToInt() / (1000 * 60 * 60) - this.hours;
-    print(
-      `Profit: ${value.meat}, ${value.items}, ${myTurncount() - this.turns}, ${
-        gametimeToInt() / (1000 * 60 * 60) - this.hours
-      }`
-    );
     this.reset();
   }
 
@@ -274,20 +273,57 @@ export class ProfitTracker {
   }
 
   save(): void {
-    this.setting.set(this.records);
+    bufferToFile(
+      JSON.stringify(
+        {
+          day: todayToString(),
+          value: this.records,
+        },
+        (key, value) => (key === "items" ? Object.fromEntries(value) : value)
+      ),
+      `profit/${this.key}`
+    );
+  }
+
+  load(def = {}): Records {
+    const saved = fileToBuffer(`profit/${this.key}`);
+    if (saved === "") return def;
+    const json = JSON.parse(saved, (key, value) =>
+      key === "items"
+        ? new Map(Object.entries(value).map(([itemStr, quantity]) => [toItem(itemStr), quantity]))
+        : value
+    );
+    if ("day" in json && "value" in json && json["day"] === todayToString()) {
+      return json["value"];
+    } else {
+      return def;
+    }
   }
 }
 
 function sum(record: Records, where: (key: string) => boolean): ProfitRecord {
-  const included: ProfitRecord[] = [];
+  const included = [];
   for (const key in record) {
     if (where(key)) included.push(record[key]);
   }
   return {
     meat: included.reduce((v, p) => v + p.meat, 0),
-    items: included.reduce((v, p) => v + p.items, 0),
+    items: included.reduce(
+      (v, p) => inventoryOperation(v, p.items, (a: number, b: number) => a + b, true),
+      new Map<Item, number>()
+    ),
     turns: included.reduce((v, p) => v + p.turns, 0),
     hours: included.reduce((v, p) => v + p.hours, 0),
+  };
+}
+
+function evaluate(record: ProfitRecord): EvaluatedProfitRecord {
+  return {
+    ...record,
+    items: Array.from(record.items).reduce(
+      (v, [item, quantity]) => v + garboValue(item) * quantity,
+      0
+    ),
   };
 }
 
@@ -299,10 +335,11 @@ function numberWithCommas(x: number): string {
 
 function printProfitSegment(key: string, record: ProfitRecord, color: string) {
   if (record === undefined) return;
+  const evaluatedRecord = evaluate(record);
   print(
-    `${key}: ${numberWithCommas(record.meat)} meat + ${numberWithCommas(record.items)} items (${
-      record.turns
-    } turns + ${numberWithCommas(record.hours)} hours)`,
+    `${key}: ${numberWithCommas(evaluatedRecord.meat)} meat + ${numberWithCommas(
+      evaluatedRecord.items
+    )} items (${evaluatedRecord.turns} turns + ${numberWithCommas(evaluatedRecord.hours)} hours)`,
     color
   );
 }
