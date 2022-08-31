@@ -176,6 +176,9 @@ export function menagerie(): Task[] {
       completed: () => get("_mayflySummons") >= 30,
       prepare: () => cliExecute("backupcamera init"),
       do: $location`Cobb's Knob Menagerie, Level 1`,
+      post: () => {
+        if (get("_mayflySummons") >= 30) uneffect($effect`Beaten Up`);
+      },
       acquire: [
         { item: $item`Sneaky Pete's leather jacket` },
         { item: $item`crystal skull`, price: 5000 },

@@ -145,7 +145,7 @@ export function garboValue(item: Item): number {
   if (cachedValue === undefined) {
     const specialValueCompute = specialValueLookup.get(item);
     const value = specialValueCompute ? specialValueCompute() : getSaleValue(item);
-    print(`Valuing ${item.name} @ ${value}`);
+    // print(`Valuing ${item.name} @ ${value}`);
     garboValueCache.set(item, value);
     return value;
   }
@@ -186,7 +186,6 @@ export type ProfitRecord = {
   turns: number;
   hours: number;
 };
-export type EvaluatedProfitRecord = Omit<ProfitRecord, "items"> & { items: number };
 export type Records = {
   [name: string]: ProfitRecord;
 };
@@ -317,13 +316,21 @@ function sum(record: Records, where: (key: string) => boolean): ProfitRecord {
   };
 }
 
+export interface ItemDetail {
+  item: Item;
+  value: number;
+  quantity: number;
+}
+export type EvaluatedProfitRecord = Omit<ProfitRecord, "items"> & { items: ItemDetail[] };
+
 function evaluate(record: ProfitRecord): EvaluatedProfitRecord {
   return {
     ...record,
-    items: Array.from(record.items).reduce(
-      (v, [item, quantity]) => v + garboValue(item) * quantity,
-      0
-    ),
+    items: Array.from(record.items).map(([item, quantity]) => ({
+      item: item,
+      value: garboValue(item) * quantity,
+      quantity: quantity,
+    })),
   };
 }
 
@@ -338,10 +345,20 @@ function printProfitSegment(key: string, record: ProfitRecord, color: string) {
   const evaluatedRecord = evaluate(record);
   print(
     `${key}: ${numberWithCommas(evaluatedRecord.meat)} meat + ${numberWithCommas(
-      evaluatedRecord.items
+      Math.round(evaluatedRecord.items.reduce((acc, cur) => acc + cur.value, 0))
     )} items (${evaluatedRecord.turns} turns + ${numberWithCommas(evaluatedRecord.hours)} hours)`,
     color
   );
+}
+
+function printNoteableItems(record: EvaluatedProfitRecord, n = 3) {
+  const losers = record.items.sort((a, b) => a.value - b.value).slice(0, n);
+  const winners = record.items.sort((a, b) => b.value - a.value).slice(0, n);
+  for (const detail of [...winners, ...losers.reverse()]) {
+    print(
+      `${detail.quantity} ${detail.item} worth ${numberWithCommas(Math.round(detail.value))} total`
+    );
+  }
 }
 
 export function printProfits(records: Records): void {
@@ -375,4 +392,7 @@ export function printProfits(records: Records): void {
     sum(records, () => true),
     "black"
   );
+  print("");
+  print("== Significant Items ==");
+  printNoteableItems(evaluate(sum(records, () => true)), 3);
 }
