@@ -1,6 +1,6 @@
 import { Quest as BaseQuest, Task as BaseTask, Limit } from "grimoire-kolmafia";
 import { myDaycount, myPath } from "kolmafia";
-import { get } from "libram";
+import { $path, get } from "libram";
 
 export type Task = BaseTask & {
   tracking?: string;
@@ -17,7 +17,7 @@ export enum Leg {
 export function getCurrentLeg(): number {
   if (myDaycount() > 1) return Leg.Aftercore;
   if (
-    myPath() === "Community Service" ||
+    myPath() === $path`Community Service` ||
     (get("kingLiberated") && get("questL02Larva") === "unstarted")
   )
     return Leg.CommunityService;

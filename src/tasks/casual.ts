@@ -5,7 +5,7 @@ import {
   inebrietyLimit,
   maximize,
   myInebriety,
-  myPathId,
+  myPath,
   numericModifier,
   retrieveItem,
   retrievePrice,
@@ -15,6 +15,7 @@ import {
   $class,
   $effect,
   $item,
+  $path,
   $skill,
   ascend,
   AsdonMartin,
@@ -23,7 +24,6 @@ import {
   haveInCampground,
   Kmail,
   Lifestyle,
-  Paths,
   prepareAscension,
   withProperty,
 } from "libram";
@@ -48,7 +48,7 @@ export const CasualQuest: Quest = {
           },
         });
         ascend(
-          Paths.Unrestricted,
+          $path`none`,
           $class`Seal Clubber`,
           Lifestyle.casual,
           "knoll",
@@ -62,7 +62,7 @@ export const CasualQuest: Quest = {
     duffo(),
     {
       name: "Run",
-      ready: () => myPathId() === Paths.Unrestricted.id,
+      ready: () => myPath() === $path`none`,
       completed: () => get("kingLiberated") && have($skill`Liver of Steel`),
       do: () => cliExecute("loopcasual"),
       limit: { tries: 1 },

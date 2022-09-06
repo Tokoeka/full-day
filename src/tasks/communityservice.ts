@@ -1,13 +1,13 @@
-import { cliExecute, getStorage, myPathId, myStorageMeat } from "kolmafia";
+import { cliExecute, getStorage, myPath, myStorageMeat } from "kolmafia";
 import {
   $class,
   $effect,
   $item,
+  $path,
   ascend,
   get,
   have,
   Lifestyle,
-  Paths,
   prepareAscension,
   uneffect,
 } from "libram";
@@ -33,7 +33,7 @@ export const CommunityServiceQuest: Quest = {
           },
         });
         ascend(
-          Paths.CommunityService,
+          $path`Community Service`,
           $class`Pastamancer`,
           Lifestyle.softcore,
           "knoll",
@@ -46,7 +46,7 @@ export const CommunityServiceQuest: Quest = {
     },
     {
       name: "Run",
-      ready: () => myPathId() === Paths.CommunityService.id,
+      ready: () => myPath() === $path`Community Service`,
       completed: () => get("kingLiberated"),
       do: () => cliExecute("loopcs"),
       limit: { tries: 1 },
