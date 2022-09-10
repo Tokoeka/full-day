@@ -16,6 +16,7 @@ import {
   pvpAttacksLeft,
   toInt,
   use,
+  userConfirm,
   useSkill,
   visitUrl,
   wait,
@@ -139,8 +140,14 @@ export function duffo(): Task {
   return {
     name: "Duffo",
     completed: () =>
-      get("_questPartyFairProgress") !== "" || ["", "finished"].includes(get("_questPartyFair")),
-    do: () => cliExecute(`duffo ${args.duffo}`),
+      get("_questPartyFairProgress") !== "" ||
+      ["", "finished"].includes(get("_questPartyFair")) ||
+      !["food", "booze"].includes(get("_questPartyFairQuest")),
+    prepare: () => {
+      if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
+    },
+    do: () => cliExecute(`duffo`),
+    post: () => Clan.join("Margaretting Tye"),
     limit: { tries: 1 },
   };
 }
@@ -239,6 +246,13 @@ export function garboAscend(): Task[] {
         useSkill($skill`Cannelloni Cocoon`);
       },
       do: $location`The Bubblin' Caldera`,
+      post: () => {
+        if (
+          $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
+          $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs")
+        )
+          uneffect($effect`Drenched in Lava`);
+      },
       acquire: [{ item: $item`heat-resistant sheet metal`, price: 5000, optional: true }],
       effects: [
         $effect`A Few Extra Pounds`,
@@ -264,12 +278,6 @@ export function garboAscend(): Task[] {
       },
       combat: new CombatStrategy().macro(Macro.attack().repeat()),
       limit: { tries: 9 }, // Clear intro adventure
-    },
-    {
-      name: "Uneffect Lava",
-      completed: () => !have($effect`Drenched in Lava`),
-      do: () => uneffect($effect`Drenched in Lava`),
-      limit: { tries: 1 },
     },
     {
       name: "Drunk Garbo",
