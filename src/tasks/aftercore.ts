@@ -4,5 +4,5 @@ import { breakfast, duffo, garboAscend, menagerie } from "./common";
 export const AftercoreQuest: Quest = {
   name: "Aftercore",
   completed: () => getCurrentLeg() > Leg.Aftercore,
-  tasks: [...breakfast(), duffo(), ...menagerie(), ...garboAscend()],
+  tasks: [...breakfast(), ...duffo(), ...menagerie(), ...garboAscend()],
 };

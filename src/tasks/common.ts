@@ -14,7 +14,9 @@ import {
   mySign,
   putCloset,
   pvpAttacksLeft,
+  runChoice,
   toInt,
+  toUrl,
   use,
   userConfirm,
   useSkill,
@@ -136,20 +138,35 @@ export function breakfast(): Task[] {
   ];
 }
 
-export function duffo(): Task {
-  return {
-    name: "Duffo",
-    completed: () =>
-      get("_questPartyFairProgress") !== "" ||
-      ["", "finished"].includes(get("_questPartyFair")) ||
-      !["food", "booze"].includes(get("_questPartyFairQuest")),
-    prepare: () => {
-      if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
+export function duffo(): Task[] {
+  return [
+    {
+      name: "Start NEP Quest",
+      completed: () => get("_questPartyFair") !== "unstarted",
+      do: (): void => {
+        visitUrl(toUrl($location`The Neverending Party`));
+        if (["food", "booze"].includes(get("_questPartyFairQuest"))) {
+          runChoice(1); // Accept quest
+        } else {
+          runChoice(2); // Decline quest
+        }
+      },
+      limit: { tries: 1 },
     },
-    do: () => cliExecute(`duffo`),
-    post: () => Clan.join("Margaretting Tye"),
-    limit: { tries: 1 },
-  };
+    {
+      name: "Duffo",
+      completed: () =>
+        get("_questPartyFairProgress") !== "" ||
+        ["", "finished"].includes(get("_questPartyFair")) ||
+        !["food", "booze"].includes(get("_questPartyFairQuest")),
+      prepare: () => {
+        if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
+      },
+      do: () => cliExecute(`duffo`),
+      post: () => Clan.join("Margaretting Tye"),
+      limit: { tries: 1 },
+    },
+  ];
 }
 
 export function menagerie(): Task[] {

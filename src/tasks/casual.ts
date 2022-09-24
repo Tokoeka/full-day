@@ -59,7 +59,7 @@ export const CasualQuest: Quest = {
       },
       limit: { tries: 1 },
     },
-    duffo(),
+    ...duffo(),
     {
       name: "Run",
       ready: () => myPath() === $path`none`,

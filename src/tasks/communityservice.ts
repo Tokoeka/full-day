@@ -67,7 +67,7 @@ export const CommunityServiceQuest: Quest = {
     },
     ...kingFreed(),
     ...breakfast(),
-    duffo(),
+    ...duffo(),
     ...garboAscend(),
   ],
 };
