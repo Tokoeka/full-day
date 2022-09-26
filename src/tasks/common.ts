@@ -162,7 +162,7 @@ export function duffo(): Task[] {
       prepare: () => {
         if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
       },
-      do: () => cliExecute(`duffo`),
+      do: () => cliExecute(`duffo go`),
       post: () => Clan.join("Margaretting Tye"),
       limit: { tries: 1 },
     },
