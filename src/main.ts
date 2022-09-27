@@ -1,14 +1,23 @@
-import { Args, getTasks } from "grimoire-kolmafia";
+import { Args } from "grimoire-kolmafia";
 import { Item } from "kolmafia";
 import { $item } from "libram";
 import { ProfitTrackingEngine } from "./engine/engine";
-import { AftercoreQuest } from "./tasks/aftercore";
-import { CasualQuest } from "./tasks/casual";
-import { CommunityServiceQuest } from "./tasks/communityservice";
+import { Task } from "./engine/task";
+import { aftercore_tasks, all_tasks, casual_tasks, communityservice_tasks } from "./tasks/all";
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
-  confirm: Args.boolean({
-    help: "If the user must confirm execution of each task.",
+  goal: Args.string({
+    help: "Which tasks to perform.",
+    options: [
+      ["all", "Complete all tasks."],
+      ["aftercore", "Complete the current aftercore."],
+      ["communityservice", "Complete a community service ascension."],
+      ["casual", "Complete a casual ascension."],
+    ],
+    default: "all",
+  }),
+  confirm: Args.flag({
+    help: "Require the user to confirm execution of each task.",
     default: false,
   }),
   abort: Args.string({
@@ -41,10 +50,6 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     ],
     default: "Platypus",
   }),
-  duffo: Args.string({
-    help: "Food and booze items to target for the Neverending Party quest (comma-delimited).",
-    default: "",
-  }),
 });
 
 export function main(command?: string): void {
@@ -54,7 +59,22 @@ export function main(command?: string): void {
     return;
   }
 
-  const tasks = getTasks([AftercoreQuest, CommunityServiceQuest, CasualQuest]);
+  // Select which tasks to perform
+  let tasks: Task[] = [];
+  switch (args.goal) {
+    case "all":
+      tasks = all_tasks();
+      break;
+    case "aftercore":
+      tasks = aftercore_tasks();
+      break;
+    case "communityservice":
+      tasks = communityservice_tasks();
+      break;
+    case "casual":
+      tasks = casual_tasks();
+      break;
+  }
 
   // Abort during the prepare() step of the specified task
   if (args.abort) {
