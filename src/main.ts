@@ -1,9 +1,14 @@
 import { Args } from "grimoire-kolmafia";
-import { Item } from "kolmafia";
+import { Item, print } from "kolmafia";
 import { $item } from "libram";
 import { ProfitTrackingEngine } from "./engine/engine";
+import { garboValue } from "./engine/profits";
 import { Task } from "./engine/task";
+import { numberWithCommas } from "./lib";
+import { Snapshot } from "./snapshot";
 import { aftercore_tasks, all_tasks, casual_tasks, communityservice_tasks } from "./tasks/all";
+
+export const initialSnapshot = Snapshot.importOrCreate("Start");
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
   goal: Args.string({
@@ -91,4 +96,20 @@ export function main(command?: string): void {
   } finally {
     engine.destruct();
   }
+
+  const { meat, items, itemDetails } = Snapshot.current().diff(initialSnapshot).value(garboValue);
+
+  // list the top 3 gaining and top 3 losing items
+  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
+  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
+  print(`Extreme Items:`);
+  for (const detail of [...winners, ...losers]) {
+    print(`${detail.quantity} ${detail.item} worth ${detail.value.toFixed(0)} total`);
+  }
+
+  print(
+    `So far today, you have generated ${numberWithCommas(
+      meat + items
+    )} meat, with ${numberWithCommas(meat)} raw meat and ${numberWithCommas(items)} from items`
+  );
 }

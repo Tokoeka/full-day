@@ -13,6 +13,16 @@ export class Engine extends BaseEngine {
       this.execute(task);
     }
   }
+
+  public available(task: Task): boolean {
+    for (const after of task.after ?? []) {
+      const after_task = this.tasks_by_name.get(after);
+      if (after_task === undefined) throw `Unknown task dependency ${after} on ${task.name}`;
+      if (!after_task.completed()) return false;
+    }
+    if (task.completed()) return false;
+    return true;
+  }
 }
 
 export class ProfitTrackingEngine extends Engine {

@@ -42,7 +42,7 @@ import {
 } from "libram";
 import { args } from "../main";
 import { Task } from "../engine/task";
-import { mapMonster, shouldOverdrink } from "../lib";
+import { canConsume, distillateAdvs, mapMonster, stooperInebrietyLimit } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -133,7 +133,7 @@ export function breakfast(): Task[] {
       completed: () => get("_clanFortuneConsultUses") >= 3,
       do: () => Clan.with("Bonus Adventures from Hell", () => cliExecute("fortune 3038166")),
       post: () => wait(10),
-      limit: { tries: 3 },
+      limit: { tries: 5 },
     },
   ];
 }
@@ -141,7 +141,7 @@ export function breakfast(): Task[] {
 export function duffo(): Task[] {
   return [
     {
-      name: "Start NEP Quest",
+      name: "Party Fair",
       completed: () => get("_questPartyFair") !== "unstarted",
       do: (): void => {
         visitUrl(toUrl($location`The Neverending Party`));
@@ -162,7 +162,7 @@ export function duffo(): Task[] {
       prepare: () => {
         if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
       },
-      do: () => cliExecute(`duffo go`),
+      do: () => cliExecute("duffo go"),
       post: () => Clan.join("Margaretting Tye"),
       limit: { tries: 1 },
     },
@@ -205,8 +205,8 @@ export function menagerie(): Task[] {
       },
       acquire: [
         { item: $item`Sneaky Pete's leather jacket` },
-        { item: $item`crystal skull`, price: 5000 },
-        { item: $item`tennis ball`, price: 10000 },
+        { item: $item`crystal skull`, price: 10_000 },
+        { item: $item`tennis ball`, price: 10_000 },
       ],
       outfit: {
         hat: $item`biker's hat`,
@@ -236,21 +236,33 @@ export function menagerie(): Task[] {
   ];
 }
 
+export function stooper(): Task {
+  return {
+    name: "Stooper",
+    ready: () => distillateAdvs() >= 10,
+    completed: () => myInebriety() >= stooperInebrietyLimit(),
+    do: () => cliExecute("drink stillsuit distillate"),
+    limit: { tries: 1 },
+  };
+}
+
 export function garboAscend(): Task[] {
   return [
     {
       name: "Garbo",
-      completed: () => shouldOverdrink() || myInebriety() > inebrietyLimit(),
+      completed: () =>
+        (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
       do: () => cliExecute("garbo yachtzeechain ascend"),
       limit: { tries: 1 },
       tracking: "Garbo",
     },
+    stooper(),
     {
       name: "Overdrink",
-      ready: () => shouldOverdrink(),
-      completed: () => myInebriety() > inebrietyLimit(),
+      completed: () => myInebriety() > stooperInebrietyLimit(),
       do: () =>
         withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP VALUE 3500")),
+      outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
     },
     {
@@ -271,17 +283,6 @@ export function garboAscend(): Task[] {
           uneffect($effect`Drenched in Lava`);
       },
       acquire: [{ item: $item`heat-resistant sheet metal`, price: 5000, optional: true }],
-      effects: [
-        $effect`A Few Extra Pounds`,
-        $effect`Astral Shell`,
-        $effect`Big`,
-        $effect`Feeling Excited`,
-        $effect`Feeling Peaceful`,
-        $effect`Power Ballad of the Arrowsmith`,
-        $effect`Rage of the Reindeer`,
-        $effect`Song of Bravado`,
-        $effect`Stevedave's Shanty of Superiority`,
-      ],
       outfit: {
         weapon: $item`June cleaver`,
         offhand: $item`Drunkula's wineglass`,

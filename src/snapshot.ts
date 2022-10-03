@@ -8,6 +8,7 @@ import {
   fileToBuffer,
   getCampground,
   getCloset,
+  getDisplay,
   getInventory,
   getShop,
   getStorage,
@@ -77,7 +78,7 @@ function getTradeableCampground(): { [item: string]: number } {
 }
 
 function myItems(): Map<Item, number> {
-  cliExecute("refresh shop; refresh storage; refresh inv");
+  cliExecute("refresh all");
   const inv = getInventory();
   const equips = getEquipment();
   const shop = getShop();
@@ -85,6 +86,7 @@ function myItems(): Map<Item, number> {
   const storage = getStorage();
   const camp = getTradeableCampground();
   const terrarium = getTerrariumEquipment();
+  const display = getDisplay();
   const overall = new Map<Item, number>();
   for (const itemName in {
     ...inv,
@@ -94,10 +96,11 @@ function myItems(): Map<Item, number> {
     ...storage,
     ...camp,
     ...terrarium,
+    ...display,
   }) {
     overall.set(
       toItem(itemName),
-      [inv, equips, shop, closet, storage, camp, terrarium].reduce(
+      [inv, equips, shop, closet, storage, camp, terrarium, display].reduce(
         (a, b) => a + (b[itemName] ?? 0),
         0
       )
@@ -333,7 +336,7 @@ export class Snapshot {
     return this.meat + this.items.size === 0;
   }
 
-  static createOrImport(filename: string): Snapshot {
+  static importOrCreate(filename: string): Snapshot {
     let snapshot = Snapshot.fromFile(filename);
     if (snapshot.isEmpty()) {
       snapshot = Snapshot.current();

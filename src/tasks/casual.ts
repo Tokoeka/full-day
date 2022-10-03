@@ -2,8 +2,8 @@ import { Quest } from "../engine/task";
 import {
   cliExecute,
   getWorkshed,
-  inebrietyLimit,
   maximize,
+  myAdventures,
   myInebriety,
   myPath,
   numericModifier,
@@ -14,6 +14,7 @@ import {
 import {
   $class,
   $effect,
+  $familiar,
   $item,
   $path,
   $skill,
@@ -27,8 +28,14 @@ import {
   prepareAscension,
   withProperty,
 } from "libram";
-import { canAscendCasual, getSkillsToPerm, shouldOverdrink } from "../lib";
-import { breakfast, duffo, kingFreed, menagerie } from "./common";
+import { canAscendCasual, canConsume, getSkillsToPerm, stooperInebrietyLimit } from "../lib";
+import { breakfast, duffo, kingFreed, menagerie, stooper } from "./common";
+
+const kmailSendersToDelete = [
+  "Lady Spookyraven's Ghost",
+  "The Loathing Postal Service",
+  "CheeseFax",
+];
 
 export const CasualQuest: Quest = {
   name: "Casual",
@@ -82,16 +89,18 @@ export const CasualQuest: Quest = {
     ...menagerie(),
     {
       name: "Garbo",
-      completed: () => shouldOverdrink() || myInebriety() > inebrietyLimit(),
+      completed: () =>
+        (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
       do: () => cliExecute("garbo"),
       limit: { tries: 1 },
       tracking: "Garbo",
     },
+    stooper(),
     {
       name: "Overdrink",
-      ready: () => shouldOverdrink(),
-      completed: () => myInebriety() > inebrietyLimit(),
+      completed: () => myInebriety() > stooperInebrietyLimit(),
       do: () => withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP")),
+      outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
     },
     {
@@ -109,19 +118,9 @@ export const CasualQuest: Quest = {
     {
       name: "Inbox",
       completed: () =>
-        Kmail.inbox().filter((k) =>
-          ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
-            k.senderName
-          )
-        ).length === 0,
+        Kmail.inbox().filter((k) => kmailSendersToDelete.includes(k.senderName)).length === 0,
       do: () =>
-        Kmail.delete(
-          Kmail.inbox().filter((k) =>
-            ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
-              k.senderName
-            )
-          )
-        ),
+        Kmail.delete(Kmail.inbox().filter((k) => kmailSendersToDelete.includes(k.senderName))),
       limit: { tries: 1 },
     },
     {

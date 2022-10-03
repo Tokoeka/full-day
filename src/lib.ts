@@ -7,7 +7,7 @@ import {
   itemType,
   Location,
   Monster,
-  myAdventures,
+  myFamiliar,
   myFullness,
   myInebriety,
   myName,
@@ -22,7 +22,7 @@ import {
   useSkill,
   visitUrl,
 } from "kolmafia";
-import { $skill, get, have, Lifestyle } from "libram";
+import { $familiar, $skill, get, have, Lifestyle } from "libram";
 
 export function isStealable(item: Item): boolean {
   return item.tradeable && item.discardable && !item.gift;
@@ -32,13 +32,16 @@ export function isDMTDuplicable(item: Item): boolean {
   return isStealable(item) && ["food", "booze", "spleen item", "potion"].includes(itemType(item));
 }
 
-export function shouldOverdrink(): boolean {
+export function canConsume(): boolean {
   return (
-    myFullness() >= fullnessLimit() &&
-    myInebriety() === inebrietyLimit() &&
-    mySpleenUse() >= spleenLimit() &&
-    myAdventures() === 0
+    myFullness() < fullnessLimit() ||
+    myInebriety() < inebrietyLimit() ||
+    mySpleenUse() < spleenLimit()
   );
+}
+
+export function stooperInebrietyLimit(): number {
+  return inebrietyLimit() + Number(myFamiliar() !== $familiar`Stooper`);
 }
 
 export function canAscendNoncasual(): boolean {
@@ -86,4 +89,9 @@ export function mapMonster(location: Location, monster: Monster): void {
     runChoice(1, `heyscriptswhatsupwinkwink=${monster.id}`);
     runCombat();
   }
+}
+
+export function distillateAdvs(): number {
+  const drams = get("familiarSweat");
+  return Math.round(drams ** 0.4);
 }
