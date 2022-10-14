@@ -22,7 +22,7 @@ import {
   useSkill,
   visitUrl,
 } from "kolmafia";
-import { $familiar, $skill, get, have, Lifestyle } from "libram";
+import { $familiar, $skill, get, have, Kmail, Lifestyle } from "libram";
 
 export function isStealable(item: Item): boolean {
   return item.tradeable && item.discardable && !item.gift;
@@ -94,4 +94,14 @@ export function mapMonster(location: Location, monster: Monster): void {
 export function distillateAdvs(): number {
   const drams = get("familiarSweat");
   return Math.round(drams ** 0.4);
+}
+
+export function cleanInbox(): void {
+  Kmail.delete(
+    Kmail.inbox().filter((k) =>
+      ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
+        k.senderName
+      )
+    )
+  );
 }

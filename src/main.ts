@@ -4,7 +4,7 @@ import { $item } from "libram";
 import { ProfitTrackingEngine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
 import { Task } from "./engine/task";
-import { numberWithCommas } from "./lib";
+import { cleanInbox, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
 import { aftercore_tasks, all_tasks, casual_tasks, communityservice_tasks } from "./tasks/all";
 
@@ -20,6 +20,15 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       ["casual", "Complete a casual ascension."],
     ],
     default: "all",
+  }),
+  strategy: Args.string({
+    help: "",
+    options: [
+      ["garbo", "Farm meat."],
+      ["baggo", "Farm duffel bags and van keys."],
+      ["chrono", "Farm chroners."],
+    ],
+    default: "garbo",
   }),
   confirm: Args.flag({
     help: "Require the user to confirm execution of each task.",
@@ -86,7 +95,7 @@ export function main(command?: string): void {
     const to_abort = tasks.find((task) => task.name === args.abort);
     if (!to_abort) throw `Unable to identify task ${args.abort}`;
     to_abort.prepare = (): void => {
-      throw `Abort requested`;
+      throw "Abort requested";
     };
   }
 
@@ -95,6 +104,7 @@ export function main(command?: string): void {
     engine.run(undefined, args.confirm);
   } finally {
     engine.destruct();
+    cleanInbox();
   }
 
   const { meat, items, itemDetails } = Snapshot.current().diff(initialSnapshot).value(garboValue);
@@ -102,7 +112,7 @@ export function main(command?: string): void {
   // list the top 3 gaining and top 3 losing items
   const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
   const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
-  print(`Extreme Items:`);
+  print("Extreme Items:");
   for (const detail of [...winners, ...losers]) {
     print(`${detail.quantity} ${detail.item} worth ${detail.value.toFixed(0)} total`);
   }

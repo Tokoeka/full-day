@@ -370,6 +370,8 @@ export function printProfits(records: Records): void {
     "blue"
   );
   printProfitSegment("* Garbo", records["Aftercore@Garbo"], "green");
+  printProfitSegment("* Baggo", records["Aftercore@Baggo"], "green");
+  printProfitSegment("* Chrono", records["Aftercore@Chrono"], "green");
   printProfitSegment("* Other", records["Aftercore@Other"], "green");
   printProfitSegment(
     "Community Service",
@@ -378,6 +380,8 @@ export function printProfits(records: Records): void {
   );
   printProfitSegment("* Run", records["Community Service@Run"], "green");
   printProfitSegment("* Garbo", records["Community Service@Garbo"], "green");
+  printProfitSegment("* Baggo", records["Community Service@Baggo"], "green");
+  printProfitSegment("* Chrono", records["Community Service@Chrono"], "green");
   printProfitSegment("* Other", records["Community Service@Other"], "green");
   printProfitSegment(
     "Casual",
@@ -386,6 +390,8 @@ export function printProfits(records: Records): void {
   );
   printProfitSegment("* Run", records["Casual@Run"], "green");
   printProfitSegment("* Garbo", records["Casual@Garbo"], "green");
+  printProfitSegment("* Baggo", records["Casual@Baggo"], "green");
+  printProfitSegment("* Chrono", records["Casual@Chrono"], "green");
   printProfitSegment("* Other", records["Casual@Other"], "green");
   printProfitSegment(
     "Total",
