@@ -8,8 +8,6 @@ import { cleanInbox, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
 import { aftercore_tasks, all_tasks, casual_tasks, communityservice_tasks } from "./tasks/all";
 
-export const initialSnapshot = Snapshot.importOrCreate("Start");
-
 export const args = Args.create("fullday", "A full-day wrapper script.", {
   goal: Args.string({
     help: "Which tasks to perform.",
@@ -99,6 +97,7 @@ export function main(command?: string): void {
     };
   }
 
+  const snapshotStart = Snapshot.importOrCreate("Start");
   const engine = new ProfitTrackingEngine(tasks, "fullday_profit_tracker");
   try {
     engine.run(undefined, args.confirm);
@@ -107,7 +106,7 @@ export function main(command?: string): void {
     cleanInbox();
   }
 
-  const { meat, items, itemDetails } = Snapshot.current().diff(initialSnapshot).value(garboValue);
+  const { meat, items, itemDetails } = Snapshot.current().diff(snapshotStart).value(garboValue);
 
   // list the top 3 gaining and top 3 losing items
   const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
