@@ -23,8 +23,9 @@ import {
   Lifestyle,
   prepareAscension,
 } from "libram";
-import { canAscendCasual, getSkillsToPerm } from "../lib";
-import { breakfast, duffo, kingFreed, menagerie, strategy } from "./common";
+import { canAscendCasual, createPermOptions } from "../lib";
+import { breakfast, duffo, kingFreed, menagerie } from "./common";
+import { farmUsingStrategy } from "./strategy";
 
 export function CasualQuest(): Quest {
   return {
@@ -50,8 +51,8 @@ export function CasualQuest(): Quest {
             Lifestyle.casual,
             "knoll",
             $item`astral six-pack`,
-            undefined,
-            getSkillsToPerm()
+            $item`astral pet sweater`,
+            createPermOptions()
           );
         },
         limit: { tries: 1 },
@@ -77,7 +78,7 @@ export function CasualQuest(): Quest {
       ...kingFreed(),
       ...breakfast(),
       ...menagerie(),
-      ...strategy(false),
+      ...farmUsingStrategy(false),
       {
         name: "Clockwork Maid",
         completed: () =>

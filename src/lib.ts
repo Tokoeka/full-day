@@ -65,14 +65,17 @@ export function numberWithCommas(x: number): string {
   return str.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export function getSkillsToPerm(): Map<Skill, Lifestyle> {
-  return new Map(
-    Skill.all()
-      .filter(
-        (skill) => have(skill) && skill.permable && getPermedSkills()[skill.name] === undefined
-      )
-      .map((skill) => [skill, Lifestyle.hardcore])
-  );
+export function createPermOptions(): { permSkills: Map<Skill, Lifestyle>; neverAbort: boolean } {
+  return {
+    permSkills: new Map(
+      Skill.all()
+        .filter(
+          (skill) => have(skill) && skill.permable && getPermedSkills()[skill.name] === undefined
+        )
+        .map((skill) => [skill, Lifestyle.hardcore])
+    ),
+    neverAbort: false,
+  };
 }
 
 export function mapMonster(location: Location, monster: Monster): void {

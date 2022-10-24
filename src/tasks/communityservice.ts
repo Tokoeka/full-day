@@ -12,8 +12,9 @@ import {
   uneffect,
 } from "libram";
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
-import { canAscendNoncasual, getSkillsToPerm } from "../lib";
-import { breakfast, duffo, kingFreed, pvp, strategy } from "./common";
+import { canAscendNoncasual, createPermOptions } from "../lib";
+import { breakfast, duffo, kingFreed, pvp } from "./common";
+import { farmUsingStrategy } from "./strategy";
 
 export function CommunityServiceQuest(): Quest {
   return {
@@ -40,7 +41,7 @@ export function CommunityServiceQuest(): Quest {
             "knoll",
             $item`astral six-pack`,
             $item`astral chapeau`,
-            getSkillsToPerm()
+            createPermOptions()
           );
         },
         limit: { tries: 1 },
@@ -69,8 +70,8 @@ export function CommunityServiceQuest(): Quest {
       ...kingFreed(),
       ...breakfast(),
       ...duffo(),
-      ...strategy(true),
-      pvp(),
+      ...farmUsingStrategy(true),
+      ...pvp([]),
     ],
   };
 }

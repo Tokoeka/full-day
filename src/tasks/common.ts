@@ -1,15 +1,11 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import {
-  bjornifyFamiliar,
   cliExecute,
   familiarWeight,
   hippyStoneBroken,
-  inebrietyLimit,
   itemAmount,
-  myAdventures,
   myAscensions,
   myClosetMeat,
-  myInebriety,
   myMeat,
   mySign,
   putCloset,
@@ -19,7 +15,6 @@ import {
   toUrl,
   use,
   userConfirm,
-  useSkill,
   visitUrl,
   wait,
 } from "kolmafia";
@@ -38,11 +33,10 @@ import {
   Macro,
   set,
   uneffect,
-  withProperty,
 } from "libram";
 import { args } from "../main";
 import { Task } from "../engine/task";
-import { canConsume, distillateAdvs, mapMonster, stooperInebrietyLimit } from "../lib";
+import { mapMonster } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -163,7 +157,10 @@ export function duffo(): Task[] {
         if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
       },
       do: () => cliExecute("duffo go"),
-      post: () => Clan.join("Margaretting Tye"),
+      post: () => {
+        Clan.join("Margaretting Tye");
+        if (userConfirm("Get a good duffo item?")) throw "User requested abort";
+      },
       limit: { tries: 1 },
     },
   ];
@@ -236,262 +233,19 @@ export function menagerie(): Task[] {
   ];
 }
 
-export function stooper(): Task {
-  return {
-    name: "Stooper",
-    ready: () => distillateAdvs() >= 10,
-    completed: () => myInebriety() >= stooperInebrietyLimit(),
-    do: () => cliExecute("drink stillsuit distillate"),
-    limit: { tries: 1 },
-  };
-}
-
-export function caldera(): Task {
-  return {
-    name: "Caldera",
-    completed: () =>
-      $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
-      $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs"),
-    prepare: () => {
-      bjornifyFamiliar($familiar`Warbear Drone`);
-      useSkill($skill`Cannelloni Cocoon`);
-    },
-    do: $location`The Bubblin' Caldera`,
-    post: () => {
-      if (
-        $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
-        $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs")
-      )
-        uneffect($effect`Drenched in Lava`);
-    },
-    acquire: [{ item: $item`heat-resistant sheet metal`, price: 5000, optional: true }],
-    outfit: {
-      weapon: $item`June cleaver`,
-      offhand: $item`Drunkula's wineglass`,
-      back: $item`Buddy Bjorn`,
-      acc1: $item`lucky gold ring`,
-      acc2: $item`mafia thumb ring`,
-      acc3: $item`Mr. Screege's spectacles`,
-      familiar: $familiar`Puck Man`,
-      famequip: $item`orange boxing gloves`,
-      modifier: "mainstat",
-    },
-    combat: new CombatStrategy().macro(Macro.attack().repeat()),
-    limit: { tries: 10 }, // Clear intro adventure
-  };
-}
-
-export function garbo(ascend: boolean): Task[] {
-  if (ascend) {
-    return [
-      {
-        name: "Garbo",
-        completed: () =>
-          (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-        do: () => cliExecute("garbo yachtzeechain ascend"),
-        limit: { tries: 1 },
-        tracking: "Garbo",
-      },
-      stooper(),
-      {
-        name: "Overdrink",
-        completed: () => myInebriety() > stooperInebrietyLimit(),
-        do: () =>
-          withProperty("spiceMelangeUsed", true, () => cliExecute(`CONSUME NIGHTCAP VALUE 3500`)),
-        outfit: { familiar: $familiar`Stooper` },
-        limit: { tries: 1 },
-      },
-      caldera(),
-      {
-        name: "Drunk Garbo",
-        ready: () => myInebriety() > inebrietyLimit(),
-        completed: () => myAdventures() === 0,
-        do: () => cliExecute("garbo ascend"),
-        limit: { tries: 1 },
-      },
-    ];
-  }
+export function pvp(after: string[]): Task[] {
   return [
     {
-      name: "Garbo",
-      completed: () =>
-        (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecute("garbo"),
-      limit: { tries: 1 },
-      tracking: "Garbo",
-    },
-    stooper(),
-    {
-      name: "Overdrink",
-      completed: () => myInebriety() > stooperInebrietyLimit(),
-      do: () => withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP")),
-      outfit: { familiar: $familiar`Stooper` },
+      name: "Fights",
+      after: [...after],
+      ready: () => hippyStoneBroken(),
+      completed: () => pvpAttacksLeft() === 0,
+      do: () => {
+        cliExecute("unequip");
+        cliExecute("UberPvPOptimizer");
+        cliExecute("swagger");
+      },
       limit: { tries: 1 },
     },
   ];
-}
-
-export function baggo(ascend: boolean): Task[] {
-  if (ascend) {
-    return [
-      {
-        name: "Garbo",
-        completed: () => get("_fullday_completedGarbo", false),
-        do: (): void => {
-          cliExecute("garbo yachtzeechain ascend nobarf");
-          set("_fullday_completedGarbo", true);
-        },
-        limit: { tries: 1 },
-        tracking: "Garbo",
-      },
-      {
-        name: "Baggo",
-        completed: () =>
-          (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-        do: () => cliExecute("baggo"),
-        limit: { tries: 1 },
-        tracking: "Baggo",
-      },
-      stooper(),
-      {
-        name: "Overdrink",
-        completed: () => myInebriety() > stooperInebrietyLimit(),
-        do: () =>
-          withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP NOMEAT")),
-        outfit: { familiar: $familiar`Stooper` },
-        limit: { tries: 1 },
-      },
-      caldera(),
-      {
-        name: "Drunk Garbo",
-        ready: () => myInebriety() > stooperInebrietyLimit(),
-        completed: () => myAdventures() === 0,
-        do: () => cliExecute("garbo"),
-        limit: { tries: 1 },
-        tracking: "Garbo",
-      },
-    ];
-  }
-  return [
-    {
-      name: "Garbo",
-      completed: () => get("_fullday_completedGarbo", false),
-      do: (): void => {
-        cliExecute("garbo yachtzeechain nobarf");
-        set("_fullday_completedGarbo", true);
-      },
-      limit: { tries: 1 },
-      tracking: "Garbo",
-    },
-    {
-      name: "Baggo",
-      completed: () =>
-        (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecute("baggo"),
-      limit: { tries: 1 },
-      tracking: "Baggo",
-    },
-    stooper(),
-    {
-      name: "Overdrink",
-      completed: () => myInebriety() > stooperInebrietyLimit(),
-      do: () => withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP")),
-      outfit: { familiar: $familiar`Stooper` },
-      limit: { tries: 1 },
-    },
-  ];
-}
-
-export function chrono(ascend: boolean): Task[] {
-  if (ascend) {
-    return [
-      {
-        name: "Garbo",
-        completed: () => get("_fullday_completedGarbo", false),
-        do: (): void => {
-          cliExecute("garbo yachtzeechain ascend nobarf");
-          set("_fullday_completedGarbo", true);
-        },
-        limit: { tries: 1 },
-        tracking: "Garbo",
-      },
-      {
-        name: "Chrono",
-        completed: () =>
-          (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-        do: () => cliExecute("chrono"),
-        limit: { tries: 1 },
-        tracking: "Chrono",
-      },
-      stooper(),
-      {
-        name: "Overdrink",
-        completed: () => myInebriety() > stooperInebrietyLimit(),
-        do: () =>
-          withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP NOMEAT")),
-        outfit: { familiar: $familiar`Stooper` },
-        limit: { tries: 1 },
-      },
-      caldera(),
-      {
-        name: "Drunk Chrono",
-        ready: () => myInebriety() > stooperInebrietyLimit(),
-        completed: () => myAdventures() === 0,
-        do: () => cliExecute("chrono"),
-        limit: { tries: 1 },
-        tracking: "Chrono",
-      },
-    ];
-  }
-  return [
-    {
-      name: "Garbo",
-      completed: () => get("_fullday_completedGarbo", false),
-      do: (): void => {
-        cliExecute("garbo yachtzeechain nobarf");
-        set("_fullday_completedGarbo", true);
-      },
-      limit: { tries: 1 },
-      tracking: "Garbo",
-    },
-    {
-      name: "Chrono",
-      completed: () =>
-        (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecute("chrono"),
-      limit: { tries: 1 },
-      tracking: "Chrono",
-    },
-    stooper(),
-    {
-      name: "Overdrink",
-      completed: () => myInebriety() > stooperInebrietyLimit(),
-      do: () => withProperty("spiceMelangeUsed", true, () => cliExecute("CONSUME NIGHTCAP")),
-      outfit: { familiar: $familiar`Stooper` },
-      limit: { tries: 1 },
-    },
-  ];
-}
-
-export function strategy(ascend: boolean): Task[] {
-  switch (args.strategy) {
-    case "garbo":
-      return garbo(ascend);
-    case "baggo":
-      return baggo(ascend);
-    case "chrono":
-      return chrono(ascend);
-    default:
-      throw `${args.strategy} strategy is not not implemented`;
-  }
-}
-
-export function pvp(): Task {
-  return {
-    name: "PvP",
-    completed: () => pvpAttacksLeft() === 0,
-    prepare: () => cliExecute("UberPvPOptimizer"),
-    do: () => cliExecute("swagger"),
-    limit: { tries: 1 },
-  };
 }
