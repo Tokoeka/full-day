@@ -20,7 +20,7 @@ import {
   withProperty,
 } from "libram";
 import { Task } from "../engine/task";
-import { canConsume, distillateAdvs, stooperInebrietyLimit } from "../lib";
+import { canConsume, cliExecuteThrow, distillateAdvs, stooperInebrietyLimit } from "../lib";
 import { args } from "../main";
 
 export function stooper(after: string[]): Task {
@@ -89,7 +89,7 @@ export function garbo(ascend: boolean): Task[] {
       name: "Garbo",
       completed: () =>
         (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecute(`garbo yachtzeechain ${ascend ? "ascend" : ""}`),
+      do: () => cliExecuteThrow(`garbo yachtzeechain ${ascend ? "ascend" : ""}`),
       limit: { tries: 1 },
       tracking: "Garbo",
     },
@@ -100,7 +100,7 @@ export function garbo(ascend: boolean): Task[] {
       completed: () => myInebriety() > stooperInebrietyLimit(),
       do: () =>
         withProperty("spiceMelangeUsed", true, () =>
-          cliExecute(`CONSUME NIGHTCAP ${ascend ? "VALUE 3250" : ""}`)
+          cliExecuteThrow(`CONSUME NIGHTCAP ${ascend ? "VALUE 3250" : ""}`)
         ),
       outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
@@ -114,7 +114,7 @@ export function garbo(ascend: boolean): Task[] {
       after: ["Overdrink"],
       ready: () => myInebriety() > inebrietyLimit(),
       completed: () => myAdventures() === 0,
-      do: () => cliExecute("garbo ascend"),
+      do: () => cliExecuteThrow("garbo ascend"),
       limit: { tries: 1 },
       tracking: "Garbo",
     });
@@ -128,7 +128,7 @@ export function baggo(ascend: boolean): Task[] {
       name: "Garbo",
       completed: () => get("_fullday_completedGarbo", false),
       do: (): void => {
-        cliExecute(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`);
+        cliExecuteThrow(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`);
         set("_fullday_completedGarbo", true);
       },
       limit: { tries: 1 },
@@ -139,7 +139,7 @@ export function baggo(ascend: boolean): Task[] {
       after: ["Garbo"],
       completed: () =>
         (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecute("baggo"),
+      do: () => cliExecuteThrow("baggo"),
       limit: { tries: 1 },
       tracking: "Baggo",
     },
@@ -150,7 +150,7 @@ export function baggo(ascend: boolean): Task[] {
       completed: () => myInebriety() > stooperInebrietyLimit(),
       do: () =>
         withProperty("spiceMelangeUsed", true, () =>
-          cliExecute(`CONSUME NIGHTCAP ${ascend ? "NOMEAT" : ""}`)
+          cliExecuteThrow(`CONSUME NIGHTCAP ${ascend ? "NOMEAT" : ""}`)
         ),
       outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
@@ -164,7 +164,7 @@ export function baggo(ascend: boolean): Task[] {
       after: ["Overdrink"],
       ready: () => myInebriety() > stooperInebrietyLimit(),
       completed: () => myAdventures() === 0,
-      do: () => cliExecute("garbo"),
+      do: () => cliExecuteThrow("garbo"),
       limit: { tries: 1 },
       tracking: "Garbo",
     });
@@ -178,7 +178,7 @@ export function chrono(ascend: boolean): Task[] {
       name: "Garbo",
       completed: () => get("_fullday_completedGarbo", false),
       do: (): void => {
-        cliExecute(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`);
+        cliExecuteThrow(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`);
         set("_fullday_completedGarbo", true);
       },
       limit: { tries: 1 },
@@ -189,7 +189,7 @@ export function chrono(ascend: boolean): Task[] {
       after: ["Garbo"],
       completed: () =>
         (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecute("chrono"),
+      do: () => cliExecuteThrow("chrono"),
       limit: { tries: 1 },
       tracking: "Chrono",
     },
@@ -200,7 +200,7 @@ export function chrono(ascend: boolean): Task[] {
       completed: () => myInebriety() > stooperInebrietyLimit(),
       do: () =>
         withProperty("spiceMelangeUsed", true, () =>
-          cliExecute(`CONSUME NIGHTCAP ${ascend ? "NOMEAT" : ""}`)
+          cliExecuteThrow(`CONSUME NIGHTCAP ${ascend ? "NOMEAT" : ""}`)
         ),
       outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
@@ -214,7 +214,7 @@ export function chrono(ascend: boolean): Task[] {
       after: ["Overdrink"],
       ready: () => myInebriety() > stooperInebrietyLimit(),
       completed: () => myAdventures() === 0,
-      do: () => cliExecute("chrono"),
+      do: () => cliExecuteThrow("chrono"),
       limit: { tries: 1 },
       tracking: "Chrono",
     });

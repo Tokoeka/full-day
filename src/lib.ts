@@ -1,4 +1,5 @@
 import {
+  cliExecute,
   fileToBuffer,
   fullnessLimit,
   getPermedSkills,
@@ -107,4 +108,8 @@ export function cleanInbox(): void {
       )
     )
   );
+}
+
+export function cliExecuteThrow(command: string): void {
+  if (!cliExecute(command)) throw `Failed to execute ${command}`;
 }

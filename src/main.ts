@@ -98,7 +98,7 @@ export function main(command?: string): void {
   }
 
   const snapshotStart = Snapshot.importOrCreate("Start");
-  const engine = new ProfitTrackingEngine(tasks, "fullday_profit_tracker");
+  const engine = new ProfitTrackingEngine(tasks, "fullday");
   try {
     engine.run(undefined, args.confirm);
   } finally {

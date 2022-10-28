@@ -36,7 +36,7 @@ import {
 } from "libram";
 import { args } from "../main";
 import { Task } from "../engine/task";
-import { mapMonster } from "../lib";
+import { cliExecuteThrow, mapMonster } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -119,7 +119,7 @@ export function breakfast(): Task[] {
     {
       name: "Detective Solver",
       completed: () => get("_detectiveCasesCompleted") >= 3,
-      do: () => cliExecute("Detective Solver"),
+      do: () => cliExecuteThrow("Detective Solver"),
       limit: { tries: 1 },
     },
     {
@@ -156,7 +156,7 @@ export function duffo(): Task[] {
       prepare: () => {
         if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
       },
-      do: () => cliExecute("duffo go"),
+      do: () => cliExecuteThrow("duffo go"),
       post: () => {
         Clan.join("Margaretting Tye");
         if (userConfirm("Get a good duffo item?")) throw "User requested abort";
