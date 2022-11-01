@@ -14,7 +14,7 @@ import {
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
 import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, duffo, kingFreed, pvp } from "./common";
-import { farmUsingStrategy } from "./strategy";
+import { strategyTasks } from "./strategies/strategy";
 
 export function CommunityServiceQuest(): Quest {
   return {
@@ -70,7 +70,7 @@ export function CommunityServiceQuest(): Quest {
       ...kingFreed(),
       ...breakfast(),
       ...duffo(),
-      ...farmUsingStrategy(true),
+      ...strategyTasks(true),
       ...pvp([]),
     ],
   };

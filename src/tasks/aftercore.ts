@@ -1,6 +1,6 @@
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
 import { breakfast, duffo, kingFreed, menagerie, pvp } from "./common";
-import { farmUsingStrategy } from "./strategy";
+import { strategyTasks } from "./strategies/strategy";
 
 export function AftercoreQuest(): Quest {
   return {
@@ -11,7 +11,7 @@ export function AftercoreQuest(): Quest {
       ...breakfast(),
       ...duffo(),
       ...menagerie(),
-      ...farmUsingStrategy(true),
+      ...strategyTasks(true),
       ...pvp([]),
     ],
   };

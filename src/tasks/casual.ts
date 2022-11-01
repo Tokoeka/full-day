@@ -25,7 +25,7 @@ import {
 } from "libram";
 import { canAscendCasual, createPermOptions } from "../lib";
 import { breakfast, duffo, kingFreed, menagerie } from "./common";
-import { farmUsingStrategy } from "./strategy";
+import { strategyTasks } from "./strategies/strategy";
 
 export function CasualQuest(): Quest {
   return {
@@ -78,7 +78,7 @@ export function CasualQuest(): Quest {
       ...kingFreed(),
       ...breakfast(),
       ...menagerie(),
-      ...farmUsingStrategy(false),
+      ...strategyTasks(false),
       {
         name: "Clockwork Maid",
         completed: () =>

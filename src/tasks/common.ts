@@ -27,6 +27,7 @@ import {
   $location,
   $monster,
   $skill,
+  Cartography,
   Clan,
   get,
   have,
@@ -36,7 +37,7 @@ import {
 } from "libram";
 import { args } from "../main";
 import { Task } from "../engine/task";
-import { cliExecuteThrow, mapMonster } from "../lib";
+import { cliExecuteThrow } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -173,7 +174,10 @@ export function menagerie(): Task[] {
       ready: () => get("_monstersMapped") < 3 && !have($effect`Everything Looks Yellow`),
       completed: () => have($item`Cobb's Knob Menagerie key`),
       do: () =>
-        mapMonster($location`Cobb's Knob Laboratory`, $monster`Knob Goblin Very Mad Scientist`),
+        Cartography.mapMonster(
+          $location`Cobb's Knob Laboratory`,
+          $monster`Knob Goblin Very Mad Scientist`
+        ),
       acquire: [{ item: $item`yellow rocket`, price: 250 }],
       combat: new CombatStrategy().macro(
         Macro.item($item`yellow rocket`),
@@ -236,7 +240,7 @@ export function menagerie(): Task[] {
 export function pvp(after: string[]): Task[] {
   return [
     {
-      name: "Fights",
+      name: "Swagger",
       after: [...after],
       ready: () => hippyStoneBroken(),
       completed: () => pvpAttacksLeft() === 0,

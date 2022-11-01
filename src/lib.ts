@@ -6,24 +6,16 @@ import {
   inebrietyLimit,
   Item,
   itemType,
-  Location,
-  Monster,
   myFamiliar,
   myFullness,
   myInebriety,
   myName,
   mySpleenUse,
-  myTurncount,
-  runChoice,
-  runCombat,
   Skill,
   spleenLimit,
   todayToString,
-  toUrl,
-  useSkill,
-  visitUrl,
 } from "kolmafia";
-import { $familiar, $skill, get, have, Kmail, Lifestyle } from "libram";
+import { $familiar, get, have, Kmail, Lifestyle } from "libram";
 
 export function isStealable(item: Item): boolean {
   return item.tradeable && item.discardable && !item.gift;
@@ -55,11 +47,6 @@ export function canAscendCasual(): boolean {
   return !/Ascend as a Casual .+? banking \d+ Karma./.test(sessionLog);
 }
 
-export function ascensionsToday(): number {
-  const sessionLog = fileToBuffer(`${myName()}_${todayToString()}.txt`);
-  return (sessionLog.match(/Ascend as a .+? banking \d+ Karma./g) || []).length;
-}
-
 export function numberWithCommas(x: number): string {
   const str = x.toString();
   if (str.includes(".")) return x.toFixed(2);
@@ -77,22 +64,6 @@ export function createPermOptions(): { permSkills: Map<Skill, Lifestyle>; neverA
     ),
     neverAbort: false,
   };
-}
-
-export function mapMonster(location: Location, monster: Monster): void {
-  useSkill($skill`Map the Monsters`);
-  if (!get("mappingMonsters")) {
-    throw new Error("Failed to setup Map the Monsters.");
-  }
-  const turns = myTurncount();
-  while (get("mappingMonsters")) {
-    if (myTurncount() > turns) {
-      throw new Error("Map the Monsters unsuccessful?");
-    }
-    visitUrl(toUrl(location));
-    runChoice(1, `heyscriptswhatsupwinkwink=${monster.id}`);
-    runCombat();
-  }
 }
 
 export function distillateAdvs(): number {

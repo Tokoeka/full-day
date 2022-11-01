@@ -1,30 +1,22 @@
-import { Args } from "grimoire-kolmafia";
+import { Args, getTasks } from "grimoire-kolmafia";
 import { Item, print } from "kolmafia";
 import { $item } from "libram";
 import { ProfitTrackingEngine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
-import { Task } from "./engine/task";
 import { cleanInbox, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
-import { aftercore_tasks, all_tasks, casual_tasks, communityservice_tasks } from "./tasks/all";
+import { AftercoreQuest } from "./tasks/aftercore";
+import { CasualQuest } from "./tasks/casual";
+import { CommunityServiceQuest } from "./tasks/communityservice";
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
-  goal: Args.string({
-    help: "Which tasks to perform.",
-    options: [
-      ["all", "Complete all tasks."],
-      ["aftercore", "Complete the current aftercore."],
-      ["communityservice", "Complete a community service ascension."],
-      ["casual", "Complete a casual ascension."],
-    ],
-    default: "all",
-  }),
   strategy: Args.string({
     help: "Farming strategy to use.",
     options: [
       ["garbo", "Farm meat using garbage-collector."],
       ["baggo", "Farm duffel bags and van keys using bag-collector."],
       ["chrono", "Farm chroners using chrono-collector."],
+      ["freecandy", "Farm Halloween using freecandy."],
     ],
     default: "garbo",
   }),
@@ -71,22 +63,8 @@ export function main(command?: string): void {
     return;
   }
 
-  // Select which tasks to perform
-  let tasks: Task[] = [];
-  switch (args.goal) {
-    case "all":
-      tasks = all_tasks();
-      break;
-    case "aftercore":
-      tasks = aftercore_tasks();
-      break;
-    case "communityservice":
-      tasks = communityservice_tasks();
-      break;
-    case "casual":
-      tasks = casual_tasks();
-      break;
-  }
+  const quests = [AftercoreQuest(), CommunityServiceQuest(), CasualQuest()];
+  const tasks = getTasks(quests);
 
   // Abort during the prepare() step of the specified task
   if (args.abort) {
@@ -108,17 +86,17 @@ export function main(command?: string): void {
 
   const { meat, items, itemDetails } = Snapshot.current().diff(snapshotStart).value(garboValue);
 
-  // list the top 3 gaining and top 3 losing items
-  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
-  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
-  print("Extreme Items:");
-  for (const detail of [...winners, ...losers]) {
-    print(`${detail.quantity} ${detail.item} worth ${detail.value.toFixed(0)} total`);
-  }
-
+  // list the top 5 gaining and top 5 losing items
+  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 5);
+  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 5);
+  print("");
   print(
     `So far today, you have generated ${numberWithCommas(
       meat + items
     )} meat, with ${numberWithCommas(meat)} raw meat and ${numberWithCommas(items)} from items`
   );
+  print("Extreme Items:");
+  for (const detail of [...winners, ...losers]) {
+    print(`${detail.quantity} ${detail.item} worth ${detail.value.toFixed(0)} total`);
+  }
 }
