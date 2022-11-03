@@ -86,9 +86,9 @@ export function main(command?: string): void {
 
   const { meat, items, itemDetails } = Snapshot.current().diff(snapshotStart).value(garboValue);
 
-  // list the top 5 gaining and top 5 losing items
-  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 5);
-  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 5);
+  // list the top 3 gaining and top 3 losing items
+  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
+  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
   print("");
   print(
     `So far today, you have generated ${numberWithCommas(
@@ -97,6 +97,10 @@ export function main(command?: string): void {
   );
   print("Extreme Items:");
   for (const detail of [...winners, ...losers]) {
-    print(`${detail.quantity} ${detail.item} worth ${detail.value.toFixed(0)} total`);
+    print(
+      `${numberWithCommas(detail.quantity)} ${detail.item} worth ${numberWithCommas(
+        Math.round(detail.value)
+      )} total`
+    );
   }
 }

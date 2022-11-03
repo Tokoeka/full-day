@@ -157,7 +157,7 @@ export function garboValue(item: Item): number {
   if (cachedValue === undefined) {
     const specialValueCompute = specialValueLookup.get(item);
     const value = specialValueCompute ? specialValueCompute() : getHistoricalSaleValue(item);
-    print(`Valuing ${item.name} @ ${value}`);
+    // print(`Valuing ${item.name} @ ${value}`);
     garboValueCache.set(item, value);
     return value;
   }
