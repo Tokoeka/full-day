@@ -1,5 +1,6 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import {
+  canAdventure,
   cliExecute,
   familiarWeight,
   hippyStoneBroken,
@@ -154,9 +155,6 @@ export function duffo(): Task[] {
         get("_questPartyFairProgress") !== "" ||
         ["", "finished"].includes(get("_questPartyFair")) ||
         !["food", "booze"].includes(get("_questPartyFairQuest")),
-      prepare: () => {
-        if (!userConfirm("Ready to start duffo?")) throw "User requested abort";
-      },
       do: () => cliExecuteThrow("duffo go"),
       post: () => {
         Clan.join("Margaretting Tye");
@@ -171,7 +169,10 @@ export function menagerie(): Task[] {
   return [
     {
       name: "Menagerie Key",
-      ready: () => get("_monstersMapped") < 3 && !have($effect`Everything Looks Yellow`),
+      ready: () =>
+        canAdventure($location`Cobb's Knob Laboratory`) &&
+        get("_monstersMapped") < 3 &&
+        !have($effect`Everything Looks Yellow`),
       completed: () => have($item`Cobb's Knob Menagerie key`),
       do: () =>
         Cartography.mapMonster(
