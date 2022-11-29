@@ -11,11 +11,20 @@ import {
   myInebriety,
   myName,
   mySpleenUse,
+  print,
   Skill,
   spleenLimit,
   todayToString,
 } from "kolmafia";
-import { $familiar, get, have, Kmail, Lifestyle } from "libram";
+import { $familiar, have, Kmail, Lifestyle } from "libram";
+
+export function debug(message: string, color?: string): void {
+  if (color) {
+    print(message, color);
+  } else {
+    print(message);
+  }
+}
 
 export function isStealable(item: Item): boolean {
   return item.tradeable && item.discardable && !item.gift;
@@ -47,6 +56,18 @@ export function canAscendCasual(): boolean {
   return !/Ascend as a Casual .+? banking \d+ Karma./.test(sessionLog);
 }
 
+export function ascensionsToday(): Lifestyle[] {
+  const sessionLog = fileToBuffer(`${myName()}_${todayToString()}.txt`);
+  const pattern = /Ascend as a (\w+) .+?, banking \d+ Karma./g;
+  let match;
+  const result = [];
+  while ((match = pattern.exec(sessionLog))) {
+    const name = match[1].toLowerCase();
+    result.push(Lifestyle[name as keyof typeof Lifestyle]);
+  }
+  return result;
+}
+
 export function numberWithCommas(x: number): string {
   const str = x.toString();
   if (str.includes(".")) return x.toFixed(2);
@@ -64,11 +85,6 @@ export function createPermOptions(): { permSkills: Map<Skill, Lifestyle>; neverA
     ),
     neverAbort: false,
   };
-}
-
-export function distillateAdvs(): number {
-  const drams = get("familiarSweat");
-  return Math.round(drams ** 0.4);
 }
 
 export function cleanInbox(): void {

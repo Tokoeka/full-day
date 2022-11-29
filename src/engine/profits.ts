@@ -175,7 +175,7 @@ class DailySetting<T> {
   }
 
   get(def: T): T {
-    const saved = fileToBuffer(`profit/${myName()}/${this.key}`);
+    const saved = fileToBuffer(`profit/${myName()}/${this.key}.json`);
     if (saved === "") return def;
     const json = JSON.parse(saved);
     if ("day" in json && "value" in json && json["day"] === todayToString()) return json["value"];
@@ -188,7 +188,7 @@ class DailySetting<T> {
         day: todayToString(),
         value: value,
       }),
-      `profit/${myName()}/${this.key}`
+      `profit/${myName()}/${this.key}.json`
     );
   }
 }

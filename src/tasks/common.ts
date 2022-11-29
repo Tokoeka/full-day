@@ -3,19 +3,20 @@ import {
   canAdventure,
   cliExecute,
   familiarWeight,
+  getStorage,
   hippyStoneBroken,
   itemAmount,
   myAscensions,
   myClosetMeat,
   myMeat,
   mySign,
+  myStorageMeat,
   putCloset,
   pvpAttacksLeft,
   runChoice,
   toInt,
   toUrl,
   use,
-  userConfirm,
   visitUrl,
   wait,
 } from "kolmafia";
@@ -42,12 +43,22 @@ import { cliExecuteThrow } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
+export function pullAll(): Task {
+  return {
+    name: "Pull All",
+    completed: () => Object.keys(getStorage()).length === 0 && myStorageMeat() === 0,
+    do: () => cliExecute("pull all"),
+    post: () => cliExecute("refresh all"),
+    limit: { tries: 1 },
+  };
+}
+
 export function kingFreed(): Task[] {
   return [
     {
       name: "Closet Meat",
-      completed: () => myMeat() <= args.maxmeat || myClosetMeat() > 0,
-      do: () => cliExecute(`closet put ${myMeat() - args.maxmeat} meat`),
+      completed: () => myMeat() <= args.minor.maxmeat || myClosetMeat() > 0,
+      do: () => cliExecute(`closet put ${myMeat() - args.minor.maxmeat} meat`),
       limit: { tries: 1 },
     },
     {
@@ -79,30 +90,18 @@ export function kingFreed(): Task[] {
     },
     {
       name: "Tune Moon",
-      completed: () => mySign() === args.tune || get("moonTuned"),
-      do: () => cliExecute(`spoon ${args.tune}`),
-      limit: { tries: 1 },
-    },
-    {
-      name: "Smash Stone",
-      completed: () => hippyStoneBroken(),
-      do: () => visitUrl("peevpee.php?action=smashstone&confirm=on"),
-      limit: { tries: 1 },
-    },
-    {
-      name: "Pledge Allegiance",
-      completed: () => !visitUrl("peevpee.php?place=fight").includes("Pledge allegiance to"),
-      do: () => visitUrl("peevpee.php?action=pledge&place=fight&pwd"),
+      completed: () => mySign() === args.minor.tune || get("moonTuned"),
+      do: () => cliExecute(`spoon ${args.minor.tune}`),
       limit: { tries: 1 },
     },
     {
       name: "Duplicate",
-      ready: () => have(args.duplicate) && get("encountersUntilDMTChoice") < 1,
+      ready: () => have(args.minor.duplicate) && get("encountersUntilDMTChoice") < 1,
       completed: () => get("lastDMTDuplication") >= myAscensions(),
-      prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
+      prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.minor.duplicate)}`),
       do: $location`The Deep Machine Tunnels`,
-      post: () => putCloset(itemAmount(args.duplicate), args.duplicate),
-      acquire: () => [{ item: args.duplicate }],
+      post: () => putCloset(itemAmount(args.minor.duplicate), args.minor.duplicate),
+      acquire: () => [{ item: args.minor.duplicate }],
       choices: { 1119: 4 },
       outfit: { familiar: $familiar`Machine Elf` },
       limit: { tries: 1 },
@@ -156,10 +155,7 @@ export function duffo(): Task[] {
         ["", "finished"].includes(get("_questPartyFair")) ||
         !["food", "booze"].includes(get("_questPartyFairQuest")),
       do: () => cliExecuteThrow("duffo go"),
-      post: () => {
-        Clan.join("Margaretting Tye");
-        if (userConfirm("Get a good duffo item?")) throw "User requested abort";
-      },
+      post: () => Clan.join("Margaretting Tye"),
       limit: { tries: 1 },
     },
   ];
@@ -238,8 +234,25 @@ export function menagerie(): Task[] {
   ];
 }
 
+export function breakStone(): Task[] {
+  return [
+    {
+      name: "Break Stone",
+      completed: () => hippyStoneBroken(),
+      do: () => visitUrl("peevpee.php?action=smashstone&confirm=on"),
+      limit: { tries: 1 },
+    },
+  ];
+}
+
 export function pvp(after: string[]): Task[] {
   return [
+    {
+      name: "Pledge Allegiance",
+      completed: () => !visitUrl("peevpee.php?place=fight").includes("Pledge allegiance to"),
+      do: () => visitUrl("peevpee.php?action=pledge&place=fight&pwd"),
+      limit: { tries: 1 },
+    },
     {
       name: "Swagger",
       after: [...after],

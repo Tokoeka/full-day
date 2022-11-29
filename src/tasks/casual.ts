@@ -24,10 +24,10 @@ import {
   prepareAscension,
 } from "libram";
 import { canAscendCasual, createPermOptions } from "../lib";
-import { breakfast, duffo, kingFreed, menagerie } from "./common";
+import { breakfast, breakStone, duffo, kingFreed, menagerie } from "./common";
 import { strategyTasks } from "./strategies/strategy";
 
-export function CasualQuest(): Quest {
+export function casualQuest(): Quest {
   return {
     name: "Casual",
     tasks: [
@@ -57,6 +57,7 @@ export function CasualQuest(): Quest {
         },
         limit: { tries: 1 },
       },
+      ...breakStone(),
       ...duffo(),
       {
         name: "Run",

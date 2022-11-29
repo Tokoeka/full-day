@@ -13,13 +13,13 @@ import {
 } from "libram";
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
 import { canAscendNoncasual, createPermOptions } from "../lib";
-import { breakfast, duffo, kingFreed, pvp } from "./common";
+import { breakfast, breakStone, duffo, kingFreed, pvp } from "./common";
 import { strategyTasks } from "./strategies/strategy";
 
-export function CommunityServiceQuest(): Quest {
+export function csQuest(): Quest {
   return {
     name: "Community Service",
-    completed: () => getCurrentLeg() > Leg.CommunityService,
+    completed: () => getCurrentLeg() > Leg.NonCasual,
     tasks: [
       {
         name: "Ascend",
@@ -46,6 +46,7 @@ export function CommunityServiceQuest(): Quest {
         },
         limit: { tries: 1 },
       },
+      ...breakStone(),
       {
         name: "Run",
         ready: () => myPath() === $path`Community Service`,

@@ -3,13 +3,18 @@ import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
 import { userConfirm } from "kolmafia";
 
-export class Engine extends BaseEngine {
+export class Engine extends BaseEngine<never, Task> {
+  confirmed = new Set<string>();
+
   public run(actions?: number, confirm?: boolean): void {
     for (let i = 0; i < (actions ?? Infinity); i++) {
       const task = this.getNextTask();
       if (!task) return;
       if (task.ready && !task.ready()) throw `Task ${task.name} is not ready`;
-      if (confirm && !userConfirm(`Executing ${task.name}, continue?`)) throw `Abort requested`;
+      if (confirm && !this.confirmed.has(task.name)) {
+        if (!userConfirm(`Executing ${task.name}, continue?`)) throw `Abort requested`;
+        this.confirmed.add(task.name);
+      }
       this.execute(task);
     }
   }

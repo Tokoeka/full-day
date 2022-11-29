@@ -6,7 +6,7 @@ import { freecandy } from "./freecandy";
 import { garbo } from "./garbo";
 
 export function strategyTasks(ascend: boolean): Task[] {
-  switch (args.strategy) {
+  switch (args.major.strategy) {
     case "garbo":
       return garbo(ascend);
     case "baggo":
@@ -16,6 +16,6 @@ export function strategyTasks(ascend: boolean): Task[] {
     case "freecandy":
       return freecandy(ascend);
     default:
-      throw `Strategy ${args.strategy} is not not implemented`;
+      throw `Strategy ${args.major.strategy} is not not implemented`;
   }
 }

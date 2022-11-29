@@ -1,8 +1,12 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import { bjornifyFamiliar, cliExecute, myInebriety, useSkill } from "kolmafia";
-import { $effect, $familiar, $item, $location, $skill, Macro, uneffect } from "libram";
+import { $effect, $familiar, $item, $location, $skill, get, Macro, uneffect } from "libram";
 import { Task } from "../../engine/task";
-import { canConsume, distillateAdvs, stooperInebrietyLimit } from "../../lib";
+import { canConsume, stooperInebrietyLimit } from "../../lib";
+
+function distillateAdvs(): number {
+  return Math.round(get("familiarSweat") ** 0.4);
+}
 
 export function stooper(): Task {
   return {
