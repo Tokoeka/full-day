@@ -2,21 +2,15 @@ import { Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
 import { userConfirm } from "kolmafia";
+import { args } from "../main";
 
 export class Engine extends BaseEngine<never, Task> {
   confirmed = new Set<string>();
+  profits: ProfitTracker;
 
-  public run(actions?: number, confirm?: boolean): void {
-    for (let i = 0; i < (actions ?? Infinity); i++) {
-      const task = this.getNextTask();
-      if (!task) return;
-      if (task.ready && !task.ready()) throw `Task ${task.name} is not ready`;
-      if (confirm && !this.confirmed.has(task.name)) {
-        if (!userConfirm(`Executing ${task.name}, continue?`)) throw `Abort requested`;
-        this.confirmed.add(task.name);
-      }
-      this.execute(task);
-    }
+  constructor(tasks: Task[], key: string) {
+    super(tasks);
+    this.profits = new ProfitTracker(key);
   }
 
   public available(task: Task): boolean {
@@ -25,16 +19,27 @@ export class Engine extends BaseEngine<never, Task> {
       if (after_task === undefined) throw `Unknown task dependency ${after} on ${task.name}`;
       if (!after_task.completed()) return false;
     }
+    if (task.ready && !task.ready() && !args.debug.requireready) return false;
     if (task.completed()) return false;
     return true;
   }
-}
 
-export class ProfitTrackingEngine extends Engine {
-  profits: ProfitTracker;
-  constructor(tasks: Task[], key: string) {
-    super(tasks);
-    this.profits = new ProfitTracker(key);
+  public run(actions?: number): void {
+    for (let i = 0; i < (actions ?? Infinity); i++) {
+      const task = this.getNextTask();
+      if (!task) return;
+
+      if (task.ready && !task.ready() && args.debug.requireready) {
+        throw `Task ${task.name} is not ready`;
+      }
+
+      if (args.debug.confirm && !this.confirmed.has(task.name)) {
+        if (!userConfirm(`Executing ${task.name}, continue?`)) throw `Abort requested`;
+        this.confirmed.add(task.name);
+      }
+
+      this.execute(task);
+    }
   }
 
   execute(task: Task): void {

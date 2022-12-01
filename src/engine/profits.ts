@@ -194,6 +194,7 @@ class DailySetting<T> {
 }
 
 export type ProfitRecord = {
+  gametime: number;
   meat: number;
   items: number;
   turns: number;
@@ -265,7 +266,9 @@ export class ProfitTracker {
     }
 
     const diff = Session.current().diff(this.session);
-    if (!(tag in this.records)) this.records[tag] = { meat: 0, items: 0, turns: 0, hours: 0 };
+    if (!(tag in this.records)) {
+      this.records[tag] = { gametime: gametimeToInt(), meat: 0, items: 0, turns: 0, hours: 0 };
+    }
 
     const value = diff.value(garboValue);
     this.records[tag].meat += value.meat;
@@ -295,6 +298,7 @@ function sum(record: Records, where: (key: string) => boolean): ProfitRecord {
     if (where(key)) included.push(record[key]);
   }
   return {
+    gametime: included.reduce((v, p) => Math.min(v, p.gametime), 0),
     meat: included.reduce((v, p) => v + p.meat, 0),
     items: included.reduce((v, p) => v + p.items, 0),
     turns: included.reduce((v, p) => v + p.turns, 0),
@@ -315,35 +319,28 @@ function printProfitSegment(key: string, record: ProfitRecord, color: string) {
 export function printProfits(records: Records): void {
   print("");
   print("== Daily Loop Profit ==");
-  printProfitSegment(
-    "Aftercore",
-    sum(records, (key) => key.startsWith("Aftercore")),
-    "blue"
-  );
-  printProfitSegment("* Garbo", records["Aftercore@Garbo"], "green");
-  printProfitSegment("* Baggo", records["Aftercore@Baggo"], "green");
-  printProfitSegment("* Chrono", records["Aftercore@Chrono"], "green");
-  printProfitSegment("* Other", records["Aftercore@Other"], "green");
-  printProfitSegment(
-    "Community Service",
-    sum(records, (key) => key.startsWith("Community Service")),
-    "blue"
-  );
-  printProfitSegment("* Run", records["Community Service@Run"], "green");
-  printProfitSegment("* Garbo", records["Community Service@Garbo"], "green");
-  printProfitSegment("* Baggo", records["Community Service@Baggo"], "green");
-  printProfitSegment("* Chrono", records["Community Service@Chrono"], "green");
-  printProfitSegment("* Other", records["Community Service@Other"], "green");
-  printProfitSegment(
-    "Casual",
-    sum(records, (key) => key.startsWith("Casual")),
-    "blue"
-  );
-  printProfitSegment("* Run", records["Casual@Run"], "green");
-  printProfitSegment("* Garbo", records["Casual@Garbo"], "green");
-  printProfitSegment("* Baggo", records["Casual@Baggo"], "green");
-  printProfitSegment("* Chrono", records["Casual@Chrono"], "green");
-  printProfitSegment("* Other", records["Casual@Other"], "green");
+
+  const sortedKeys = Object.entries(records)
+    .sort((a, b) => a[1].gametime - b[1].gametime)
+    .map(([key]) => key);
+  const groups = new Set(sortedKeys.map((x) => x.split("@")[0]));
+
+  for (const group of groups) {
+    printProfitSegment(
+      group,
+      sum(records, (key) => key.startsWith(group)),
+      "blue"
+    );
+
+    const groupKeys = sortedKeys.filter((key) => key.startsWith(group));
+    const indexOfOther = groupKeys.findIndex((key) => key.endsWith("Other"));
+    groupKeys.push(groupKeys.splice(indexOfOther, 1)[0]);
+
+    for (const key of groupKeys) {
+      printProfitSegment(`* ${key.split("@")[1]}`, records[key], "green");
+    }
+  }
+
   printProfitSegment(
     "Total",
     sum(records, () => true),

@@ -1,7 +1,7 @@
 import { Args, getTasks } from "grimoire-kolmafia";
 import { Item, print } from "kolmafia";
 import { $item } from "libram";
-import { ProfitTrackingEngine } from "./engine/engine";
+import { Engine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
 import { cleanInbox, debug, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
@@ -75,6 +75,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     abort: Args.string({
       help: "If given, abort during the prepare() step for the task with matching name.",
     }),
+    requireready: Args.flag({ help: "If given, require that each task be ready." }),
     list: Args.flag({
       help: "Show the status of all tasks and exit.",
       setting: "",
@@ -103,14 +104,14 @@ export function main(command?: string): void {
   }
 
   const snapshotStart = Snapshot.importOrCreate("Start");
-  const engine = new ProfitTrackingEngine(tasks, "fullday");
+  const engine = new Engine(tasks, "fullday");
   try {
     if (args.debug.list) {
       listTasks(engine);
       return;
     }
 
-    engine.run(undefined, args.debug.confirm);
+    engine.run();
   } finally {
     engine.destruct();
     cleanInbox();
@@ -137,7 +138,7 @@ export function main(command?: string): void {
   }
 }
 
-function listTasks(engine: ProfitTrackingEngine): void {
+function listTasks(engine: Engine): void {
   for (const task of engine.tasks) {
     if (task.completed()) {
       debug(`${task.name}: Done`, "blue");
