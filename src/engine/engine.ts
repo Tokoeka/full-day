@@ -19,7 +19,7 @@ export class Engine extends BaseEngine<never, Task> {
       if (after_task === undefined) throw `Unknown task dependency ${after} on ${task.name}`;
       if (!after_task.completed()) return false;
     }
-    if (task.ready && !task.ready() && !args.debug.requireready) return false;
+    // if (task.ready && !task.ready()) return false;
     if (task.completed()) return false;
     return true;
   }
@@ -28,16 +28,11 @@ export class Engine extends BaseEngine<never, Task> {
     for (let i = 0; i < (actions ?? Infinity); i++) {
       const task = this.getNextTask();
       if (!task) return;
-
-      if (task.ready && !task.ready() && args.debug.requireready) {
-        throw `Task ${task.name} is not ready`;
-      }
-
+      if (task.ready && !task.ready()) throw `Task ${task.name} is not ready`;
       if (args.debug.confirm && !this.confirmed.has(task.name)) {
         if (!userConfirm(`Executing ${task.name}, continue?`)) throw `Abort requested`;
         this.confirmed.add(task.name);
       }
-
       this.execute(task);
     }
   }

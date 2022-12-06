@@ -1,8 +1,11 @@
 import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
+  autosell,
   buy,
+  buyUsingStorage,
   cliExecute,
   descToItem,
+  Familiar,
   getFuel,
   getWorkshed,
   itemAmount,
@@ -13,6 +16,7 @@ import {
   myTurncount,
   restoreMp,
   runChoice,
+  storageAmount,
   totalTurnsPlayed,
   use,
   visitUrl,
@@ -28,20 +32,65 @@ import {
   $skill,
   ascend,
   AsdonMartin,
-  ensureEffect,
   get,
   getKramcoWandererChance,
   have,
   Lifestyle,
   Macro,
+  Pantogram,
   prepareAscension,
   RetroCape,
-  SourceTerminal,
+  SongBoom,
 } from "libram";
-import { getCurrentLeg, Leg, Quest } from "../engine/task";
+import { getCurrentLeg, Leg, Quest, Task } from "../engine/task";
 import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, kingFreed, pullAll, pvp } from "./common";
 import { strategyTasks } from "./strategies/strategy";
+
+const gear: Task[] = [
+  {
+    name: "Pants",
+    completed: () => have($item`pantogram pants`),
+    do: () => {
+      if (step("questM05Toot") === -1) visitUrl("council.php");
+      if (step("questM05Toot") === 0) visitUrl("tutorial.php?action=toot");
+      if (have($item`letter from King Ralph XI`)) use($item`letter from King Ralph XI`);
+      if (have($item`pork elf goodies sack`)) use($item`pork elf goodies sack`);
+      if (!have($item`porquoise`)) {
+        if (storageAmount($item`porquoise`) === 0) buyUsingStorage($item`porquoise`);
+        cliExecute("pull 1 porquoise");
+      }
+      Pantogram.makePants(
+        "Muscle",
+        "Stench Resistance: 2",
+        "Maximum MP: 20",
+        "Combat Rate: 5",
+        "Meat Drop: 60"
+      );
+      autosell($item`hamethyst`, itemAmount($item`hamethyst`));
+      autosell($item`baconstone`, itemAmount($item`baconstone`));
+    },
+    limit: { tries: 1 },
+  },
+  {
+    name: "Lucky Gold Ring",
+    completed: () => have($item`lucky gold ring`),
+    do: () => cliExecute("pull lucky gold ring"),
+    limit: { tries: 1 },
+  },
+  {
+    name: "Pointer Finger",
+    completed: () => have($item`mafia pointer finger ring`),
+    do: () => cliExecute("pull mafia pointer finger ring"),
+    limit: { tries: 1 },
+  },
+  {
+    name: "Asdon",
+    completed: () => have($item`Asdon Martin keyfob`) || have($item`cold medicine cabinet`),
+    do: () => cliExecute("pull Asdon Martin keyfob"),
+    limit: { tries: 1 },
+  },
+];
 
 export function gyouQuest(): Quest {
   return {
@@ -65,34 +114,30 @@ export function gyouQuest(): Quest {
             createPermOptions()
           );
           if (visitUrl("main.php").includes("somewhat-human-shaped mass of grey goo nanites")) {
-            runChoice(-1);
+            runChoice(1);
           }
         },
         limit: { tries: 1 },
       },
+      ...gear,
       ...breakStone(),
       {
         name: "Run",
         ready: () => myPath() === $path`Grey You`,
         completed: () =>
-          step("questL13Final") !== -1 && get("gooseReprocessed").split(",").length === 73,
+          step("questL13Final") !== -1 && get("gooseReprocessed").split(",").length >= 69,
         do: () => cliExecute("loopgyou delaytower tune=wombat"),
         limit: { tries: 1 },
         tracking: "Run",
       },
       {
         name: "In-Run Farm Initial",
-        // after: ["Ascend", "Run", ...gear.map((task) => task.name)],
         completed: () => myTurncount() >= 1000,
         do: $location`Barf Mountain`,
         acquire: [{ item: $item`wad of used tape` }],
         prepare: (): void => {
           RetroCape.tuneToSkill($skill`Precision Shot`);
-
-          if (have($item`How to Avoid Scams`)) ensureEffect($effect`How to Scam Tourists`);
-
-          // Use only the first source terminal enhance, save the others for aftercore
-          if (get("_sourceTerminalEnhanceUses") === 0) SourceTerminal.enhance($effect`meat.enh`);
+          SongBoom.setSong("Total Eclipse of Your Meat");
 
           // Prepare latte
           if (
@@ -129,19 +174,22 @@ export function gyouQuest(): Quest {
           }
         },
         post: getExtros,
-        outfit: {
-          back: $item`unwrapped knock-off retro superhero cape`,
-          weapon: $item`astral pistol`,
-          offhand:
-            getKramcoWandererChance() > 0.05
-              ? $item`Kramco Sausage-o-Matic™`
-              : $item`latte lovers member's mug`,
-          acc1: $item`lucky gold ring`,
-          acc2: $item`mafia pointer finger ring`,
-          acc3: $item`mafia thumb ring`,
-          familiar: $familiar`Space Jellyfish`,
-          modifier: "meat",
+        outfit: () => {
+          return {
+            back: $item`unwrapped knock-off retro superhero cape`,
+            weapon: $item`astral pistol`,
+            offhand:
+              getKramcoWandererChance() > 0.05
+                ? $item`Kramco Sausage-o-Matic™`
+                : $item`latte lovers member's mug`,
+            acc1: $item`lucky gold ring`,
+            acc2: $item`mafia pointer finger ring`,
+            acc3: $item`mafia thumb ring`,
+            familiar: $familiar`Space Jellyfish`,
+            modifier: "meat",
+          };
         },
+        effects: () => (have($item`How to Avoid Scams`) ? $effects`How to Scam Tourists` : []),
         combat: new CombatStrategy().macro(
           new Macro()
             .trySkill($skill`Bowl Straight Up`)
@@ -157,7 +205,6 @@ export function gyouQuest(): Quest {
       pullAll(),
       {
         name: "Tower",
-        // after: ["Ascend", "Pull All", "In-Run Farm Initial"],
         completed: () => step("questL13Final") > 11,
         do: () => cliExecute("loopgyou delaytower"),
         limit: { tries: 1 },
@@ -165,10 +212,10 @@ export function gyouQuest(): Quest {
       },
       {
         name: "In-Run Farm Final",
-        // after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
+        after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
         completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
         prepare: (): void => {
-          restoreMp(10);
+          restoreMp(20);
 
           // Prepare Asdon buff
           if (AsdonMartin.installed() && !have($effect`Driving Observantly`))
@@ -177,7 +224,7 @@ export function gyouQuest(): Quest {
         do: $location`Barf Mountain`,
         outfit: {
           modifier: "meat",
-          weapon: $item`haiku katana`,
+          weapon: $item`June cleaver`, //$item`haiku katana`,
           offhand:
             getKramcoWandererChance() > 0.05
               ? $item`Kramco Sausage-o-Matic™`
@@ -192,7 +239,7 @@ export function gyouQuest(): Quest {
             .trySkill($skill`Bowl Straight Up`)
             .skill($skill`Extract Jelly`)
             .skill($skill`Sing Along`)
-            .skill($skill`Summer Siesta`)
+            // .skill($skill`Summer Siesta`)
             .skill($skill`Double Nanovision`)
             .repeat()
         ),
@@ -201,22 +248,20 @@ export function gyouQuest(): Quest {
       },
       {
         name: "Prism",
-        // after: ["Ascend", "In-Run Farm Final"],
         completed: () => myClass() !== $class`Grey Goo`,
         do: () => cliExecute("loopgyou class=1"),
+        outfit: { familiar: Familiar.none },
         limit: { tries: 1 },
       },
+      ...duffo(),
       {
         name: "Level",
-        // after: ["Ascend", "Prism", "Pull All"],
         completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
         do: () => cliExecute("loopcasual goal=level"),
         limit: { tries: 1 },
       },
-
       ...kingFreed(),
       ...breakfast(),
-      ...duffo(),
       ...strategyTasks(true),
       ...pvp([]),
     ],

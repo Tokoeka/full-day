@@ -75,7 +75,6 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     abort: Args.string({
       help: "If given, abort during the prepare() step for the task with matching name.",
     }),
-    requireready: Args.flag({ help: "If given, require that each task be ready." }),
     list: Args.flag({
       help: "Show the status of all tasks and exit.",
       setting: "",
@@ -119,9 +118,9 @@ export function main(command?: string): void {
 
   const { meat, items, itemDetails } = Snapshot.current().diff(snapshotStart).value(garboValue);
 
-  // list the top 3 gaining and top 3 losing items
-  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 3);
-  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 3);
+  // list the top 10 gaining and top 10 losing items
+  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 10);
+  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 10);
   print("");
   print(
     `So far today, you have generated ${numberWithCommas(
