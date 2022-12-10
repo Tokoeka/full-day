@@ -2,7 +2,8 @@ import { Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
 import { userConfirm } from "kolmafia";
-import { args } from "../main";
+import { args, completedProperty } from "../main";
+import { set } from "libram";
 
 export class Engine extends BaseEngine<never, Task> {
   confirmed = new Set<string>();
@@ -40,6 +41,7 @@ export class Engine extends BaseEngine<never, Task> {
   execute(task: Task): void {
     try {
       super.execute(task);
+      set(completedProperty, task.name);
     } finally {
       const questName = task.name.split("/")[0];
       this.profits.record(`${questName}@${task.tracking ?? "Other"}`);

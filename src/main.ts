@@ -1,9 +1,9 @@
 import { Args, getTasks } from "grimoire-kolmafia";
-import { Item, print } from "kolmafia";
-import { $item } from "libram";
+import { gametimeToInt, Item, print } from "kolmafia";
+import { $item, get, Kmail, set } from "libram";
 import { Engine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
-import { cleanInbox, debug, numberWithCommas } from "./lib";
+import { debug, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
 import { aftercoreQuest } from "./tasks/aftercore";
 import { casualQuest } from "./tasks/casual";
@@ -12,10 +12,9 @@ import { gyouQuest } from "./tasks/gyou";
 
 /** TODOs
  * improve goto pickpocketing task: banishes, init equipment
- * finish and test gyou quest
- * refactor top winning and losing item tracking
- * improve profit tracking printout (maybe order sequentially rather than hardcoding)
  */
+
+const snapshotStart = Snapshot.importOrCreate("Start");
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
   major: Args.group("Major Options", {
@@ -82,6 +81,10 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
   }),
 });
 
+const scriptName = Args.getMetadata(args).scriptName;
+const timeProperty = `${scriptName}_firstStart`;
+export const completedProperty = `${scriptName}_lastCompleted`;
+
 export function main(command?: string): void {
   Args.fill(args, command);
   if (args.help) {
@@ -89,7 +92,15 @@ export function main(command?: string): void {
     return;
   }
 
-  const noncasualQuest = args.major.path === "gyou" ? gyouQuest : csQuest;
+  if (get(timeProperty, -1) === -1) {
+    set(timeProperty, gametimeToInt());
+    set(completedProperty, "");
+  }
+
+  const noncasualQuest =
+    args.major.path === "gyou" || get(completedProperty).split("/")[0] === "Grey You"
+      ? gyouQuest
+      : csQuest;
   const quests = [aftercoreQuest(), noncasualQuest(), casualQuest()];
   const tasks = getTasks(quests);
 
@@ -102,7 +113,6 @@ export function main(command?: string): void {
     };
   }
 
-  const snapshotStart = Snapshot.importOrCreate("Start");
   const engine = new Engine(tasks, "fullday");
   try {
     if (args.debug.list) {
@@ -116,11 +126,36 @@ export function main(command?: string): void {
     cleanInbox();
   }
 
-  const { meat, items, itemDetails } = Snapshot.current().diff(snapshotStart).value(garboValue);
+  printFulldaySnapshot();
+}
 
-  // list the top 10 gaining and top 10 losing items
-  const losers = itemDetails.sort((a, b) => a.value - b.value).slice(0, 10);
+function listTasks(engine: Engine): void {
+  for (const task of engine.tasks) {
+    if (task.completed()) {
+      debug(`${task.name}: Done`, "blue");
+    } else if (engine.available(task)) {
+      debug(`${task.name}: Available`);
+    } else {
+      debug(`${task.name}: Not Available`, "red");
+    }
+  }
+}
+
+export function cleanInbox(): void {
+  Kmail.delete(
+    Kmail.inbox().filter((k) =>
+      ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
+        k.senderName
+      )
+    )
+  );
+}
+
+function printFulldaySnapshot() {
+  const { meat, items, itemDetails } = Snapshot.current().diff(snapshotStart).value(garboValue);
   const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 10);
+  const losers = itemDetails.sort((a, b) => b.value - a.value).slice(-10);
+
   print("");
   print(
     `So far today, you have generated ${numberWithCommas(
@@ -134,19 +169,5 @@ export function main(command?: string): void {
         Math.round(detail.value)
       )} total`
     );
-  }
-}
-
-function listTasks(engine: Engine): void {
-  for (const task of engine.tasks) {
-    if (task.completed()) {
-      debug(`${task.name}: Done`, "blue");
-    } else {
-      if (engine.available(task)) {
-        debug(`${task.name}: Available`);
-      } else {
-        debug(`${task.name}: Not Available`, "red");
-      }
-    }
   }
 }

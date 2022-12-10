@@ -18,6 +18,7 @@ import {
   myMeat,
   myName,
   myStorageMeat,
+  print,
   Slot,
   todayToString,
   toItem,
@@ -78,7 +79,10 @@ function getTradeableCampground(): { [item: string]: number } {
 }
 
 function myItems(): Map<Item, number> {
-  cliExecute("refresh all");
+  print("");
+  cliExecute("refresh shop");
+  cliExecute("refresh storage");
+  cliExecute("refresh inv");
   const inv = getInventory();
   const equips = getEquipment();
   const shop = getShop();

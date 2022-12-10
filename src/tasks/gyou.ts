@@ -136,6 +136,7 @@ export function gyouQuest(): Quest {
         do: $location`Barf Mountain`,
         acquire: [{ item: $item`wad of used tape` }],
         prepare: (): void => {
+          restoreMp(20);
           RetroCape.tuneToSkill($skill`Precision Shot`);
           SongBoom.setSong("Total Eclipse of Your Meat");
 
@@ -224,7 +225,7 @@ export function gyouQuest(): Quest {
         do: $location`Barf Mountain`,
         outfit: {
           modifier: "meat",
-          weapon: $item`June cleaver`, //$item`haiku katana`,
+          weapon: $item`haiku katana`,
           offhand:
             getKramcoWandererChance() > 0.05
               ? $item`Kramco Sausage-o-Matic™`
@@ -239,7 +240,7 @@ export function gyouQuest(): Quest {
             .trySkill($skill`Bowl Straight Up`)
             .skill($skill`Extract Jelly`)
             .skill($skill`Sing Along`)
-            // .skill($skill`Summer Siesta`)
+            .skill($skill`Summer Siesta`)
             .skill($skill`Double Nanovision`)
             .repeat()
         ),
