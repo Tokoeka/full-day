@@ -3,7 +3,7 @@ import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
 import { userConfirm } from "kolmafia";
 import { args, completedProperty } from "../main";
-import { set } from "libram";
+import { $effect, have, set } from "libram";
 
 export class Engine extends BaseEngine<never, Task> {
   confirmed = new Set<string>();
@@ -47,6 +47,11 @@ export class Engine extends BaseEngine<never, Task> {
       this.profits.record(`${questName}@${task.tracking ?? "Other"}`);
       this.profits.save();
     }
+  }
+
+  post(task: Task): void {
+    super.post(task);
+    if (have($effect`Beaten Up`)) throw "Fight was lost; stop.";
   }
 
   destruct(): void {

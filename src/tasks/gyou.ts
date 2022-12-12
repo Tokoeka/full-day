@@ -86,7 +86,10 @@ const gear: Task[] = [
   },
   {
     name: "Asdon",
-    completed: () => have($item`Asdon Martin keyfob`) || have($item`cold medicine cabinet`),
+    completed: () =>
+      have($item`Asdon Martin keyfob`) ||
+      have($item`cold medicine cabinet`) ||
+      storageAmount($item`Asdon Martin keyfob`) === 0,
     do: () => cliExecute("pull Asdon Martin keyfob"),
     limit: { tries: 1 },
   },
