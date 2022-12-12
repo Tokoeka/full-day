@@ -28,6 +28,7 @@ import {
   $familiar,
   $item,
   $location,
+  $monster,
   $path,
   $skill,
   ascend,
@@ -194,15 +195,17 @@ export function gyouQuest(): Quest {
           };
         },
         effects: () => (have($item`How to Avoid Scams`) ? $effects`How to Scam Tourists` : []),
-        combat: new CombatStrategy().macro(
-          new Macro()
-            .trySkill($skill`Bowl Straight Up`)
-            .skill($skill`Extract Jelly`)
-            .skill($skill`Sing Along`)
-            .skill($skill`Precision Shot`)
-            .skill($skill`Double Nanovision`)
-            .repeat()
-        ),
+        combat: new CombatStrategy()
+          .macro(
+            new Macro()
+              .trySkill($skill`Bowl Straight Up`)
+              .skill($skill`Extract Jelly`)
+              .skill($skill`Sing Along`)
+              .skill($skill`Precision Shot`)
+              .skill($skill`Double Nanovision`)
+              .repeat()
+          )
+          .macro(new Macro().skill($skill`Infinite Loop`).repeat(), $monster`sausage goblin`),
         limit: { tries: 550 },
         tracking: "GooFarming",
       },
@@ -238,15 +241,17 @@ export function gyouQuest(): Quest {
           familiar: $familiar`Space Jellyfish`,
         },
         effects: $effects`How to Scam Tourists`,
-        combat: new CombatStrategy().macro(
-          new Macro()
-            .trySkill($skill`Bowl Straight Up`)
-            .skill($skill`Extract Jelly`)
-            .skill($skill`Sing Along`)
-            .skill($skill`Summer Siesta`)
-            .skill($skill`Double Nanovision`)
-            .repeat()
-        ),
+        combat: new CombatStrategy()
+          .macro(
+            new Macro()
+              .trySkill($skill`Bowl Straight Up`)
+              .skill($skill`Extract Jelly`)
+              .skill($skill`Sing Along`)
+              .skill($skill`Summer Siesta`)
+              .skill($skill`Double Nanovision`)
+              .repeat()
+          )
+          .macro(new Macro().skill($skill`Infinite Loop`).repeat(), $monster`sausage goblin`),
         limit: { tries: 150 },
         tracking: "GooFarming",
       },

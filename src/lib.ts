@@ -68,40 +68,6 @@ export function ascensionsToday(): Lifestyle[] {
   return result;
 }
 
-// export enum Gender {
-//   male = 1,
-//   female = 2,
-// }
-
-// export enum Zodiac {
-//   mongoose = 1,
-//   wallaby = 2,
-//   vole = 3,
-//   platypus = 4,
-//   opossum = 5,
-//   marmot = 6,
-//   wombat = 7,
-//   blender = 8,
-//   packrat = 9,
-// }
-
-// export function ascensionDetailsToday(): any {
-//   const sessionLog = fileToBuffer(`${myName()}_${todayToString()}.txt`);
-//   const pattern =
-//     /Ascend as a (\w+) ([\w\s]+) (\w+) under the (\w+) sign on (?:a )?([\w\s]+) path, banking (\d+) Karma./g;
-//   let match;
-//   const result = [];
-//   while ((match = pattern.exec(sessionLog))) {
-//     const lifestyle = Lifestyle[match[1].toLowerCase() as keyof typeof Lifestyle];
-//     const gender = Gender[match[2].toLowerCase() as keyof typeof Gender];
-//     const class_ = 0;
-//     const zodiac = 0;
-//     const karma = match[5];
-//     result.push(name);
-//   }
-//   return result;
-// }
-
 export function numberWithCommas(x: number): string {
   const str = x.toString();
   if (str.includes(".")) return x.toFixed(2);
