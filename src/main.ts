@@ -141,7 +141,7 @@ function listTasks(engine: Engine): void {
   }
 }
 
-export function cleanInbox(): void {
+function cleanInbox(): void {
   Kmail.delete(
     Kmail.inbox().filter((k) =>
       ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
