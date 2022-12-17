@@ -5,7 +5,7 @@ import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
 
 export function chrono(ascend: boolean): Task[] {
-  const tasks: Task[] = [
+  return [
     {
       name: "Garbo",
       completed: () => get("_fullday_completedGarbo", false) && !canConsume(),
@@ -32,19 +32,18 @@ export function chrono(ascend: boolean): Task[] {
       outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
     },
+    ...(ascend
+      ? [
+          caldera(),
+          {
+            name: "Overdrunk",
+            ready: () => myInebriety() > stooperInebrietyLimit(),
+            completed: () => myAdventures() === 0,
+            do: () => cliExecuteThrow("chrono"),
+            limit: { tries: 1 },
+            tracking: "Chrono",
+          },
+        ]
+      : []),
   ];
-
-  if (ascend) {
-    tasks.push(caldera());
-    tasks.push({
-      name: "Overdrunk",
-      ready: () => myInebriety() > stooperInebrietyLimit(),
-      completed: () => myAdventures() === 0,
-      do: () => cliExecuteThrow("chrono"),
-      limit: { tries: 1 },
-      tracking: "Chrono",
-    });
-  }
-
-  return tasks;
 }

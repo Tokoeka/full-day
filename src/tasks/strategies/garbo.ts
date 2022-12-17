@@ -5,7 +5,7 @@ import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
 
 export function garbo(ascend: boolean): Task[] {
-  const tasks: Task[] = [
+  return [
     {
       name: "Garbo",
       completed: () =>
@@ -25,18 +25,18 @@ export function garbo(ascend: boolean): Task[] {
       outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
     },
+    ...(ascend
+      ? [
+          caldera(),
+          {
+            name: "Overdrunk",
+            ready: () => myInebriety() > inebrietyLimit(),
+            completed: () => myAdventures() === 0,
+            do: () => cliExecuteThrow("garbo ascend"),
+            limit: { tries: 1 },
+            tracking: "Garbo",
+          },
+        ]
+      : []),
   ];
-
-  if (ascend) {
-    tasks.push(caldera());
-    tasks.push({
-      name: "Overdrunk",
-      ready: () => myInebriety() > inebrietyLimit(),
-      completed: () => myAdventures() === 0,
-      do: () => cliExecuteThrow("garbo ascend"),
-      limit: { tries: 1 },
-      tracking: "Garbo",
-    });
-  }
-  return tasks;
 }

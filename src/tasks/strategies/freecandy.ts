@@ -5,7 +5,7 @@ import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
 
 export function freecandy(ascend: boolean): Task[] {
-  const tasks: Task[] = [
+  return [
     {
       name: "Garboween",
       completed: () => get("_fullday_completedGarboween", false) && !canConsume(),
@@ -42,22 +42,24 @@ export function freecandy(ascend: boolean): Task[] {
       outfit: { familiar: $familiar`Stooper` },
       limit: { tries: 1 },
     },
-  ];
-
-  if (ascend) tasks.push(caldera());
-
-  tasks.push({
-    name: "Overdrunk",
-    ready: () => myInebriety() > stooperInebrietyLimit(),
-    completed: () => myAdventures() < 5,
-    do: () => cliExecuteThrow("freecandy"),
-    outfit: {
-      familiar: $familiar`Reagnimated Gnome`,
-      famequip: $item`gnomish housemaid's kgnee`,
+    ...(ascend ? [caldera()] : []),
+    {
+      name: "Overdrunk",
+      ready: () => myInebriety() > stooperInebrietyLimit(),
+      completed: () => myAdventures() < 5,
+      do: () => cliExecuteThrow("freecandy"),
+      outfit: {
+        familiar: $familiar`Reagnimated Gnome`,
+        famequip: $item`gnomish housemaid's kgnee`,
+      },
+      limit: { tries: 1 },
+      tracking: "Freecandy",
     },
-    limit: { tries: 1 },
-    tracking: "Freecandy",
-  });
-  // TODO spend remaining turns
-  return tasks;
+    {
+      name: "Combo",
+      completed: () => myAdventures() === 0,
+      do: () => cliExecuteThrow(`combo ${myAdventures()}`),
+      limit: { tries: 1 },
+    },
+  ];
 }
