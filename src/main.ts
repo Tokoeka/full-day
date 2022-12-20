@@ -24,17 +24,17 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
         ["cs", "Community Service"],
         ["gyou", "Grey You"],
       ],
-      default: "cs",
+      default: "gyou",
     }),
     strategy: Args.string({
-      help: "Farming strategy to use.",
-      options: [
-        ["garbo", "Farm meat using garbage-collector."],
-        ["baggo", "Farm duffel bags and van keys using bag-collector."],
-        ["chrono", "Farm chroners using chrono-collector."],
-        ["freecandy", "Farm Halloween using freecandy."],
-      ],
+      help: "Farming strategy to use. The currently implemented strategies are garbo, freecandy, and baggo.",
       default: "garbo",
+    }),
+    roninfarm: Args.string({
+      help: "Command to be run at the start of gyou ronin farming. For best effect, make sure that it stops when your turncount reaches 1000.",
+    }),
+    postroninfarm: Args.string({
+      help: "Command to be run at the start of post-gyou ronin farming. For best effect, make sure that it stops when your remaining adventures are 40.",
     }),
   }),
   minor: Args.group("Minor Options", {

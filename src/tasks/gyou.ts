@@ -1,4 +1,4 @@
-import { CombatStrategy, step } from "grimoire-kolmafia";
+import { Args, CombatStrategy, Outfit, step } from "grimoire-kolmafia";
 import {
   autosell,
   buy,
@@ -31,6 +31,7 @@ import {
   $monster,
   $path,
   $skill,
+  $slot,
   ascend,
   AsdonMartin,
   get,
@@ -41,10 +42,12 @@ import {
   Pantogram,
   prepareAscension,
   RetroCape,
+  set,
   SongBoom,
 } from "libram";
 import { getCurrentLeg, Leg, Quest, Task } from "../engine/task";
-import { canAscendNoncasual, createPermOptions } from "../lib";
+import { canAscendNoncasual, cliExecuteThrow, createPermOptions } from "../lib";
+import { args } from "../main";
 import { breakfast, breakStone, duffo, kingFreed, pullAll, pvp } from "./common";
 import { strategyTasks } from "./strategies/strategy";
 
@@ -135,6 +138,16 @@ export function gyouQuest(): Quest {
         tracking: "Run",
       },
       {
+        name: "Custom Ronin Farm",
+        completed: () =>
+          !args.major.roninfarm ||
+          get(`_${Args.getMetadata(args).scriptName}_roninfarmComplete`, false),
+        do: () => cliExecuteThrow(args.major.roninfarm ?? ""),
+        post: () => set(`_${Args.getMetadata(args).scriptName}_roninfarmComplete`, true),
+        limit: { tries: 1 },
+        tracking: "GooFarming",
+      },
+      {
         name: "In-Run Farm Initial",
         completed: () => myTurncount() >= 1000,
         do: $location`Barf Mountain`,
@@ -180,19 +193,23 @@ export function gyouQuest(): Quest {
         },
         post: getExtros,
         outfit: () => {
-          return {
-            back: $item`unwrapped knock-off retro superhero cape`,
-            weapon: $item`astral pistol`,
-            offhand:
-              getKramcoWandererChance() > 0.05
-                ? $item`Kramco Sausage-o-Matic™`
-                : $item`latte lovers member's mug`,
-            acc1: $item`lucky gold ring`,
-            acc2: $item`mafia pointer finger ring`,
-            acc3: $item`mafia thumb ring`,
-            familiar: $familiar`Space Jellyfish`,
-            modifier: "meat",
-          };
+          const outfit = new Outfit();
+          outfit.equip($item`unwrapped knock-off retro superhero cape`, $slot`back`);
+          outfit.equip($item`astral pistol`, $slot`weapon`);
+          outfit.equip(
+            getKramcoWandererChance() > 0.05
+              ? $item`Kramco Sausage-o-Matic™`
+              : $item`latte lovers member's mug`,
+            $slot`off-hand`
+          );
+          outfit.equip([
+            $item`lucky gold ring`,
+            $item`mafia pointer finger ring`,
+            $item`mafia thumb ring`,
+          ]);
+          outfit.equip($familiar`Space Jellyfish`);
+          outfit.modifier = "meat";
+          return outfit;
         },
         effects: () => (have($item`How to Avoid Scams`) ? $effects`How to Scam Tourists` : []),
         combat: new CombatStrategy()
@@ -201,7 +218,7 @@ export function gyouQuest(): Quest {
               .trySkill($skill`Bowl Straight Up`)
               .skill($skill`Extract Jelly`)
               .skill($skill`Sing Along`)
-              .skill($skill`Precision Shot`)
+              .trySkill($skill`Precision Shot`)
               .skill($skill`Double Nanovision`)
               .repeat()
           )
@@ -218,6 +235,16 @@ export function gyouQuest(): Quest {
         tracking: "Run",
       },
       {
+        name: "Custom Post-Ronin Farm",
+        completed: () =>
+          !args.major.postroninfarm ||
+          get(`_${Args.getMetadata(args).scriptName}_postroninfarmComplete`, false),
+        do: () => cliExecuteThrow(args.major.postroninfarm ?? ""),
+        post: () => set(`_${Args.getMetadata(args).scriptName}_postroninfarmComplete`, true),
+        limit: { tries: 1 },
+        tracking: "GooFarming",
+      },
+      {
         name: "In-Run Farm Final",
         after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
         completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
@@ -229,16 +256,18 @@ export function gyouQuest(): Quest {
             AsdonMartin.drive(AsdonMartin.Driving.Observantly);
         },
         do: $location`Barf Mountain`,
-        outfit: {
-          modifier: "meat",
-          weapon: $item`haiku katana`,
-          offhand:
+        outfit: () => {
+          const outfit = new Outfit();
+          outfit.equip($item`haiku katana`, $slot`weapon`);
+          outfit.equip(
             getKramcoWandererChance() > 0.05
               ? $item`Kramco Sausage-o-Matic™`
               : $item`latte lovers member's mug`,
-          acc1: $item`lucky gold ring`,
-          acc2: $item`mafia pointer finger ring`,
-          familiar: $familiar`Space Jellyfish`,
+            $slot`off-hand`
+          );
+          outfit.equip([$item`lucky gold ring`, $item`mafia pointer finger ring`]);
+          outfit.equip($familiar`Space Jellyfish`), (outfit.modifier = "meat");
+          return outfit;
         },
         effects: $effects`How to Scam Tourists`,
         combat: new CombatStrategy()
@@ -247,7 +276,7 @@ export function gyouQuest(): Quest {
               .trySkill($skill`Bowl Straight Up`)
               .skill($skill`Extract Jelly`)
               .skill($skill`Sing Along`)
-              .skill($skill`Summer Siesta`)
+              .trySkill($skill`Summer Siesta`)
               .skill($skill`Double Nanovision`)
               .repeat()
           )

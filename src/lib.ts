@@ -78,9 +78,7 @@ export function createPermOptions(): { permSkills: Map<Skill, Lifestyle>; neverA
   return {
     permSkills: new Map(
       Skill.all()
-        .filter(
-          (skill) => have(skill) && skill.permable && getPermedSkills()[skill.name] === undefined
-        )
+        .filter((skill) => have(skill) && skill.permable && !getPermedSkills()[skill.name])
         .map((skill) => [skill, Lifestyle.hardcore])
     ),
     neverAbort: false,
