@@ -1,10 +1,11 @@
-import { cliExecute, getStorage, myPath, myStorageMeat } from "kolmafia";
+import { cliExecute, getStorage, getWorkshed, myPath, myStorageMeat, use } from "kolmafia";
 import {
   $class,
   $effect,
   $item,
   $path,
   ascend,
+  AsdonMartin,
   get,
   have,
   Lifestyle,
@@ -66,6 +67,15 @@ export function csQuest(): Quest {
         name: "Uneffect Lost",
         completed: () => !have($effect`Feeling Lost`),
         do: () => uneffect($effect`Feeling Lost`),
+        limit: { tries: 1 },
+      },
+      {
+        name: "Workshed",
+        completed: () => get("_workshedItemUsed") || getWorkshed() === $item`cold medicine cabinet`,
+        do: (): void => {
+          AsdonMartin.drive($effect`Driving Observantly`, 1000);
+          use($item`cold medicine cabinet`);
+        },
         limit: { tries: 1 },
       },
       ...kingFreed(),
