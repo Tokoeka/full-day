@@ -36,7 +36,6 @@ export function casualQuest(): Quest {
         completed: () => !canAscendCasual(),
         do: (): void => {
           prepareAscension({
-            workshed: "Asdon Martin keyfob",
             garden: "packet of thanksgarden seeds",
             eudora: "New-You Club Membership Form",
             chateau: {
