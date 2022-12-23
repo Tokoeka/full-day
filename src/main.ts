@@ -98,7 +98,8 @@ export function main(command?: string): void {
   }
 
   const noncasualQuest =
-    args.major.path === "gyou" || get(completedProperty).split("/")[0] === "Grey You"
+    (args.major.path === "gyou" && get(completedProperty).split("/")[0] !== "Community Service") ||
+    get(completedProperty).split("/")[0] === "Grey You"
       ? gyouQuest
       : csQuest;
   const quests = [aftercoreQuest(), noncasualQuest(), casualQuest()];
