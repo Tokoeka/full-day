@@ -1,5 +1,5 @@
 import { Args, getTasks } from "grimoire-kolmafia";
-import { gametimeToInt, Item, print } from "kolmafia";
+import { gametimeToInt, print } from "kolmafia";
 import { $item, get, Kmail, set } from "libram";
 import { Engine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
@@ -9,10 +9,7 @@ import { aftercoreQuest } from "./tasks/aftercore";
 import { casualQuest } from "./tasks/casual";
 import { csQuest } from "./tasks/cs";
 import { gyouQuest } from "./tasks/gyou";
-
-/** TODOs
- * improve goto pickpocketing task: banishes, init equipment
- */
+import { chooseStrategy } from "./tasks/strategies/strategy";
 
 const snapshotStart = Snapshot.importOrCreate("Start");
 
@@ -27,14 +24,9 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       default: "gyou",
     }),
     strategy: Args.string({
-      help: "Farming strategy to use. The currently implemented strategies are garbo, freecandy, and baggo.",
+      help: "Farming strategy to use.",
+      options: [["garbo", ""]],
       default: "garbo",
-    }),
-    roninfarm: Args.string({
-      help: "Command to be run at the start of gyou ronin farming. For best effect, make sure that it stops when your turncount reaches 1000.",
-    }),
-    postroninfarm: Args.string({
-      help: "Command to be run at the start of post-gyou ronin farming. For best effect, make sure that it stops when your remaining adventures are 40.",
     }),
   }),
   minor: Args.group("Minor Options", {
@@ -53,14 +45,10 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       ],
       default: "Platypus",
     }),
-    duplicate: Args.custom(
-      {
-        help: "Item to duplicate in the Deep Machine Tunnels.",
-        default: $item`Daily Affirmation: Always be Collecting`,
-      },
-      Item.get,
-      "ITEM"
-    ),
+    duplicate: Args.item({
+      help: "Item to duplicate in the Deep Machine Tunnels.",
+      default: $item`Daily Affirmation: Always be Collecting`,
+    }),
     maxmeat: Args.number({
       help: "Maximum amount of meat to keep in inventory after breaking the prism.",
       default: 2_000_000,
@@ -97,11 +85,12 @@ export function main(command?: string): void {
     set(completedProperty, "");
   }
 
+  const strategy = chooseStrategy();
   const noncasualQuest =
     args.major.path === "gyou" || get(completedProperty).split("/")[0] === "Grey You"
       ? gyouQuest
       : csQuest;
-  const quests = [aftercoreQuest(), noncasualQuest(), casualQuest()];
+  const quests = [aftercoreQuest(strategy), noncasualQuest(strategy), casualQuest(strategy)];
   const tasks = getTasks(quests);
 
   // Abort during the prepare() step of the specified task

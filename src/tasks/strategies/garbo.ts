@@ -1,11 +1,11 @@
 import { inebrietyLimit, myAdventures, myInebriety } from "kolmafia";
 import { $familiar, withProperty } from "libram";
-import { Task } from "../../engine/task";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
+import { Strategy } from "./strategy";
 
-export function garbo(ascend: boolean): Task[] {
-  return [
+export const garbo: Strategy = {
+  tasks: (ascend: boolean) => [
     {
       name: "Garbo",
       completed: () =>
@@ -38,5 +38,5 @@ export function garbo(ascend: boolean): Task[] {
           },
         ]
       : []),
-  ];
-}
+  ],
+};

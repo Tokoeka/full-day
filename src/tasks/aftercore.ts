@@ -1,8 +1,8 @@
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
 import { breakfast, duffo, kingFreed, menagerie, pvp } from "./common";
-import { strategyTasks } from "./strategies/strategy";
+import { Strategy } from "./strategies/strategy";
 
-export function aftercoreQuest(): Quest {
+export function aftercoreQuest(strategy: Strategy): Quest {
   return {
     name: "Aftercore",
     completed: () => getCurrentLeg() > Leg.Aftercore,
@@ -11,7 +11,7 @@ export function aftercoreQuest(): Quest {
       ...breakfast(),
       ...duffo(),
       ...menagerie(),
-      ...strategyTasks(true),
+      ...strategy.tasks(true),
       ...pvp([]),
     ],
   };
