@@ -159,7 +159,7 @@ export function gyouQuest(strategy: Strategy): Quest {
             do: $location`Barf Mountain`,
             acquire: [{ item: $item`wad of used tape` }],
             prepare: (): void => {
-              restoreMp(20);
+              restoreMp(30);
               RetroCape.tuneToSkill($skill`Precision Shot`);
               SongBoom.setSong("Total Eclipse of Your Meat");
 
@@ -258,7 +258,7 @@ export function gyouQuest(strategy: Strategy): Quest {
             name: "In-Run Barf Final",
             completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
             prepare: (): void => {
-              restoreMp(20);
+              restoreMp(30);
 
               // Prepare Asdon buff
               if (AsdonMartin.installed() && !have($effect`Driving Observantly`))
