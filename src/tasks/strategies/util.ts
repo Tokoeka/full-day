@@ -16,14 +16,14 @@ function getScriptName(command: string): string {
 
 export function createStrategyTasks(
   command: string,
-  overdrunk?: boolean
+  overdrunk = false
 ): (ascend: boolean) => Task[] {
   const argsScriptName = Args.getMetadata(args).scriptName;
   const commandScriptName = getScriptName(command);
 
   return (ascend: boolean) => [
     {
-      name: "Garbo",
+      name: "Garbo Nobarf",
       completed: () => get(`_${argsScriptName}_completedGarbo`, false) && !canConsume(),
       do: () => cliExecuteThrow(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`),
       post: () => set(`_${argsScriptName}_completedGarbo`, true),

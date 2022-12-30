@@ -25,7 +25,11 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     }),
     strategy: Args.string({
       help: "Farming strategy to use.",
-      options: [["garbo", ""]],
+      options: [
+        ["garbo", "Farm meat using garbage-collector."],
+        ["freecandy", "Farm Halloween using freecandy."],
+        ["baggo", "Farm duffel bags and van keys using bag-collector."],
+      ],
       default: "garbo",
     }),
   }),

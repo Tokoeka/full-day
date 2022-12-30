@@ -3,7 +3,7 @@ import { Task } from "../../engine/task";
 import { args } from "../../main";
 import { freecandy } from "./freecandy";
 import { garbo } from "./garbo";
-import { railo } from "./railo";
+import { baggo } from "./baggo";
 
 export type Strategy = {
   tasks: (ascend: boolean) => Task[];
@@ -13,11 +13,11 @@ export type Strategy = {
 export function chooseStrategy(): Strategy {
   switch (args.major.strategy) {
     case "garbo":
-      return garbo;
+      return garbo();
     case "freecandy":
-      return freecandy;
-    case "railo":
-      return railo;
+      return freecandy();
+    case "baggo":
+      return baggo();
     default:
       throw `Unsupported strategy "${args.major.strategy}"`;
   }

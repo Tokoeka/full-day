@@ -154,7 +154,7 @@ export function gyouQuest(strategy: Strategy): Quest {
             tracking: "GooFarming",
           }
         : {
-            name: "In-Run Farm Initial",
+            name: "In-Run Barf Initial",
             completed: () => myTurncount() >= 1000,
             do: $location`Barf Mountain`,
             acquire: [{ item: $item`wad of used tape` }],
@@ -228,7 +228,13 @@ export function gyouQuest(strategy: Strategy): Quest {
                   .skill($skill`Double Nanovision`)
                   .repeat()
               )
-              .macro(new Macro().skill($skill`Infinite Loop`).repeat(), $monster`sausage goblin`),
+              .macro(
+                new Macro()
+                  .item($item`Time-Spinner`)
+                  .skill($skill`Infinite Loop`)
+                  .repeat(),
+                $monster`sausage goblin`
+              ),
             limit: { tries: 550 },
             tracking: "GooFarming",
           },
@@ -249,7 +255,7 @@ export function gyouQuest(strategy: Strategy): Quest {
             limit: { tries: 1 },
           }
         : {
-            name: "In-Run Farm Final",
+            name: "In-Run Barf Final",
             completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
             prepare: (): void => {
               restoreMp(20);
@@ -283,7 +289,13 @@ export function gyouQuest(strategy: Strategy): Quest {
                   .skill($skill`Double Nanovision`)
                   .repeat()
               )
-              .macro(new Macro().skill($skill`Infinite Loop`).repeat(), $monster`sausage goblin`),
+              .macro(
+                new Macro()
+                  .item($item`Time-Spinner`)
+                  .skill($skill`Infinite Loop`)
+                  .repeat(),
+                $monster`sausage goblin`
+              ),
             limit: { tries: 150 },
             tracking: "GooFarming",
           },
