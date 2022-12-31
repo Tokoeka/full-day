@@ -1,3 +1,4 @@
+import { Args } from "grimoire-kolmafia";
 import { myAdventures, myInebriety } from "kolmafia";
 import { $familiar, get, set, withProperty } from "libram";
 import { Task } from "../../engine/task";
@@ -9,23 +10,32 @@ function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export function custom(ascend: boolean): Task[] {
-  const scriptName = capitalize(args.major.strategy.split(" ")[0]);
-  return [
+function getScriptName(command: string): string {
+  return capitalize(command.split(" ")[0]);
+}
+
+export function createStrategyTasks(
+  command: string,
+  overdrunk = false
+): (ascend: boolean) => Task[] {
+  const argsScriptName = Args.getMetadata(args).scriptName;
+  const commandScriptName = getScriptName(command);
+
+  return (ascend: boolean) => [
     {
-      name: "Garbo",
-      completed: () => get("_fullday_completedGarbo", false) && !canConsume(),
+      name: "Garbo Nobarf",
+      completed: () => get(`_${argsScriptName}_completedGarbo`, false) && !canConsume(),
       do: () => cliExecuteThrow(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`),
-      post: () => set("_fullday_completedGarbo", true),
+      post: () => set(`_${argsScriptName}_completedGarbo`, true),
       limit: { tries: 1 },
       tracking: "Garbo",
     },
     {
-      name: scriptName,
+      name: commandScriptName,
       completed: () => myAdventures() === 0 || myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecuteThrow(args.major.strategy),
+      do: () => cliExecuteThrow(command),
       limit: { tries: 1 },
-      tracking: scriptName,
+      tracking: commandScriptName,
     },
     stooper(),
     {
@@ -45,9 +55,9 @@ export function custom(ascend: boolean): Task[] {
             name: "Overdrunk",
             ready: () => myInebriety() > stooperInebrietyLimit(),
             completed: () => myAdventures() === 0,
-            do: () => cliExecuteThrow(args.major.strategy),
+            do: () => cliExecuteThrow(overdrunk ? command : "garbo ascend"),
             limit: { tries: 1 },
-            tracking: scriptName,
+            tracking: commandScriptName,
           },
         ]
       : []),

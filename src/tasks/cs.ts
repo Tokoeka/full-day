@@ -15,9 +15,9 @@ import {
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
 import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, kingFreed, pvp } from "./common";
-import { strategyTasks } from "./strategies/strategy";
+import { Strategy } from "./strategies/strategy";
 
-export function csQuest(): Quest {
+export function csQuest(strategy: Strategy): Quest {
   return {
     name: "Community Service",
     completed: () => getCurrentLeg() > Leg.NonCasual,
@@ -81,7 +81,7 @@ export function csQuest(): Quest {
       ...kingFreed(),
       ...breakfast(),
       ...duffo(),
-      ...strategyTasks(true),
+      ...strategy.tasks(true),
       ...pvp([]),
     ],
   };

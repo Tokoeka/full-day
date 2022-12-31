@@ -1,19 +1,24 @@
+import { Item } from "kolmafia";
 import { Task } from "../../engine/task";
 import { args } from "../../main";
-import { baggo } from "./baggo";
-import { custom } from "./custom";
 import { freecandy } from "./freecandy";
 import { garbo } from "./garbo";
+import { baggo } from "./baggo";
 
-export function strategyTasks(ascend: boolean): Task[] {
+export type Strategy = {
+  tasks: (ascend: boolean) => Task[];
+  gyou?: { pulls: Item[]; ronin: Task["do"]; postronin: Task["do"] };
+};
+
+export function chooseStrategy(): Strategy {
   switch (args.major.strategy) {
     case "garbo":
-      return garbo(ascend);
+      return garbo();
     case "freecandy":
-      return freecandy(ascend);
+      return freecandy();
     case "baggo":
-      return baggo(ascend);
+      return baggo();
     default:
-      return custom(ascend);
+      throw `Unsupported strategy "${args.major.strategy}"`;
   }
 }
