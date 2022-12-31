@@ -87,15 +87,6 @@ const gear: Task[] = [
     do: () => cliExecute("pull mafia pointer finger ring"),
     limit: { tries: 1 },
   },
-  {
-    name: "Asdon",
-    completed: () =>
-      have($item`Asdon Martin keyfob`) ||
-      have($item`cold medicine cabinet`) ||
-      storageAmount($item`Asdon Martin keyfob`) === 0,
-    do: () => cliExecute("pull Asdon Martin keyfob"),
-    limit: { tries: 1 },
-  },
 ];
 
 export function createPull(item: Item): Task {
