@@ -7,7 +7,11 @@ import { baggo } from "./baggo";
 
 export type Strategy = {
   tasks: (ascend: boolean) => Task[];
-  gyou?: { pulls: Item[]; ronin: Task["do"]; postronin: Task["do"] };
+  gyou?: {
+    pulls: Item[];
+    ronin: Pick<Task, "prepare" | "do" | "outfit">;
+    postronin: Pick<Task, "prepare" | "do" | "outfit">;
+  };
 };
 
 export function chooseStrategy(): Strategy {

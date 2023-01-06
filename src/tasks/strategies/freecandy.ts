@@ -16,14 +16,9 @@ export function freecandy(): Strategy {
         tracking: "Garbo",
       },
       {
-        name: "Treat Outfit",
-        completed: () => get("freecandy_treatOutfit") === "Ceramic Suit",
-        do: () => set("freecandy_treatOutfit", "Ceramic Suit"),
-        limit: { tries: 1 },
-      },
-      {
         name: "Freecandy",
         completed: () => myAdventures() < 5 || myInebriety() >= stooperInebrietyLimit(),
+        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
         do: () => cliExecuteThrow("freecandy"),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
@@ -48,6 +43,7 @@ export function freecandy(): Strategy {
         name: "Overdrunk",
         ready: () => myInebriety() > stooperInebrietyLimit(),
         completed: () => myAdventures() < 5,
+        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
         do: () => cliExecuteThrow("freecandy"),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
@@ -77,13 +73,21 @@ export function freecandy(): Strategy {
         $item`porcelain phantom mask`,
         $item`beholed bedsheet`,
       ],
-      ronin: () => {
-        set("freecandy_treatOutfit", "Ceramic Suit");
-        cliExecuteThrow(`freecandy ${Math.ceil((1000 - myTurncount()) / 5)}`);
+      ronin: {
+        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
+        do: () => cliExecuteThrow(`freecandy ${Math.ceil((1000 - myTurncount()) / 5)}`),
+        outfit: {
+          familiar: $familiar`Reagnimated Gnome`,
+          famequip: $item`gnomish housemaid's kgnee`,
+        },
       },
-      postronin: () => {
-        set("freecandy_treatOutfit", "Ceramic Suit");
-        cliExecuteThrow(`freecandy ${Math.ceil((myAdventures() - 40) / 5)}`);
+      postronin: {
+        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
+        do: () => cliExecuteThrow(`freecandy ${Math.ceil((myAdventures() - 40) / 5)}`),
+        outfit: {
+          familiar: $familiar`Reagnimated Gnome`,
+          famequip: $item`gnomish housemaid's kgnee`,
+        },
       },
     },
   };

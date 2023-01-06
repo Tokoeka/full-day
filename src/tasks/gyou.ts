@@ -140,9 +140,9 @@ export function gyouQuest(strategy: Strategy): Quest {
         ? {
             name: "In-Run Farm Initial",
             completed: () => myTurncount() >= 1000,
-            do: strategy.gyou.ronin,
             limit: { tries: 1 },
             tracking: "GooFarming",
+            ...strategy.gyou.ronin,
           }
         : {
             name: "In-Run Barf Initial",
@@ -241,9 +241,9 @@ export function gyouQuest(strategy: Strategy): Quest {
         ? {
             name: "In-Run Farm Final",
             completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
-            do: strategy.gyou.postronin,
             tracking: "GooFarming",
             limit: { tries: 1 },
+            ...strategy.gyou.postronin,
           }
         : {
             name: "In-Run Barf Final",

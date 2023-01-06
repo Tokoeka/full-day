@@ -9,8 +9,8 @@ export function baggo(): Strategy {
     tasks: createStrategyTasks("baggo", true),
     gyou: {
       pulls: [$item`human musk`],
-      ronin: () => cliExecuteThrow(`baggo turns=${1000 - myTurncount()}`),
-      postronin: () => cliExecuteThrow("baggo turns=-40"),
+      ronin: { do: () => cliExecuteThrow(`baggo turns=${1000 - myTurncount()}`) },
+      postronin: { do: () => cliExecuteThrow("baggo turns=-40") },
     },
   };
 }
