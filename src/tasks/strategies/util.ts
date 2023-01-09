@@ -24,7 +24,9 @@ export function createStrategyTasks(
   return (ascend: boolean) => [
     {
       name: "Garbo Nobarf",
-      completed: () => get(`_${argsScriptName}_completedGarbo`, false) && !canConsume(),
+      completed: () =>
+        (get(`_${argsScriptName}_completedGarbo`, false) && !canConsume()) ||
+        myInebriety() >= stooperInebrietyLimit(),
       do: () => cliExecuteThrow(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`),
       post: () => set(`_${argsScriptName}_completedGarbo`, true),
       limit: { tries: 1 },

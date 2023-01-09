@@ -5,7 +5,6 @@ import {
   buyUsingStorage,
   cliExecute,
   descToItem,
-  Familiar,
   getFuel,
   getWorkshed,
   Item,
@@ -13,8 +12,10 @@ import {
   myAdventures,
   myClass,
   myLevel,
+  myMaxhp,
   myPath,
   myTurncount,
+  restoreHp,
   restoreMp,
   runChoice,
   storageAmount,
@@ -28,6 +29,7 @@ import {
   $effects,
   $familiar,
   $item,
+  $items,
   $location,
   $monster,
   $path,
@@ -293,8 +295,47 @@ export function gyouQuest(strategy: Strategy): Quest {
       {
         name: "Prism",
         completed: () => myClass() !== $class`Grey Goo`,
-        do: () => cliExecute("loopgyou class=1"),
-        outfit: { familiar: Familiar.none },
+        do: () => {
+          throw `Check glitch kill equipment`;
+          // cliExecute("loopgyou class=1");
+        },
+        // Stats reset on prism break, equip glitch kill equipment prior
+        outfit: () => ({
+          familiar: $familiar`Shorter-Order Cook`,
+          ...(have($item`January's Garbage Tote`) && have($skill`Torso Awareness`)
+            ? { shirt: $item`makeshift garbage shirt` }
+            : {}),
+          acc1: $item`mime army insignia (infantry)`,
+          modifier: `muscle experience, 5 muscle experience percent, -ml`,
+        }),
+        limit: { tries: 1 },
+      },
+      {
+        name: "Fight Glitch",
+        ready: () => have($item`[glitch season reward name]`),
+        completed: () => get("_glitchMonsterFights") > 0,
+        acquire: [
+          ...$items`gas can, gas balloon, shard of double-ice`.map((it) => ({
+            item: it,
+            price: 1000,
+          })),
+          ...(have($item`January's Garbage Tote`)
+            ? [{ item: $item`makeshift garbage shirt` }]
+            : []),
+        ],
+        prepare: () => restoreHp(myMaxhp()),
+        do: () => visitUrl("inv_eat.php?pwd&whichitem=10207"),
+        post: () => {
+          if (!get("_lastCombatWon"))
+            throw new Error("Lost Combat - Check to see what went wrong.");
+        },
+        combat: new CombatStrategy().macro(() =>
+          Macro.tryItem($item`gas balloon`)
+            .trySkill($skill`Feel Pride`)
+            .tryItem(...$items`shard of double-ice, gas can`)
+            .attack()
+            .repeat()
+        ),
         limit: { tries: 1 },
       },
       ...duffo(),
@@ -304,6 +345,7 @@ export function gyouQuest(strategy: Strategy): Quest {
         do: () => use($item`Asdon Martin keyfob`),
         limit: { tries: 1 },
       },
+
       {
         name: "Level",
         completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
