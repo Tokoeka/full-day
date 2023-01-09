@@ -1,9 +1,9 @@
 import { Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
-import { userConfirm } from "kolmafia";
+import { haveEffect, userConfirm } from "kolmafia";
 import { args, completedProperty } from "../main";
-import { $effect, have, set } from "libram";
+import { $effect, set, uneffect } from "libram";
 
 export class Engine extends BaseEngine<never, Task> {
   confirmed = new Set<string>();
@@ -51,7 +51,10 @@ export class Engine extends BaseEngine<never, Task> {
 
   post(task: Task): void {
     super.post(task);
-    if (have($effect`Beaten Up`)) throw "Fight was lost; stop.";
+    if (haveEffect($effect`Beaten Up`) > 0 && haveEffect($effect`Beaten Up`) <= 3) {
+      throw "Fight was lost; stop.";
+    }
+    uneffect($effect`Beaten Up`);
   }
 
   destruct(): void {

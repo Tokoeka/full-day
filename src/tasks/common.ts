@@ -96,15 +96,23 @@ export function kingFreed(): Task[] {
     },
     {
       name: "Duplicate",
-      ready: () => have(args.minor.duplicate) && get("encountersUntilDMTChoice") < 1,
+      ready: () =>
+        have(args.minor.duplicate) &&
+        get("encountersUntilDMTChoice") <=
+          $familiar`Machine Elf`.fightsLimit - $familiar`Machine Elf`.fightsToday,
       completed: () => get("lastDMTDuplication") >= myAscensions(),
       prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.minor.duplicate)}`),
       do: $location`The Deep Machine Tunnels`,
       post: () => putCloset(itemAmount(args.minor.duplicate), args.minor.duplicate),
       acquire: () => [{ item: args.minor.duplicate }],
       choices: { 1119: 4 },
-      outfit: { familiar: $familiar`Machine Elf` },
-      limit: { tries: 1 },
+      combat: new CombatStrategy().macro(new Macro().attack().repeat()),
+      outfit: {
+        weapon: $item`Fourth of May Cosplay Saber`,
+        familiar: $familiar`Machine Elf`,
+        modifier: "muscle, -ml",
+      },
+      limit: { tries: 6 },
     },
   ];
 }

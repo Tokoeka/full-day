@@ -3,6 +3,7 @@ import {
   autosell,
   buy,
   buyUsingStorage,
+  canInteract,
   cliExecute,
   descToItem,
   getFuel,
@@ -39,6 +40,7 @@ import {
   AsdonMartin,
   get,
   getKramcoWandererChance,
+  getModifier,
   have,
   Lifestyle,
   Macro,
@@ -94,7 +96,7 @@ const gear: Task[] = [
 export function createPull(item: Item): Task {
   return {
     name: item.name,
-    completed: () => have(item),
+    completed: () => have(item) || canInteract(),
     do: () => cliExecute(`pull ${item}`),
     limit: { tries: 1 },
   };
@@ -295,10 +297,7 @@ export function gyouQuest(strategy: Strategy): Quest {
       {
         name: "Prism",
         completed: () => myClass() !== $class`Grey Goo`,
-        do: () => {
-          throw `Check glitch kill equipment`;
-          // cliExecute("loopgyou class=1");
-        },
+        do: () => cliExecute("loopgyou class=1"),
         // Stats reset on prism break, equip glitch kill equipment prior
         outfit: () => ({
           familiar: $familiar`Shorter-Order Cook`,
@@ -306,8 +305,10 @@ export function gyouQuest(strategy: Strategy): Quest {
             ? { shirt: $item`makeshift garbage shirt` }
             : {}),
           acc1: $item`mime army insignia (infantry)`,
-          modifier: `muscle experience, 5 muscle experience percent, -ml`,
+          modifier: "muscle experience, 5 muscle experience percent, -ml",
+          avoid: Item.all().filter((item) => getModifier("Monster Level", item) < 0),
         }),
+        acquire: [{ item: $item`makeshift garbage shirt` }],
         limit: { tries: 1 },
       },
       {
@@ -325,10 +326,6 @@ export function gyouQuest(strategy: Strategy): Quest {
         ],
         prepare: () => restoreHp(myMaxhp()),
         do: () => visitUrl("inv_eat.php?pwd&whichitem=10207"),
-        post: () => {
-          if (!get("_lastCombatWon"))
-            throw new Error("Lost Combat - Check to see what went wrong.");
-        },
         combat: new CombatStrategy().macro(() =>
           Macro.tryItem($item`gas balloon`)
             .trySkill($skill`Feel Pride`)
@@ -341,8 +338,8 @@ export function gyouQuest(strategy: Strategy): Quest {
       ...duffo(),
       {
         name: "Workshed",
-        completed: () => get("_workshedItemUsed") || getWorkshed() === $item`Asdon Martin keyfob`,
-        do: () => use($item`Asdon Martin keyfob`),
+        completed: () => get("_workshedItemUsed") || getWorkshed() === $item`cold medicine cabinet`,
+        do: () => use($item`cold medicine cabinet`),
         limit: { tries: 1 },
       },
 
