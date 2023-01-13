@@ -304,7 +304,6 @@ export function gyouQuest(strategy: Strategy): Quest {
           ...(have($item`January's Garbage Tote`) && have($skill`Torso Awareness`)
             ? { shirt: $item`makeshift garbage shirt` }
             : {}),
-          acc1: $item`mime army insignia (infantry)`,
           modifier: "muscle experience, 5 muscle experience percent, -ml",
           avoid: Item.all().filter((item) => getModifier("Monster Level", item) < 0),
         }),
@@ -320,9 +319,6 @@ export function gyouQuest(strategy: Strategy): Quest {
             item: it,
             price: 1000,
           })),
-          ...(have($item`January's Garbage Tote`)
-            ? [{ item: $item`makeshift garbage shirt` }]
-            : []),
         ],
         prepare: () => restoreHp(myMaxhp()),
         do: () => visitUrl("inv_eat.php?pwd&whichitem=10207"),
