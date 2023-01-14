@@ -1,0 +1,62 @@
+import { Args } from "grimoire-kolmafia";
+import { $item } from "libram";
+
+export const args = Args.create("fullday", "A full-day wrapper script.", {
+  major: Args.group("Major Options", {
+    path: Args.string({
+      help: "Non-casual path to ascend into.",
+      options: [
+        ["cs", "Community Service"],
+        ["gyou", "Grey You"],
+      ],
+      default: "gyou",
+    }),
+    strategy: Args.string({
+      help: "Farming strategy to use.",
+      options: [
+        ["garbo", "Farm meat using garbage-collector."],
+        ["freecandy", "Farm Halloween using freecandy."],
+        ["baggo", "Farm duffel bags and van keys using bag-collector."],
+      ],
+      default: "garbo",
+    }),
+  }),
+  minor: Args.group("Minor Options", {
+    tune: Args.string({
+      help: "Which moon sign to tune using the hewn moon-rune spoon.",
+      options: [
+        ["Mongoose", "friendly Degrassi Knoll | Muscle | +20% Physical Damage"],
+        ["Wallaby", "friendly Degrassi Knoll | Mysticality | +20% Spell Damage"],
+        ["Vole", "friendly Degrassi Knoll | Moxie | +20% Combat Initiative and +20 Maximum HP/MP"],
+        ["Platypus", "Little Canadia | Muscle | Familiar Weight +5 lbs."],
+        ["Opossum", "Little Canadia | Mysticality | +5 Adventures per day from Food "],
+        ["Marmot", "Little Canadia 	Moxie | Slight Resistance to All Elements (+1)"],
+        ["Wombat", "The Gnomish Gnomad Camp | Muscle | +20% Meat from Monsters"],
+        ["Blender", "The Gnomish Gnomad Camp | Mysticality | +5 Adventures per day from Booze"],
+        ["Packrat", "The Gnomish Gnomad Camp | Moxie | +10% Items from Monsters"],
+      ],
+      default: "Platypus",
+    }),
+    duplicate: Args.item({
+      help: "Item to duplicate in the Deep Machine Tunnels.",
+      default: $item`Daily Affirmation: Always be Collecting`,
+    }),
+    maxmeat: Args.number({
+      help: "Maximum amount of meat to keep in inventory after breaking the prism.",
+      default: 2_000_000,
+    }),
+  }),
+  debug: Args.group("Debug Options", {
+    confirm: Args.flag({
+      help: "Require the user to confirm execution of each task.",
+      default: false,
+    }),
+    abort: Args.string({
+      help: "If given, abort during the prepare() step for the task with matching name.",
+    }),
+    list: Args.flag({
+      help: "Show the status of all tasks and exit.",
+      setting: "",
+    }),
+  }),
+});

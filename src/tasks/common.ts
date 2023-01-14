@@ -37,7 +37,7 @@ import {
   set,
   uneffect,
 } from "libram";
-import { args } from "../main";
+import { args } from "../args";
 import { Task } from "../engine/task";
 import { cliExecuteThrow } from "../lib";
 

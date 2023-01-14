@@ -1,7 +1,8 @@
 import { Args, getTasks } from "grimoire-kolmafia";
-import { gametimeToInt, print } from "kolmafia";
-import { $item, get, Kmail, set } from "libram";
-import { Engine } from "./engine/engine";
+import { print } from "kolmafia";
+import { get, Kmail } from "libram";
+import { args } from "./args";
+import { completedProperty, Engine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
 import { debug, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
@@ -13,70 +14,6 @@ import { chooseStrategy } from "./tasks/strategies/strategy";
 
 const snapshotStart = Snapshot.importOrCreate("Start");
 
-export const args = Args.create("fullday", "A full-day wrapper script.", {
-  major: Args.group("Major Options", {
-    path: Args.string({
-      help: "Non-casual path to ascend into.",
-      options: [
-        ["cs", "Community Service"],
-        ["gyou", "Grey You"],
-      ],
-      default: "gyou",
-    }),
-    strategy: Args.string({
-      help: "Farming strategy to use.",
-      options: [
-        ["garbo", "Farm meat using garbage-collector."],
-        ["freecandy", "Farm Halloween using freecandy."],
-        ["baggo", "Farm duffel bags and van keys using bag-collector."],
-      ],
-      default: "garbo",
-    }),
-  }),
-  minor: Args.group("Minor Options", {
-    tune: Args.string({
-      help: "Which moon sign to tune using the hewn moon-rune spoon.",
-      options: [
-        ["Mongoose", "friendly Degrassi Knoll | Muscle | +20% Physical Damage"],
-        ["Wallaby", "friendly Degrassi Knoll | Mysticality | +20% Spell Damage"],
-        ["Vole", "friendly Degrassi Knoll | Moxie | +20% Combat Initiative and +20 Maximum HP/MP"],
-        ["Platypus", "Little Canadia | Muscle | Familiar Weight +5 lbs."],
-        ["Opossum", "Little Canadia | Mysticality | +5 Adventures per day from Food "],
-        ["Marmot", "Little Canadia 	Moxie | Slight Resistance to All Elements (+1)"],
-        ["Wombat", "The Gnomish Gnomad Camp | Muscle | +20% Meat from Monsters"],
-        ["Blender", "The Gnomish Gnomad Camp | Mysticality | +5 Adventures per day from Booze"],
-        ["Packrat", "The Gnomish Gnomad Camp | Moxie | +10% Items from Monsters"],
-      ],
-      default: "Platypus",
-    }),
-    duplicate: Args.item({
-      help: "Item to duplicate in the Deep Machine Tunnels.",
-      default: $item`Daily Affirmation: Always be Collecting`,
-    }),
-    maxmeat: Args.number({
-      help: "Maximum amount of meat to keep in inventory after breaking the prism.",
-      default: 2_000_000,
-    }),
-  }),
-  debug: Args.group("Debug Options", {
-    confirm: Args.flag({
-      help: "Require the user to confirm execution of each task.",
-      default: false,
-    }),
-    abort: Args.string({
-      help: "If given, abort during the prepare() step for the task with matching name.",
-    }),
-    list: Args.flag({
-      help: "Show the status of all tasks and exit.",
-      setting: "",
-    }),
-  }),
-});
-
-const scriptName = Args.getMetadata(args).scriptName;
-const timeProperty = `${scriptName}_firstStart`;
-export const completedProperty = `${scriptName}_lastCompleted`;
-
 export function main(command?: string): void {
   Args.fill(args, command);
   if (args.help) {
@@ -84,17 +21,14 @@ export function main(command?: string): void {
     return;
   }
 
-  if (get(timeProperty, -1) === -1) {
-    set(timeProperty, gametimeToInt());
-    set(completedProperty, "");
-  }
+  const lastQuest = get(completedProperty).split("/")[0];
+  const pathOverride = new Map([
+    ["Community Service", "cs"],
+    ["Grey You", "gyou"],
+  ]).get(lastQuest);
 
   const strategy = chooseStrategy();
-  const noncasualQuest =
-    (args.major.path === "gyou" && get(completedProperty).split("/")[0] !== "Community Service") ||
-    get(completedProperty).split("/")[0] === "Grey You"
-      ? gyouQuest
-      : csQuest;
+  const noncasualQuest = (pathOverride ?? args.major.path) === "gyou" ? gyouQuest : csQuest;
   const quests = [aftercoreQuest(strategy), noncasualQuest(strategy), casualQuest(strategy)];
   const tasks = getTasks(quests);
 

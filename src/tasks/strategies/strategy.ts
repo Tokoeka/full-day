@@ -1,9 +1,9 @@
 import { Item } from "kolmafia";
 import { Task } from "../../engine/task";
-import { args } from "../../main";
 import { freecandy } from "./freecandy";
 import { garbo } from "./garbo";
 import { baggo } from "./baggo";
+import { args } from "../../args";
 
 export type Strategy = {
   tasks: (ascend: boolean) => Task[];

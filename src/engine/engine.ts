@@ -1,9 +1,11 @@
-import { Engine as BaseEngine } from "grimoire-kolmafia";
+import { Args, Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
 import { haveEffect, userConfirm } from "kolmafia";
-import { args, completedProperty } from "../main";
 import { $effect, set, uneffect } from "libram";
+import { args } from "../args";
+
+export const completedProperty = `_${Args.getMetadata(args).scriptName}_lastCompleted`;
 
 export class Engine extends BaseEngine<never, Task> {
   confirmed = new Set<string>();

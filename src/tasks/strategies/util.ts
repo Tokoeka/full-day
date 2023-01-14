@@ -1,9 +1,9 @@
 import { Args } from "grimoire-kolmafia";
 import { myAdventures, myInebriety } from "kolmafia";
 import { $familiar, get, set, withProperty } from "libram";
+import { args } from "../../args";
 import { Task } from "../../engine/task";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
-import { args } from "../../main";
 import { caldera, stooper } from "./common";
 
 function capitalize(word: string): string {
