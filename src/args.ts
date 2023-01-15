@@ -60,3 +60,5 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     }),
   }),
 });
+
+export const metadata = Args.getMetadata(args);

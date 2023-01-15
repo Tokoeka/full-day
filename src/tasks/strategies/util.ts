@@ -1,7 +1,6 @@
-import { Args } from "grimoire-kolmafia";
 import { myAdventures, myInebriety } from "kolmafia";
 import { $familiar, get, set, withProperty } from "libram";
-import { args } from "../../args";
+import { metadata } from "../../args";
 import { Task } from "../../engine/task";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
@@ -18,7 +17,7 @@ export function createStrategyTasks(
   command: string,
   overdrunk = false
 ): (ascend: boolean) => Task[] {
-  const argsScriptName = Args.getMetadata(args).scriptName;
+  const argsScriptName = metadata.scriptName;
   const commandScriptName = getScriptName(command);
 
   return (ascend: boolean) => [
