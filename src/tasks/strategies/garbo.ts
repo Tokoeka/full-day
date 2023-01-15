@@ -1,5 +1,5 @@
 import { inebrietyLimit, myAdventures, myInebriety } from "kolmafia";
-import { $familiar, withProperty } from "libram";
+import { $familiar, get, withProperty } from "libram";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
 import { Strategy } from "./strategy";
@@ -10,7 +10,8 @@ export function garbo(): Strategy {
       {
         name: "Garbo",
         completed: () =>
-          (myAdventures() === 0 && !canConsume()) || myInebriety() >= stooperInebrietyLimit(),
+          (get("_garboCompleted", "") !== "" && myAdventures() === 0 && !canConsume()) ||
+          myInebriety() >= stooperInebrietyLimit(),
         do: () => cliExecuteThrow(`garbo yachtzeechain ${ascend ? "ascend" : ""}`),
         limit: { tries: 1 },
         tracking: "Garbo",

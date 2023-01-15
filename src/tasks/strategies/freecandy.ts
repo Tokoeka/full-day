@@ -9,9 +9,8 @@ export function freecandy(): Strategy {
     tasks: (ascend: boolean) => [
       {
         name: "Garboween",
-        completed: () => get("_fullday_completedGarboween", false) && !canConsume(),
+        completed: () => get("_garboCompleted", "") !== "" && !canConsume(),
         do: () => cliExecuteThrow(`garboween yachtzeechain ${ascend ? "ascend" : ""}`),
-        post: () => set("_fullday_completedGarboween", true),
         limit: { tries: 1 },
         tracking: "Garbo",
       },

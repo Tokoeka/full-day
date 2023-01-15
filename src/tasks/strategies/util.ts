@@ -1,6 +1,5 @@
 import { myAdventures, myInebriety } from "kolmafia";
-import { $familiar, get, set, withProperty } from "libram";
-import { metadata } from "../../args";
+import { $familiar, get, withProperty } from "libram";
 import { Task } from "../../engine/task";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
@@ -17,17 +16,15 @@ export function createStrategyTasks(
   command: string,
   overdrunk = false
 ): (ascend: boolean) => Task[] {
-  const argsScriptName = metadata.scriptName;
   const commandScriptName = getScriptName(command);
 
   return (ascend: boolean) => [
     {
       name: "Garbo Nobarf",
       completed: () =>
-        (get(`_${argsScriptName}_completedGarbo`, false) && !canConsume()) ||
+        (get("_garboCompleted", "") !== "" && !canConsume()) ||
         myInebriety() >= stooperInebrietyLimit(),
       do: () => cliExecuteThrow(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`),
-      post: () => set(`_${argsScriptName}_completedGarbo`, true),
       limit: { tries: 1 },
       tracking: "Garbo",
     },
