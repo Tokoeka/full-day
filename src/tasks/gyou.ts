@@ -341,8 +341,8 @@ export function gyouQuest(strategy: Strategy): Quest {
 
       {
         name: "Level",
-        completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
-        do: () => cliExecute("loopcasual goal=level"),
+        completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 14,
+        do: () => cliExecute("loopcasual goal=level levelto=14"),
         limit: { tries: 1 },
       },
       ...kingFreed(),
