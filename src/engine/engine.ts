@@ -2,7 +2,7 @@ import { Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
 import { haveEffect, userConfirm } from "kolmafia";
-import { $effect, set, uneffect } from "libram";
+import { $effect, have, set, uneffect } from "libram";
 import { args, metadata } from "../args";
 
 export const completedProperty = `_${metadata.scriptName}_lastCompleted`;
@@ -53,10 +53,8 @@ export class Engine extends BaseEngine<never, Task> {
 
   post(task: Task): void {
     super.post(task);
-    if (haveEffect($effect`Beaten Up`) > 0 && haveEffect($effect`Beaten Up`) <= 3) {
-      throw "Fight was lost; stop.";
-    }
-    uneffect($effect`Beaten Up`);
+    if (haveEffect($effect`Beaten Up`) > 3) uneffect($effect`Beaten Up`);
+    if (have($effect`Beaten Up`)) throw "Fight was lost; stop.";
   }
 
   destruct(): void {
