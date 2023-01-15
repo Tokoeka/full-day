@@ -54,6 +54,9 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     abort: Args.string({
       help: "If given, abort during the prepare() step for the task with matching name.",
     }),
+    completedtasks: Args.string({
+      help: "A comma-separated list of task names the should be treated as completed. Can be used as a workaround for script bugs.",
+    }),
     list: Args.flag({
       help: "Show the status of all tasks and exit.",
       setting: "",

@@ -41,7 +41,7 @@ export function main(command?: string): void {
     };
   }
 
-  const engine = new Engine(tasks, "fullday");
+  const engine = new Engine(tasks, args.debug.completedtasks?.split(",") ?? [], "fullday");
   try {
     if (args.debug.list) {
       listTasks(engine);
