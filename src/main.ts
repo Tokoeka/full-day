@@ -1,7 +1,7 @@
 import { Args, getTasks } from "grimoire-kolmafia";
 import { print } from "kolmafia";
 import { get, Kmail } from "libram";
-import { args } from "./args";
+import { args, pathAliases } from "./args";
 import { completedProperty, Engine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
 import { debug, numberWithCommas } from "./lib";
@@ -22,10 +22,7 @@ export function main(command?: string): void {
   }
 
   const lastQuest = get(completedProperty).split("/")[0];
-  const pathOverride = new Map([
-    ["Community Service", "cs"],
-    ["Grey You", "gyou"],
-  ]).get(lastQuest);
+  const pathOverride = new Map(pathAliases.map(({ path, alias }) => [path, alias])).get(lastQuest);
 
   const strategy = chooseStrategy();
   const noncasualQuest = (pathOverride ?? args.major.path) === "gyou" ? gyouQuest : csQuest;

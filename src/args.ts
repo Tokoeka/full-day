@@ -1,22 +1,24 @@
 import { Args } from "grimoire-kolmafia";
 import { $item } from "libram";
 
+export const pathAliases = [
+  { path: "Grey You", alias: "gyou" },
+  { path: "Community Service", alias: "cs" },
+];
+
 export const args = Args.create("fullday", "A full-day wrapper script.", {
   major: Args.group("Major Options", {
     path: Args.string({
       help: "Non-casual path to ascend into.",
-      options: [
-        ["cs", "Community Service"],
-        ["gyou", "Grey You"],
-      ],
-      default: "gyou",
+      options: pathAliases.map(({ path, alias }) => [alias, path]),
+      default: pathAliases[0].alias,
     }),
     strategy: Args.string({
       help: "Farming strategy to use.",
       options: [
-        ["garbo", "Farm meat using garbage-collector."],
-        ["freecandy", "Farm Halloween using freecandy."],
-        ["baggo", "Farm duffel bags and van keys using bag-collector."],
+        ["garbo", "Farm meat using garbage-collector"],
+        ["freecandy", "Farm Halloween candy using freecandy"],
+        ["baggo", "Farm duffel bags and van keys using bag-collector"],
       ],
       default: "garbo",
     }),
