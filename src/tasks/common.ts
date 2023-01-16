@@ -1,4 +1,4 @@
-import { CombatStrategy } from "grimoire-kolmafia";
+import { CombatStrategy, Outfit } from "grimoire-kolmafia";
 import {
   canAdventure,
   cliExecute,
@@ -6,7 +6,9 @@ import {
   getStorage,
   hippyStoneBroken,
   itemAmount,
+  jumpChance,
   myAscensions,
+  myClass,
   myClosetMeat,
   myMeat,
   mySign,
@@ -21,6 +23,7 @@ import {
   wait,
 } from "kolmafia";
 import {
+  $classes,
   $effect,
   $effects,
   $familiar,
@@ -35,7 +38,6 @@ import {
   have,
   Macro,
   set,
-  uneffect,
 } from "libram";
 import { args } from "../args";
 import { Task } from "../engine/task";
@@ -202,34 +204,36 @@ export function menagerie(): Task[] {
       limit: { tries: 1 },
     },
     {
-      name: "Mayfly BASICs",
+      name: "Mayfly Runaways",
       completed: () => get("_mayflySummons") >= 30,
-      prepare: () => cliExecute("backupcamera init"),
-      do: $location`Cobb's Knob Menagerie, Level 1`,
-      post: () => {
-        if (get("_mayflySummons") >= 30) uneffect($effect`Beaten Up`);
+      prepare: () => {
+        if (jumpChance($monster`BASIC Elemental`) < 100) {
+          throw `Unable to guarantee winning initiative against BASIC Elemental`;
+        }
       },
+      do: $location`Cobb's Knob Menagerie, Level 1`,
       acquire: [
-        { item: $item`Sneaky Pete's leather jacket` },
-        { item: $item`crystal skull`, price: 10_000 },
+        { item: $item`Louder Than Bomb`, price: 10_000 },
         { item: $item`tennis ball`, price: 10_000 },
       ],
-      outfit: {
-        hat: $item`biker's hat`,
-        back: $item`Duke Vampire's regal cloak`,
-        weapon: $item`June cleaver`,
-        offhand: $item`tiny black hole`,
-        shirt: $item`Sneaky Pete's leather jacket`,
-        pants: $item`designer sweatpants`,
-        acc1: $item`mayfly bait necklace`,
-        acc2: $item`Lord Soggyraven's Slippers`,
-        acc3: $item`backup camera`,
-        familiar: $familiar`Grey Goose`,
-        famequip: $item`tiny stillsuit`,
+      outfit: () => {
+        const outfit = new Outfit();
+
+        if (!$classes`Disco Bandit, Accordion Thief`.includes(myClass())) {
+          outfit.equipFirst($items`mime army infiltration glove, tiny black hole`);
+        }
+
+        outfit.equip({
+          acc1: $item`mayfly bait necklace`,
+          familiar: $familiar`Grey Goose`,
+          famequip: $item`tiny stillsuit`,
+          modifier: "pickpocket chance, init 100max",
+        });
+        return outfit;
       },
       effects: $effects`Springy Fusilli, Cletus's Canticle of Celerity`,
       combat: new CombatStrategy()
-        .macro(Macro.item($item`crystal skull`), $monster`Fruit Golem`)
+        .macro(Macro.item($item`Louder Than Bomb`), $monster`Fruit Golem`)
         .macro(Macro.item($item`tennis ball`), $monster`Knob Goblin Mutant`)
         .macro(
           Macro.step("pickpocket")
