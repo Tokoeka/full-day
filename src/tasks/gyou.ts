@@ -52,7 +52,7 @@ import {
 import { getCurrentLeg, Leg, Quest, Task } from "../engine/task";
 import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, kingFreed, pullAll, pvp } from "./common";
-import { Strategy } from "./strategies/strategy";
+import { chooseStrategy } from "./strategies/strategy";
 
 export const gyouQuestName = "Grey You";
 
@@ -104,7 +104,8 @@ export function createPull(item: Item): Task {
   };
 }
 
-export function gyouQuest(strategy: Strategy): Quest {
+export function gyouQuest(): Quest {
+  const strategy = chooseStrategy();
   return {
     name: gyouQuestName,
     completed: () => getCurrentLeg() > Leg.NonCasual,

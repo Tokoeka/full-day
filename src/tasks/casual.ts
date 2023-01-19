@@ -25,9 +25,10 @@ import {
 } from "libram";
 import { canAscendCasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, kingFreed, menagerie } from "./common";
-import { Strategy } from "./strategies/strategy";
+import { chooseStrategy } from "./strategies/strategy";
 
-export function casualQuest(strategy: Strategy): Quest {
+export function casualQuest(): Quest {
+  const strategy = chooseStrategy();
   return {
     name: "Casual",
     tasks: [

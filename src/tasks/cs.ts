@@ -15,11 +15,12 @@ import {
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
 import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, kingFreed, pvp } from "./common";
-import { Strategy } from "./strategies/strategy";
+import { chooseStrategy } from "./strategies/strategy";
 
 export const csQuestName = "Community Service";
 
-export function csQuest(strategy: Strategy): Quest {
+export function csQuest(): Quest {
+  const strategy = chooseStrategy();
   return {
     name: csQuestName,
     completed: () => getCurrentLeg() > Leg.NonCasual,

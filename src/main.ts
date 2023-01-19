@@ -10,7 +10,6 @@ import { aftercoreQuest } from "./tasks/aftercore";
 import { casualQuest } from "./tasks/casual";
 import { csQuest } from "./tasks/cs";
 import { gyouQuest } from "./tasks/gyou";
-import { chooseStrategy } from "./tasks/strategies/strategy";
 
 const snapshotStart = Snapshot.importOrCreate("Start");
 
@@ -23,10 +22,9 @@ export function main(command?: string): void {
 
   const lastQuest = get(completedProperty).split("/")[0];
   const pathOverride = new Map(pathAliases.map(({ path, alias }) => [path, alias])).get(lastQuest);
-
-  const strategy = chooseStrategy();
   const noncasualQuest = (pathOverride ?? args.major.path) === "gyou" ? gyouQuest : csQuest;
-  const quests = [aftercoreQuest(strategy), noncasualQuest(strategy), casualQuest(strategy)];
+
+  const quests = [aftercoreQuest(), noncasualQuest(), casualQuest()];
   const tasks = getTasks(quests);
 
   // Abort during the prepare() step of the specified task
