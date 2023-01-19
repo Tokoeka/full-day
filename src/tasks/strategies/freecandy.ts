@@ -1,5 +1,5 @@
 import { myAdventures, myInebriety, myTurncount } from "kolmafia";
-import { $familiar, $item, get, set, withProperty } from "libram";
+import { $familiar, $item, get, withProperty } from "libram";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
 import { Strategy } from "./strategy";
@@ -17,7 +17,6 @@ export function freecandy(): Strategy {
       {
         name: "Freecandy",
         completed: () => myAdventures() < 5 || myInebriety() >= stooperInebrietyLimit(),
-        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
         do: () => cliExecuteThrow("freecandy"),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
@@ -42,7 +41,6 @@ export function freecandy(): Strategy {
         name: "Overdrunk",
         ready: () => myInebriety() > stooperInebrietyLimit(),
         completed: () => myAdventures() < 5,
-        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
         do: () => cliExecuteThrow("freecandy"),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
@@ -73,7 +71,6 @@ export function freecandy(): Strategy {
         $item`beholed bedsheet`,
       ],
       ronin: {
-        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
         do: () => cliExecuteThrow(`freecandy ${Math.ceil((1000 - myTurncount()) / 5)}`),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
@@ -81,7 +78,6 @@ export function freecandy(): Strategy {
         },
       },
       postronin: {
-        prepare: () => set("freecandy_treatOutfit", "Ceramic Suit"),
         do: () => cliExecuteThrow(`freecandy ${Math.ceil((myAdventures() - 40) / 5)}`),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
