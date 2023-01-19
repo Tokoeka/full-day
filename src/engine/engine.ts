@@ -2,7 +2,7 @@ import { Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "./task";
 import { printProfits, ProfitTracker } from "./profits";
 import { haveEffect, userConfirm } from "kolmafia";
-import { $effect, have, set, uneffect } from "libram";
+import { $effect, have, PropertiesManager, set, uneffect } from "libram";
 import { args, metadata } from "../args";
 import { debug } from "../lib";
 
@@ -71,5 +71,12 @@ export class Engine extends BaseEngine<never, Task> {
   destruct(): void {
     super.destruct();
     printProfits(this.profits.all());
+  }
+
+  initPropertiesManager(manager: PropertiesManager): void {
+    super.initPropertiesManager(manager);
+    set("garbo_yachtzeechain", true);
+    set("garbo_candydish", true);
+    set("freecandy_treatOutfit", "Ceramic Suit");
   }
 }
