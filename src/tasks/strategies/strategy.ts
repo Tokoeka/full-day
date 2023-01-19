@@ -23,6 +23,6 @@ export function chooseStrategy(): Strategy {
     case "baggo":
       return baggo();
     default:
-      throw `Unsupported strategy "${args.major.strategy}"`;
+      throw `Unsupported strategy: ${args.major.strategy}`;
   }
 }
