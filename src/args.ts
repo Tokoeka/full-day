@@ -1,9 +1,11 @@
 import { Args } from "grimoire-kolmafia";
 import { $item } from "libram";
+import { csQuestName } from "./tasks/cs";
+import { gyouQuestName } from "./tasks/gyou";
 
 export const pathAliases = [
-  { path: "Grey You", alias: "gyou" },
-  { path: "Community Service", alias: "cs" },
+  { path: gyouQuestName, alias: "gyou" },
+  { path: csQuestName, alias: "cs" },
 ];
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {

@@ -17,9 +17,11 @@ import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, kingFreed, pvp } from "./common";
 import { Strategy } from "./strategies/strategy";
 
+export const csQuestName = "Community Service";
+
 export function csQuest(strategy: Strategy): Quest {
   return {
-    name: "Community Service",
+    name: csQuestName,
     completed: () => getCurrentLeg() > Leg.NonCasual,
     tasks: [
       {

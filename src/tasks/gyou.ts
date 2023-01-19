@@ -54,6 +54,8 @@ import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, kingFreed, pullAll, pvp } from "./common";
 import { Strategy } from "./strategies/strategy";
 
+export const gyouQuestName = "Grey You";
+
 const gear: Task[] = [
   {
     name: "Pants",
@@ -104,7 +106,7 @@ export function createPull(item: Item): Task {
 
 export function gyouQuest(strategy: Strategy): Quest {
   return {
-    name: "Grey You",
+    name: gyouQuestName,
     completed: () => getCurrentLeg() > Leg.NonCasual,
     tasks: [
       {
