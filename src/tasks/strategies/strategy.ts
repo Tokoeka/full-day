@@ -9,8 +9,8 @@ export type Strategy = {
   tasks: (ascend: boolean) => Task[];
   gyou?: {
     pulls: Item[];
-    ronin: Pick<Task, "prepare" | "do" | "outfit">;
-    postronin: Pick<Task, "prepare" | "do" | "outfit">;
+    ronin: Pick<Task, "do" | "outfit">;
+    postronin: Pick<Task, "do" | "outfit">;
   };
 };
 
