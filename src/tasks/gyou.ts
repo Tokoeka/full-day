@@ -3,7 +3,6 @@ import {
   autosell,
   buy,
   buyUsingStorage,
-  canInteract,
   cliExecute,
   descToItem,
   getFuel,
@@ -56,6 +55,24 @@ import { chooseStrategy } from "./strategies/strategy";
 
 export const gyouQuestName = "Grey You";
 
+function itemsPulled(): Item[] {
+  return get("_roninStoragePulls")
+    .split(",")
+    .map((itemIdString) => Item.get(Number(itemIdString)));
+}
+
+function createPulls(items: Item[]): Task {
+  return {
+    name: "Pulls",
+    completed: () => items.every((item) => itemsPulled().includes(item)),
+    do: () =>
+      items
+        .filter((item) => !itemsPulled().includes(item))
+        .forEach((item) => cliExecute(`pull ${item}`)),
+    limit: { tries: 1 },
+  };
+}
+
 const gear: Task[] = [
   {
     name: "Pants",
@@ -95,15 +112,6 @@ const gear: Task[] = [
   },
 ];
 
-export function createPull(item: Item): Task {
-  return {
-    name: item.name,
-    completed: () => have(item) || canInteract(),
-    do: () => cliExecute(`pull ${item}`),
-    limit: { tries: 1 },
-  };
-}
-
 export function gyouQuest(): Quest {
   const strategy = chooseStrategy();
   return {
@@ -132,7 +140,7 @@ export function gyouQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...(strategy.gyou?.pulls.map(createPull) ?? gear),
+      ...(strategy.gyou ? [createPulls(strategy.gyou.pulls)] : gear),
       ...breakStone(),
       {
         name: "Run",
@@ -341,7 +349,6 @@ export function gyouQuest(): Quest {
         do: () => use($item`cold medicine cabinet`),
         limit: { tries: 1 },
       },
-
       {
         name: "Level",
         completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 14,
