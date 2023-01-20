@@ -26,6 +26,10 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     }),
   }),
   minor: Args.group("Minor Options", {
+    voa: Args.number({
+      help: "Value of an adventure in meat.",
+      default: 6500,
+    }),
     tune: Args.string({
       help: "Which moon sign to tune using the hewn moon-rune spoon.",
       options: [

@@ -75,6 +75,7 @@ export class Engine extends BaseEngine<never, Task> {
 
   initPropertiesManager(manager: PropertiesManager): void {
     super.initPropertiesManager(manager);
+    manager.set({ valueOfAdventure: args.minor.voa });
     set("garbo_yachtzeechain", true);
     set("garbo_candydish", true);
     set("freecandy_treatOutfit", "Ceramic Suit");
