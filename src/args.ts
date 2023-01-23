@@ -13,7 +13,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     path: Args.string({
       help: "Non-casual path to ascend into.",
       options: pathAliases.map(({ path, alias }) => [alias, path]),
-      default: pathAliases[0].alias,
+      default: "gyou",
     }),
     strategy: Args.string({
       help: "Farming strategy to use.",
