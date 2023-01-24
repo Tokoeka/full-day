@@ -64,10 +64,10 @@ function itemsPulled(): Item[] {
 function createPulls(items: Item[]): Task {
   return {
     name: "Pulls",
-    completed: () => items.every((item) => itemsPulled().includes(item)),
+    completed: () => items.every((item) => itemsPulled().includes(item) || have(item)),
     do: () =>
       items
-        .filter((item) => !itemsPulled().includes(item))
+        .filter((item) => !itemsPulled().includes(item) && !have(item))
         .forEach((item) => cliExecute(`pull ${item}`)),
     limit: { tries: 1 },
   };
