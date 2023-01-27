@@ -24,7 +24,11 @@ export function main(command?: string): void {
   const pathOverride = new Map(pathAliases.map(({ path, alias }) => [path, alias])).get(lastQuest);
   const noncasualQuest = (pathOverride ?? args.major.path) === "gyou" ? gyouQuest : csQuest;
 
-  const quests = [aftercoreQuest(), noncasualQuest(), casualQuest()];
+  const quests = [
+    aftercoreQuest(),
+    noncasualQuest(),
+    ...(args.major.nocasual ? [] : [casualQuest()]),
+  ];
   const tasks = getTasks(quests);
 
   // Abort during the prepare() step of the specified task

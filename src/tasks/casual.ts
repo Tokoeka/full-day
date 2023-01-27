@@ -1,14 +1,5 @@
 import { Quest } from "../engine/task";
-import {
-  cliExecute,
-  getWorkshed,
-  maximize,
-  myPath,
-  numericModifier,
-  retrieveItem,
-  retrievePrice,
-  use,
-} from "kolmafia";
+import { cliExecute, getWorkshed, myPath, use } from "kolmafia";
 import {
   $class,
   $effect,
@@ -19,12 +10,11 @@ import {
   AsdonMartin,
   get,
   have,
-  haveInCampground,
   Lifestyle,
   prepareAscension,
 } from "libram";
 import { canAscendCasual, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, kingFreed, menagerie } from "./common";
+import { breakfast, breakStone, duffo, endOfDay, kingFreed, menagerie } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
 export function casualQuest(): Quest {
@@ -80,32 +70,7 @@ export function casualQuest(): Quest {
       ...breakfast(),
       ...menagerie(),
       ...strategy.tasks(false),
-      {
-        name: "Clockwork Maid",
-        completed: () =>
-          haveInCampground($item`clockwork maid`) ||
-          numericModifier($item`clockwork maid`, "Adventures") * get("valueOfAdventure") <
-            retrievePrice($item`clockwork maid`),
-        do: (): void => {
-          retrieveItem($item`clockwork maid`);
-          use($item`clockwork maid`);
-        },
-        limit: { tries: 1 },
-      },
-      {
-        name: "Raffle",
-        completed: () => have($item`raffle ticket`),
-        do: () => cliExecute(`raffle ${Math.random() * 10 + 1}`),
-        limit: { tries: 1 },
-      },
-      {
-        name: "Pajamas",
-        completed: () =>
-          maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
-          numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
-        do: () => maximize("adv, switch tot, switch left-hand man, switch disembodied hand", false),
-        limit: { tries: 1 },
-      },
+      ...endOfDay(),
     ],
   };
 }

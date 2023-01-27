@@ -48,9 +48,10 @@ import {
   RetroCape,
   SongBoom,
 } from "libram";
+import { args } from "../args";
 import { getCurrentLeg, Leg, Quest, Task } from "../engine/task";
-import { canAscendNoncasual, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, kingFreed, pullAll, pvp } from "./common";
+import { canAscendNoncasual, cliExecuteThrow, createPermOptions } from "../lib";
+import { breakfast, breakStone, duffo, endOfDay, kingFreed, pullAll, pvp } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
 export const gyouQuestName = "Grey You";
@@ -111,6 +112,13 @@ const gear: Task[] = [
     limit: { tries: 1 },
   },
 ];
+
+const steelOrgan: Task = {
+  name: "Steel Organ",
+  completed: () => have($skill`Liver of Steel`),
+  do: () => cliExecuteThrow("loopcasual goal=organ"),
+  limit: { tries: 1 },
+};
 
 export function gyouQuest(): Quest {
   const strategy = chooseStrategy();
@@ -357,8 +365,9 @@ export function gyouQuest(): Quest {
       },
       ...kingFreed(),
       ...breakfast(),
-      ...strategy.tasks(true),
-      ...pvp([]),
+      ...(args.major.nocasual
+        ? [steelOrgan, ...strategy.tasks(false), ...endOfDay()]
+        : [...strategy.tasks(true), ...pvp([])]),
     ],
   };
 }

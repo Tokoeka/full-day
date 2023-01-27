@@ -10,11 +10,6 @@ export const pathAliases = [
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
   major: Args.group("Major Options", {
-    path: Args.string({
-      help: "Non-casual path to ascend into.",
-      options: pathAliases.map(({ path, alias }) => [alias, path]),
-      default: "gyou",
-    }),
     strategy: Args.string({
       help: "Farming strategy to use.",
       options: [
@@ -24,6 +19,12 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       ],
       default: "garbo",
     }),
+    path: Args.string({
+      help: "Non-casual path to ascend into.",
+      options: pathAliases.map(({ path, alias }) => [alias, path]),
+      default: "gyou",
+    }),
+    nocasual: Args.flag({ help: "Do not do a casual ascension.", default: false }),
   }),
   minor: Args.group("Minor Options", {
     voa: Args.number({
