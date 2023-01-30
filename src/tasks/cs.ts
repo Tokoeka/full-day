@@ -12,10 +12,9 @@ import {
   prepareAscension,
   uneffect,
 } from "libram";
-import { args } from "../args";
 import { getCurrentLeg, Leg, Quest } from "../engine/task";
 import { canAscendNoncasual, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay, kingFreed, pvp } from "./common";
+import { breakfast, breakStone, duffo, endOfDay, kingFreed } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
 export const csQuestName = "Community Service";
@@ -85,9 +84,8 @@ export function csQuest(): Quest {
       ...kingFreed(),
       ...breakfast(),
       ...duffo(),
-      ...(args.major.nocasual
-        ? [...strategy.tasks(false), ...endOfDay()]
-        : [...strategy.tasks(true), ...pvp([])]),
+      ...strategy.tasks(false),
+      ...endOfDay(),
     ],
   };
 }

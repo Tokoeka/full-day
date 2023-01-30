@@ -17,10 +17,12 @@ import { canAscendCasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, kingFreed, menagerie } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
+export const casualQuestName = "Casual";
+
 export function casualQuest(): Quest {
   const strategy = chooseStrategy();
   return {
-    name: "Casual",
+    name: casualQuestName,
     tasks: [
       {
         name: "Ascend",

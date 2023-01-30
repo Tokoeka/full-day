@@ -48,10 +48,9 @@ import {
   RetroCape,
   SongBoom,
 } from "libram";
-import { args } from "../args";
 import { getCurrentLeg, Leg, Quest, Task } from "../engine/task";
 import { canAscendNoncasual, cliExecuteThrow, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay, kingFreed, pullAll, pvp } from "./common";
+import { breakfast, breakStone, duffo, endOfDay, kingFreed, pullAll } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
 export const gyouQuestName = "Grey You";
@@ -365,9 +364,9 @@ export function gyouQuest(): Quest {
       },
       ...kingFreed(),
       ...breakfast(),
-      ...(args.major.nocasual
-        ? [steelOrgan, ...strategy.tasks(false), ...endOfDay()]
-        : [...strategy.tasks(true), ...pvp([])]),
+      steelOrgan,
+      ...strategy.tasks(false),
+      ...endOfDay(),
     ],
   };
 }

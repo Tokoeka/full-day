@@ -1,11 +1,11 @@
 import { Args } from "grimoire-kolmafia";
 import { $item } from "libram";
 import { csQuestName } from "./tasks/cs";
-import { gyouQuestName } from "./tasks/gyou";
+import { casualQuestName } from "./tasks/casual";
 
 export const pathAliases = [
-  { path: gyouQuestName, alias: "gyou" },
   { path: csQuestName, alias: "cs" },
+  { path: casualQuestName, alias: "casual" },
 ];
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
@@ -20,11 +20,10 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       default: "garbo",
     }),
     path: Args.string({
-      help: "Non-casual path to ascend into.",
+      help: "Path to ascend into.",
       options: pathAliases.map(({ path, alias }) => [alias, path]),
-      default: "gyou",
+      default: "cs",
     }),
-    nocasual: Args.flag({ help: "Do not do a casual ascension.", default: false }),
   }),
   minor: Args.group("Minor Options", {
     voa: Args.number({
