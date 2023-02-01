@@ -1,19 +1,18 @@
 import { ascended, Quest } from "./structure";
-import { breakfast, duffo, kingFreed, pvp } from "./common";
+import { breakfast, duffo, endOfDay, pvp } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
-export function aftercoreQuest(): Quest {
-  const strategy = chooseStrategy();
+export function aftercoreQuest(ascend: boolean): Quest {
+  const strategyTasks = chooseStrategy().tasks(ascend);
   return {
     name: "Aftercore",
-    completed: ascended,
+    completed: () => ascended(),
     tasks: [
-      ...kingFreed(),
-      ...breakfast(),
-      ...duffo(),
+      ...breakfast([]),
+      ...duffo([]),
       // ...menagerie(),
-      ...strategy.tasks(true),
-      ...pvp([]),
+      ...strategyTasks,
+      ...(ascend ? pvp([]) : endOfDay([])),
     ],
   };
 }

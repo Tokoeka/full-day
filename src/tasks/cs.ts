@@ -12,9 +12,9 @@ import {
   prepareAscension,
   uneffect,
 } from "libram";
-import { Quest } from "./structure";
-import { canAscendNoncasual, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay, kingFreed } from "./common";
+import { ascended, Quest } from "./structure";
+import { createPermOptions } from "../lib";
+import { breakfast, breakStone, duffo, endOfDay } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
 export const csQuestName = "Community Service";
@@ -26,7 +26,7 @@ export function csQuest(): Quest {
     tasks: [
       {
         name: "Ascend",
-        completed: () => !canAscendNoncasual(),
+        completed: () => ascended(),
         do: (): void => {
           prepareAscension({
             garden: "Peppermint Pip Packet",
@@ -49,7 +49,7 @@ export function csQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...breakStone(),
+      breakStone(),
       {
         name: "Run",
         ready: () => myPath() === $path`Community Service`,
@@ -80,11 +80,10 @@ export function csQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...kingFreed(),
-      ...breakfast(),
-      ...duffo(),
+      ...breakfast([]),
+      ...duffo([]),
       ...strategy.tasks(false),
-      ...endOfDay(),
+      ...endOfDay([]),
     ],
   };
 }

@@ -48,9 +48,9 @@ import {
   RetroCape,
   SongBoom,
 } from "libram";
-import { Quest, Task } from "./structure";
-import { canAscendNoncasual, cliExecuteThrow, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay, kingFreed, pullAll } from "./common";
+import { ascended, Quest, Task } from "./structure";
+import { cliExecuteThrow, createPermOptions } from "../lib";
+import { breakfast, breakStone, duffo, endOfDay, pullAll } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
 export const gyouQuestName = "Grey You";
@@ -112,13 +112,6 @@ const gear: Task[] = [
   },
 ];
 
-const steelOrgan: Task = {
-  name: "Steel Organ",
-  completed: () => have($skill`Liver of Steel`),
-  do: () => cliExecuteThrow("loopcasual goal=organ"),
-  limit: { tries: 1 },
-};
-
 export function gyouQuest(): Quest {
   const strategy = chooseStrategy();
   return {
@@ -126,7 +119,7 @@ export function gyouQuest(): Quest {
     tasks: [
       {
         name: "Ascend",
-        completed: () => !canAscendNoncasual(),
+        completed: () => ascended(),
         do: (): void => {
           prepareAscension({
             eudora: "Our Daily Candles™ order form",
@@ -147,7 +140,7 @@ export function gyouQuest(): Quest {
         limit: { tries: 1 },
       },
       ...(strategy.gyou ? [createPulls(strategy.gyou.pulls)] : gear),
-      ...breakStone(),
+      breakStone(),
       {
         name: "Run",
         ready: () => myPath() === $path`Grey You`,
@@ -348,7 +341,7 @@ export function gyouQuest(): Quest {
         ),
         limit: { tries: 1 },
       },
-      ...duffo(),
+      ...duffo([]),
       {
         name: "Workshed",
         completed: () => get("_workshedItemUsed") || getWorkshed() === $item`cold medicine cabinet`,
@@ -361,11 +354,15 @@ export function gyouQuest(): Quest {
         do: () => cliExecute("loopcasual goal=level levelto=14"),
         limit: { tries: 1 },
       },
-      ...kingFreed(),
-      ...breakfast(),
-      steelOrgan,
+      ...breakfast([]),
+      {
+        name: "Steel Organ",
+        completed: () => have($skill`Liver of Steel`),
+        do: () => cliExecuteThrow("loopcasual goal=organ"),
+        limit: { tries: 1 },
+      },
       ...strategy.tasks(false),
-      ...endOfDay(),
+      ...endOfDay([]),
     ],
   };
 }

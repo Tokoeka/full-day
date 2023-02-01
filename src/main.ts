@@ -46,16 +46,18 @@ export function main(command?: string): void {
   printFulldaySnapshot();
 }
 
-function getQuests(run: string) {
-  switch (run) {
+function getQuests(path: string) {
+  switch (path) {
     case "cs":
-      return [aftercoreQuest(), csQuest()];
+      return [aftercoreQuest(true), csQuest()];
     case "casual":
-      return [aftercoreQuest(), casualQuest()];
+      return [aftercoreQuest(true), casualQuest()];
     case "custom":
-      return [aftercoreQuest()];
+      return [aftercoreQuest(true)];
+    case "none":
+      return [aftercoreQuest(false)];
     default:
-      throw `Unknown run type ${run}`;
+      throw `Unknown path type ${path}`;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Quest } from "./structure";
+import { ascended, Quest } from "./structure";
 import { cliExecute, getWorkshed, myAdventures, myPath, use } from "kolmafia";
 import {
   $class,
@@ -13,8 +13,8 @@ import {
   Lifestyle,
   prepareAscension,
 } from "libram";
-import { canAscendCasual, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay, kingFreed, menagerie } from "./common";
+import { createPermOptions } from "../lib";
+import { breakfast, breakStone, duffo, endOfDay, menagerie } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
 export const casualQuestName = "Casual";
@@ -26,7 +26,7 @@ export function casualQuest(): Quest {
     tasks: [
       {
         name: "Ascend",
-        completed: () => !canAscendCasual(),
+        completed: () => ascended(),
         do: (): void => {
           prepareAscension({
             garden: "packet of thanksgarden seeds",
@@ -49,8 +49,8 @@ export function casualQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...breakStone(),
-      ...duffo(),
+      breakStone(),
+      ...duffo([]),
       {
         name: "Run",
         ready: () => myPath() === $path`none`,
@@ -74,11 +74,10 @@ export function casualQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...kingFreed(),
       ...breakfast(),
-      ...menagerie(),
+      ...menagerie([]),
       ...strategy.tasks(false),
-      ...endOfDay(),
+      ...endOfDay([]),
     ],
   };
 }

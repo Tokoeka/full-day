@@ -1,15 +1,16 @@
-import { CombatStrategy, Outfit } from "grimoire-kolmafia";
+import { CombatStrategy } from "grimoire-kolmafia";
 import {
   canAdventure,
+  canEquip,
   cliExecute,
   familiarWeight,
   getStorage,
   hippyStoneBroken,
+  Item,
   itemAmount,
   jumpChance,
   maximize,
   myAscensions,
-  myClass,
   myClosetMeat,
   myMeat,
   mySign,
@@ -27,7 +28,6 @@ import {
   wait,
 } from "kolmafia";
 import {
-  $classes,
   $effect,
   $effects,
   $familiar,
@@ -46,7 +46,7 @@ import {
 } from "libram";
 import { args } from "../args";
 import { Task } from "./structure";
-import { cliExecuteThrow } from "../lib";
+import { canPickpocket, cliExecuteThrow } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -60,49 +60,53 @@ export function pullAll(): Task {
   };
 }
 
-export function kingFreed(): Task[] {
+export function breakfast(after: string[]): Task[] {
   return [
     {
       name: "Closet Meat",
+      after: after,
       completed: () => myMeat() <= args.minor.maxmeat || myClosetMeat() > 0,
       do: () => cliExecute(`closet put ${myMeat() - args.minor.maxmeat} meat`),
       limit: { tries: 1 },
     },
     {
       name: "Rain-Doh",
+      after: after,
       completed: () => !have($item`can of Rain-Doh`),
       do: () => use($item`can of Rain-Doh`),
       limit: { tries: 1 },
     },
     {
       name: "Astral Constainer",
+      after: after,
       completed: () => astralContainers.every((item) => !have(item)),
-      do: () =>
-        astralContainers.forEach((item) => {
-          if (have(item)) use(item);
-        }),
+      do: () => astralContainers.filter((item) => have(item)).forEach((item) => use(item)),
       limit: { tries: 1 },
     },
     {
       name: "Every Skill",
+      after: after,
       completed: () => get("_bookOfEverySkillUsed", false),
       do: () => use($item`The Big Book of Every Skill`),
       limit: { tries: 1 },
     },
     {
       name: "Enable Reverser",
+      after: after,
       completed: () => get("backupCameraReverserEnabled"),
       do: () => cliExecute("backupcamera reverser on"),
       limit: { tries: 1 },
     },
     {
       name: "Tune Moon",
+      after: after,
       completed: () => mySign() === args.minor.tune || get("moonTuned"),
       do: () => cliExecute(`spoon ${args.minor.tune}`),
       limit: { tries: 1 },
     },
     {
       name: "Duplicate",
+      after: after,
       ready: () =>
         have(args.minor.duplicate) &&
         get("encountersUntilDMTChoice") <=
@@ -121,37 +125,36 @@ export function kingFreed(): Task[] {
       },
       limit: { tries: 6 },
     },
-  ];
-}
-
-export function breakfast(): Task[] {
-  return [
-    {
-      name: "Breakfast",
-      completed: () => get("breakfastCompleted"),
-      do: () => cliExecute("breakfast"),
-      limit: { tries: 1 },
-    },
     {
       name: "Detective Solver",
+      after: after,
       completed: () => get("_detectiveCasesCompleted") >= 3,
       do: () => cliExecuteThrow("Detective Solver"),
       limit: { tries: 1 },
     },
     {
       name: "Clan Fortune",
+      after: after,
       completed: () => get("_clanFortuneConsultUses") >= 3,
       do: () => Clan.with("Bonus Adventures from Hell", () => cliExecute("fortune 3038166")),
       post: () => wait(10),
       limit: { tries: 5 },
     },
+    {
+      name: "Breakfast",
+      after: after,
+      completed: () => get("breakfastCompleted"),
+      do: () => cliExecute("breakfast"),
+      limit: { tries: 1 },
+    },
   ];
 }
 
-export function duffo(): Task[] {
+export function duffo(after: string[]): Task[] {
   return [
     {
       name: "Party Fair",
+      after: [...after],
       completed: () => get("_questPartyFair") !== "unstarted",
       do: (): void => {
         visitUrl(toUrl($location`The Neverending Party`));
@@ -165,6 +168,7 @@ export function duffo(): Task[] {
     },
     {
       name: "Duffo",
+      after: [...after, "Party Fair"],
       completed: () =>
         get("_questPartyFairProgress") !== "" ||
         ["", "finished"].includes(get("_questPartyFair")) ||
@@ -176,10 +180,17 @@ export function duffo(): Task[] {
   ];
 }
 
-export function menagerie(): Task[] {
+function bestPickpocketItem(): Item {
+  return have($item`mime army infiltration glove`) && canEquip($item`mime army infiltration glove`)
+    ? $item`mime army infiltration glove`
+    : $item`tiny black hole`;
+}
+
+export function menagerie(after: string[]): Task[] {
   return [
     {
       name: "Menagerie Key",
+      after: [...after],
       ready: () =>
         canAdventure($location`Cobb's Knob Laboratory`) &&
         get("_monstersMapped") < 3 &&
@@ -199,6 +210,7 @@ export function menagerie(): Task[] {
     },
     {
       name: "Feed Goose",
+      after: [...after, "Menagerie Key"],
       completed: () =>
         get("_mayflySummons") >= 30 ||
         get("gooseDronesRemaining") > 0 ||
@@ -210,6 +222,7 @@ export function menagerie(): Task[] {
     },
     {
       name: "Mayfly Runaways",
+      after: [...after, "Menagerie Key", "Feed Goose"],
       completed: () => get("_mayflySummons") >= 30,
       prepare: () => {
         if (jumpChance($monster`BASIC Elemental`) < 100) {
@@ -222,21 +235,15 @@ export function menagerie(): Task[] {
         { item: $item`tennis ball`, price: 10_000 },
       ],
       outfit: () => {
-        const outfit = new Outfit();
-
-        if (!$classes`Disco Bandit, Accordion Thief`.includes(myClass())) {
-          outfit.equipFirst($items`mime army infiltration glove, tiny black hole`);
-        }
-
-        outfit.equip({
+        return {
+          equip: canPickpocket() ? [] : [bestPickpocketItem()],
           acc1: $item`mayfly bait necklace`,
           familiar: $familiar`Grey Goose`,
           famequip: $item`tiny stillsuit`,
           modifier: "pickpocket chance, init 100max",
-        });
-        return outfit;
+        };
       },
-      effects: $effects`Springy Fusilli, Cletus's Canticle of Celerity`,
+      effects: $effects`Cletus's Canticle of Celerity, Nearly Silent Hunting, Springy Fusilli, Suspicious Gaze, Walberg's Dim Bulb`,
       combat: new CombatStrategy()
         .macro(Macro.item($item`Louder Than Bomb`), $monster`Fruit Golem`)
         .macro(Macro.item($item`tennis ball`), $monster`Knob Goblin Mutant`)
@@ -251,28 +258,27 @@ export function menagerie(): Task[] {
   ];
 }
 
-export function breakStone(): Task[] {
-  return [
-    {
-      name: "Break Stone",
-      completed: () => hippyStoneBroken(),
-      do: () => visitUrl("peevpee.php?action=smashstone&confirm=on"),
-      limit: { tries: 1 },
-    },
-  ];
+export function breakStone(): Task {
+  return {
+    name: "Break Stone",
+    completed: () => hippyStoneBroken(),
+    do: () => visitUrl("peevpee.php?action=smashstone&confirm=on"),
+    limit: { tries: 1 },
+  };
 }
 
 export function pvp(after: string[]): Task[] {
   return [
     {
       name: "Pledge Allegiance",
+      after: after,
       completed: () => !visitUrl("peevpee.php?place=fight").includes("Pledge allegiance to"),
       do: () => visitUrl("peevpee.php?action=pledge&place=fight&pwd"),
       limit: { tries: 1 },
     },
     {
       name: "Swagger",
-      after: [...after],
+      after: [...after, "Pledge Allegiance"],
       ready: () => hippyStoneBroken(),
       completed: () => pvpAttacksLeft() === 0,
       do: () => {
@@ -285,10 +291,18 @@ export function pvp(after: string[]): Task[] {
   ];
 }
 
-export function endOfDay(): Task[] {
+export function endOfDay(after: string[]): Task[] {
   return [
     {
+      name: "Raffle",
+      after: after,
+      completed: () => have($item`raffle ticket`),
+      do: () => cliExecute(`raffle ${Math.random() * 10 + 1}`),
+      limit: { tries: 1 },
+    },
+    {
       name: "Clockwork Maid",
+      after: after,
       completed: () =>
         haveInCampground($item`clockwork maid`) ||
         numericModifier($item`clockwork maid`, "Adventures") * get("valueOfAdventure") <
@@ -300,13 +314,8 @@ export function endOfDay(): Task[] {
       limit: { tries: 1 },
     },
     {
-      name: "Raffle",
-      completed: () => have($item`raffle ticket`),
-      do: () => cliExecute(`raffle ${Math.random() * 10 + 1}`),
-      limit: { tries: 1 },
-    },
-    {
       name: "Pajamas",
+      after: after,
       completed: () =>
         maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
         numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
