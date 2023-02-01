@@ -11,7 +11,7 @@ export function aftercoreQuest(): Quest {
       ...kingFreed(),
       ...breakfast(),
       ...duffo(),
-      ...menagerie(),
+      // ...menagerie(),
       ...strategy.tasks(true),
       ...pvp([]),
     ],
