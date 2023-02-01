@@ -1,13 +1,12 @@
 import { Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "../tasks/structure";
 import { printProfits, ProfitTracker } from "./profits";
-import { haveEffect, userConfirm } from "kolmafia";
+import { haveEffect } from "kolmafia";
 import { $effect, have, PropertiesManager, set, uneffect } from "libram";
 import { args } from "../args";
 import { debug } from "../lib";
 
 export class Engine extends BaseEngine<never, Task> {
-  confirmed = new Set<string>();
   profits: ProfitTracker;
 
   constructor(tasks: Task[], completedTasks: string[], key: string) {
@@ -41,10 +40,6 @@ export class Engine extends BaseEngine<never, Task> {
       const task = this.getNextTask();
       if (!task) return;
       if (task.ready && !task.ready()) throw `Task ${task.name} is not ready`;
-      if (args.debug.confirm && !this.confirmed.has(task.name)) {
-        if (!userConfirm(`Executing ${task.name}, continue?`)) throw `Abort requested`;
-        this.confirmed.add(task.name);
-      }
       this.execute(task);
     }
   }

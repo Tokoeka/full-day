@@ -52,10 +52,6 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     }),
   }),
   debug: Args.group("Debug Options", {
-    confirm: Args.flag({
-      help: "Require the user to confirm execution of each task.",
-      default: false,
-    }),
     abort: Args.string({
       help: "If given, abort during the prepare() step for the task with matching name.",
     }),
