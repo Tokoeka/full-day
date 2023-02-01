@@ -45,7 +45,7 @@ import {
   set,
 } from "libram";
 import { args } from "../args";
-import { Task } from "../engine/task";
+import { Task } from "./structure";
 import { cliExecuteThrow } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;

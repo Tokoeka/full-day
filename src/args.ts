@@ -1,12 +1,5 @@
 import { Args } from "grimoire-kolmafia";
 import { $item } from "libram";
-import { csQuestName } from "./tasks/cs";
-import { casualQuestName } from "./tasks/casual";
-
-export const pathAliases = [
-  { path: csQuestName, alias: "cs" },
-  { path: casualQuestName, alias: "casual" },
-];
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
   major: Args.group("Major Options", {
@@ -21,7 +14,11 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     }),
     path: Args.string({
       help: "Path to ascend into.",
-      options: pathAliases.map(({ path, alias }) => [alias, path]),
+      options: [
+        ["cs", "Community Service"],
+        ["casual", "Casual"],
+        ["custom", "Jump the gash manually"],
+      ],
       default: "cs",
     }),
   }),

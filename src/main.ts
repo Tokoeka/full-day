@@ -1,10 +1,9 @@
 import { Args, getTasks } from "grimoire-kolmafia";
 import { print } from "kolmafia";
-import { get, Kmail } from "libram";
-import { args, pathAliases } from "./args";
-import { completedProperty, Engine } from "./engine/engine";
+import { args } from "./args";
+import { Engine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
-import { debug, numberWithCommas } from "./lib";
+import { cleanInbox, debug, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
 import { aftercoreQuest } from "./tasks/aftercore";
 import { casualQuest } from "./tasks/casual";
@@ -19,11 +18,7 @@ export function main(command?: string): void {
     return;
   }
 
-  const lastQuest = get(completedProperty).split("/")[0];
-  const pathOverride = new Map(pathAliases.map(({ path, alias }) => [path, alias])).get(lastQuest);
-  const ascensionQuest = (pathOverride ?? args.major.path) === "cs" ? csQuest : casualQuest;
-
-  const quests = [aftercoreQuest(), ascensionQuest()];
+  const quests = getQuests(args.major.path);
   const tasks = getTasks(quests);
 
   // Abort during the prepare() step of the specified task
@@ -51,6 +46,19 @@ export function main(command?: string): void {
   printFulldaySnapshot();
 }
 
+function getQuests(run: string) {
+  switch (run) {
+    case "cs":
+      return [aftercoreQuest(), csQuest()];
+    case "casual":
+      return [aftercoreQuest(), casualQuest()];
+    case "custom":
+      return [aftercoreQuest()];
+    default:
+      throw `Unknown run type ${run}`;
+  }
+}
+
 function listTasks(engine: Engine): void {
   for (const task of engine.tasks) {
     if (task.completed()) {
@@ -61,16 +69,6 @@ function listTasks(engine: Engine): void {
       debug(`${task.name}: Not Available`, "red");
     }
   }
-}
-
-function cleanInbox(): void {
-  Kmail.delete(
-    Kmail.inbox().filter((k) =>
-      ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
-        k.senderName
-      )
-    )
-  );
 }
 
 function printFulldaySnapshot() {

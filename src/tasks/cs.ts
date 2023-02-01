@@ -12,7 +12,7 @@ import {
   prepareAscension,
   uneffect,
 } from "libram";
-import { getCurrentLeg, Leg, Quest } from "../engine/task";
+import { Quest } from "./structure";
 import { canAscendNoncasual, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, kingFreed } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
@@ -23,7 +23,6 @@ export function csQuest(): Quest {
   const strategy = chooseStrategy();
   return {
     name: csQuestName,
-    completed: () => getCurrentLeg() > Leg.NonCasual,
     tasks: [
       {
         name: "Ascend",

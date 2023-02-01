@@ -1,5 +1,5 @@
-import { Quest } from "../engine/task";
-import { cliExecute, getWorkshed, myPath, use } from "kolmafia";
+import { Quest } from "./structure";
+import { cliExecute, getWorkshed, myAdventures, myPath, use } from "kolmafia";
 import {
   $class,
   $effect,
@@ -55,7 +55,13 @@ export function casualQuest(): Quest {
         name: "Run",
         ready: () => myPath() === $path`none`,
         completed: () => get("kingLiberated") && have($skill`Liver of Steel`),
-        do: () => cliExecute("loopcasual"),
+        do: (): void => {
+          cliExecute("loopcasual fluffers=false stomach=15 workshed='Asdon Martin keyfob'");
+          if (myAdventures() === 0 && !have($skill`Liver of Steel`)) {
+            cliExecute("cast 2 ancestral recall");
+            cliExecute("loopcasual fluffers=false stomach=15");
+          }
+        },
         limit: { tries: 1 },
         tracking: "Run",
       },

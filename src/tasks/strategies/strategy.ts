@@ -1,5 +1,5 @@
 import { Item } from "kolmafia";
-import { Task } from "../../engine/task";
+import { Task } from "../structure";
 import { freecandy } from "./freecandy";
 import { garbo } from "./garbo";
 import { baggo } from "./baggo";

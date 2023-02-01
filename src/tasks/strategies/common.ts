@@ -1,7 +1,7 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import { bjornifyFamiliar, cliExecute, myInebriety, useSkill } from "kolmafia";
 import { $effect, $familiar, $item, $location, $skill, get, Macro, uneffect } from "libram";
-import { Task } from "../../engine/task";
+import { Task } from "../structure";
 import { canConsume, stooperInebrietyLimit } from "../../lib";
 
 function distillateAdvs(): number {

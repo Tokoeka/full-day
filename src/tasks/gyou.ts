@@ -48,7 +48,7 @@ import {
   RetroCape,
   SongBoom,
 } from "libram";
-import { getCurrentLeg, Leg, Quest, Task } from "../engine/task";
+import { Quest, Task } from "./structure";
 import { canAscendNoncasual, cliExecuteThrow, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, kingFreed, pullAll } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
@@ -123,7 +123,6 @@ export function gyouQuest(): Quest {
   const strategy = chooseStrategy();
   return {
     name: gyouQuestName,
-    completed: () => getCurrentLeg() > Leg.NonCasual,
     tasks: [
       {
         name: "Ascend",

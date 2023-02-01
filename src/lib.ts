@@ -16,7 +16,7 @@ import {
   spleenLimit,
   todayToString,
 } from "kolmafia";
-import { $familiar, have, Lifestyle } from "libram";
+import { $familiar, have, Kmail, Lifestyle } from "libram";
 
 export function debug(message: string, color?: string): void {
   if (color) {
@@ -87,4 +87,14 @@ export function createPermOptions(): { permSkills: Map<Skill, Lifestyle>; neverA
 
 export function cliExecuteThrow(command: string): void {
   if (!cliExecute(command)) throw `Failed to execute ${command}`;
+}
+
+export function cleanInbox(): void {
+  Kmail.delete(
+    Kmail.inbox().filter((k) =>
+      ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
+        k.senderName
+      )
+    )
+  );
 }
