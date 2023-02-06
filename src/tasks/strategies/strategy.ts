@@ -10,7 +10,6 @@ export type Strategy = {
   gyou?: {
     pulls: Item[];
     ronin: Pick<Task, "do" | "outfit">;
-    postronin: Pick<Task, "do" | "outfit">;
   };
 };
 

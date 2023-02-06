@@ -1,4 +1,4 @@
-import { CombatStrategy, Outfit, step } from "grimoire-kolmafia";
+import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
   autosell,
   buy,
@@ -14,7 +14,6 @@ import {
   myLevel,
   myMaxhp,
   myPath,
-  myTurncount,
   restoreHp,
   restoreMp,
   runChoice,
@@ -34,7 +33,6 @@ import {
   $monster,
   $path,
   $skill,
-  $slot,
   ascend,
   AsdonMartin,
   get,
@@ -104,12 +102,6 @@ const gear: Task[] = [
     do: () => cliExecute("pull lucky gold ring"),
     limit: { tries: 1 },
   },
-  {
-    name: "Pointer Finger",
-    completed: () => have($item`mafia pointer finger ring`),
-    do: () => cliExecute("pull mafia pointer finger ring"),
-    limit: { tries: 1 },
-  },
 ];
 
 export function gyouQuest(): Quest {
@@ -144,23 +136,22 @@ export function gyouQuest(): Quest {
       {
         name: "Run",
         ready: () => myPath() === $path`Grey You`,
-        completed: () =>
-          step("questL13Final") !== -1 && get("gooseReprocessed").split(",").length >= 69,
-        do: () => cliExecute("loopgyou delaytower tune=wombat"),
+        completed: () => step("questL13Final") > 11,
+        do: () => cliExecute("loopgyou tune=wombat"),
         limit: { tries: 1 },
         tracking: "Run",
       },
       strategy.gyou
         ? {
-            name: "In-Run Farm Initial",
-            completed: () => myTurncount() >= 1000,
+            name: "In-Run Farm",
+            completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
             limit: { tries: 1 },
             tracking: "GooFarming",
             ...strategy.gyou.ronin,
           }
         : {
-            name: "In-Run Barf Initial",
-            completed: () => myTurncount() >= 1000,
+            name: "In-Run Barf",
+            completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
             do: $location`Barf Mountain`,
             acquire: [{ item: $item`wad of used tape` }],
             prepare: (): void => {
@@ -204,23 +195,18 @@ export function gyouQuest(): Quest {
             },
             post: getExtros,
             outfit: () => {
-              const outfit = new Outfit();
-              outfit.equip($item`unwrapped knock-off retro superhero cape`, $slot`back`);
-              outfit.equip($item`astral pistol`, $slot`weapon`);
-              outfit.equip(
-                getKramcoWandererChance() > 0.05
-                  ? $item`Kramco Sausage-o-Matic™`
-                  : $item`latte lovers member's mug`,
-                $slot`off-hand`
-              );
-              outfit.equip([
-                $item`lucky gold ring`,
-                $item`mafia pointer finger ring`,
-                $item`mafia thumb ring`,
-              ]);
-              outfit.equip($familiar`Space Jellyfish`);
-              outfit.modifier = "meat";
-              return outfit;
+              return {
+                back: $item`unwrapped knock-off retro superhero cape`,
+                weapon: $item`astral pistol`,
+                offhand:
+                  getKramcoWandererChance() > 0.05
+                    ? $item`Kramco Sausage-o-Matic™`
+                    : $item`latte lovers member's mug`,
+                acc1: $item`lucky gold ring`,
+                acc2: $item`mafia thumb ring`,
+                familiar: $familiar`Space Jellyfish`,
+                modifier: "meat",
+              };
             },
             effects: () => (have($item`How to Avoid Scams`) ? $effects`How to Scam Tourists` : []),
             combat: new CombatStrategy()
@@ -243,72 +229,26 @@ export function gyouQuest(): Quest {
             limit: { tries: 550 },
             tracking: "GooFarming",
           },
-      pullAll(),
-      {
-        name: "Tower",
-        completed: () => step("questL13Final") > 11,
-        do: () => cliExecute("loopgyou delaytower"),
-        limit: { tries: 1 },
-        tracking: "Run",
-      },
-      strategy.gyou
-        ? {
-            name: "In-Run Farm Final",
-            completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
-            tracking: "GooFarming",
-            limit: { tries: 1 },
-            ...strategy.gyou.postronin,
-          }
-        : {
-            name: "In-Run Barf Final",
-            completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
-            prepare: (): void => {
-              restoreMp(30);
-
-              // Prepare Asdon buff
-              if (AsdonMartin.installed() && !have($effect`Driving Observantly`))
-                AsdonMartin.drive(AsdonMartin.Driving.Observantly);
-            },
-            do: $location`Barf Mountain`,
-            outfit: () => {
-              const outfit = new Outfit();
-              outfit.equip($item`haiku katana`, $slot`weapon`);
-              outfit.equip(
-                getKramcoWandererChance() > 0.05
-                  ? $item`Kramco Sausage-o-Matic™`
-                  : $item`latte lovers member's mug`,
-                $slot`off-hand`
-              );
-              outfit.equip([$item`lucky gold ring`, $item`mafia pointer finger ring`]);
-              outfit.equip($familiar`Space Jellyfish`), (outfit.modifier = "meat");
-              return outfit;
-            },
-            effects: $effects`How to Scam Tourists`,
-            combat: new CombatStrategy()
-              .macro(
-                new Macro()
-                  .trySkill($skill`Bowl Straight Up`)
-                  .skill($skill`Extract Jelly`)
-                  .skill($skill`Sing Along`)
-                  .trySkill($skill`Summer Siesta`)
-                  .skill($skill`Double Nanovision`)
-                  .repeat()
-              )
-              .macro(
-                new Macro()
-                  .item($item`Time-Spinner`)
-                  .skill($skill`Infinite Loop`)
-                  .repeat(),
-                $monster`sausage goblin`
-              ),
-            limit: { tries: 150 },
-            tracking: "GooFarming",
-          },
       {
         name: "Prism",
         completed: () => myClass() !== $class`Grey Goo`,
         do: () => cliExecute("loopgyou class=1"),
-        // Stats reset on prism break, equip glitch kill equipment prior
+        limit: { tries: 1 },
+      },
+      pullAll(),
+      {
+        name: "Fight Glitch",
+        ready: () => have($item`[glitch season reward name]`),
+        completed: () => get("_glitchMonsterFights") > 0,
+        acquire: [
+          { item: $item`makeshift garbage shirt` },
+          ...$items`gas can, gas balloon, shard of double-ice`.map((item) => ({
+            item,
+            price: 1000,
+          })),
+        ],
+        prepare: () => restoreHp(myMaxhp()),
+        do: () => visitUrl("inv_eat.php?pwd&whichitem=10207"),
         outfit: () => ({
           familiar: $familiar`Shorter-Order Cook`,
           ...(have($item`January's Garbage Tote`) && have($skill`Torso Awareness`)
@@ -317,21 +257,6 @@ export function gyouQuest(): Quest {
           modifier: "muscle experience, 5 muscle experience percent, -ml",
           avoid: Item.all().filter((item) => getModifier("Monster Level", item) < 0),
         }),
-        acquire: [{ item: $item`makeshift garbage shirt` }],
-        limit: { tries: 1 },
-      },
-      {
-        name: "Fight Glitch",
-        ready: () => have($item`[glitch season reward name]`),
-        completed: () => get("_glitchMonsterFights") > 0,
-        acquire: [
-          ...$items`gas can, gas balloon, shard of double-ice`.map((it) => ({
-            item: it,
-            price: 1000,
-          })),
-        ],
-        prepare: () => restoreHp(myMaxhp()),
-        do: () => visitUrl("inv_eat.php?pwd&whichitem=10207"),
         combat: new CombatStrategy().macro(() =>
           Macro.tryItem($item`gas balloon`)
             .trySkill($skill`Feel Pride`)

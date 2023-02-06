@@ -1,4 +1,3 @@
-import { myTurncount } from "kolmafia";
 import { $item } from "libram";
 import { cliExecuteThrow } from "../../lib";
 import { Strategy } from "./strategy";
@@ -9,8 +8,7 @@ export function baggo(): Strategy {
     tasks: createStrategyTasks("baggo", true),
     gyou: {
       pulls: [$item`mime army infiltration glove`, $item`human musk`, $item`tryptophan dart`],
-      ronin: { do: () => cliExecuteThrow(`baggo turns=${1000 - myTurncount()}`) },
-      postronin: { do: () => cliExecuteThrow("baggo turns=-40") },
+      ronin: { do: () => cliExecuteThrow("baggo turns=-40") },
     },
   };
 }
