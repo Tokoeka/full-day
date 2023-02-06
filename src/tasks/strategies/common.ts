@@ -21,20 +21,14 @@ export function stooper(): Task {
 export function caldera(): Task {
   return {
     name: "Caldera",
-    completed: () =>
-      $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
-      $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs"),
+    completed: () => get("hallowienerVolcoino"),
     prepare: () => {
       bjornifyFamiliar($familiar`Warbear Drone`);
       useSkill($skill`Cannelloni Cocoon`);
     },
     do: $location`The Bubblin' Caldera`,
     post: () => {
-      if (
-        $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
-        $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs")
-      )
-        uneffect($effect`Drenched in Lava`);
+      if (get("hallowienerVolcoino")) uneffect($effect`Drenched in Lava`);
     },
     acquire: [{ item: $item`heat-resistant sheet metal`, price: 5000, optional: true }],
     outfit: {

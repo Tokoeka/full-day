@@ -74,7 +74,7 @@ export function casualQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...breakfast(),
+      ...breakfast([]),
       ...menagerie([]),
       ...strategy.tasks(false),
       ...endOfDay([]),
