@@ -319,6 +319,7 @@ export function endOfDay(after: string[]): Task[] {
       completed: () =>
         maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
         numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
+      prepare: () => cliExecute("refresh all"),
       do: () => maximize("adv, switch tot, switch left-hand man, switch disembodied hand", false),
       limit: { tries: 1 },
     },
