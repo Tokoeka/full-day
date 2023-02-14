@@ -17,9 +17,9 @@
   "license": "Apache",
   "dependencies": {
     "core-js": "^3.16.4",
-    "grimoire-kolmafia": "^0.3.8",
-    "kolmafia": "5.26781.0",
-    "libram": "0.7.6"
+    "grimoire-kolmafia": "^0.3.13",
+    "kolmafia": "^5.27193.0",
+    "libram": "^0.7.11"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",
@@ -33,7 +33,7 @@
     "babel-loader": "^8.2.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-libram": "^0.2.19",
+    "eslint-plugin-libram": "^0.2.28",
     "prettier": "^2.3.2",
     "typescript": "^4.4.2",
     "webpack": "^5.51.1",
