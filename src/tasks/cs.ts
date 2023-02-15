@@ -1,6 +1,5 @@
 import { cliExecute, getStorage, getWorkshed, myPath, myStorageMeat, use } from "kolmafia";
 import {
-  $class,
   $effect,
   $item,
   $path,
@@ -16,6 +15,7 @@ import { ascended, Quest } from "./structure";
 import { createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
+import { args } from "../args";
 
 export const csQuestName = "Community Service";
 
@@ -33,13 +33,19 @@ export function csQuest(): Quest {
             eudora: "Our Daily Candles™ order form",
             chateau: {
               desk: "continental juice bar",
-              nightstand: "foreign language tapes",
+              nightstand: (
+                {
+                  Muscle: "electric muscle stimulator",
+                  Mysticality: "foreign language tapes",
+                  Moxie: "bowl of potpourri",
+                } as const
+              )[args.major.class.primestat.toString()],
               ceiling: "ceiling fan",
             },
           });
           ascend(
             $path`Community Service`,
-            $class`Pastamancer`,
+            args.major.class,
             Lifestyle.softcore,
             "knoll",
             $item`astral six-pack`,

@@ -1,5 +1,5 @@
 import { Args } from "grimoire-kolmafia";
-import { $item } from "libram";
+import { $class, $item } from "libram";
 
 export const args = Args.create("fullday", "A full-day wrapper script.", {
   major: Args.group("Major Options", {
@@ -22,6 +22,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       ],
       default: "cs",
     }),
+    class: Args.class({ help: "", default: $class`Pastamancer` }),
   }),
   minor: Args.group("Minor Options", {
     voa: Args.number({

@@ -1,7 +1,6 @@
 import { ascended, Quest } from "./structure";
 import { cliExecute, getWorkshed, myAdventures, myPath, use } from "kolmafia";
 import {
-  $class,
   $effect,
   $item,
   $path,
@@ -16,7 +15,7 @@ import {
 import { createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, menagerie } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
-
+import { args } from "../args";
 export const casualQuestName = "Casual";
 
 export function casualQuest(): Quest {
@@ -33,13 +32,19 @@ export function casualQuest(): Quest {
             eudora: "New-You Club Membership Form",
             chateau: {
               desk: "Swiss piggy bank",
-              nightstand: "electric muscle stimulator",
+              nightstand: (
+                {
+                  Muscle: "electric muscle stimulator",
+                  Mysticality: "foreign language tapes",
+                  Moxie: "bowl of potpourri",
+                } as const
+              )[args.major.class.primestat.toString()],
               ceiling: "ceiling fan",
             },
           });
           ascend(
             $path`none`,
-            $class`Seal Clubber`,
+            args.major.class,
             Lifestyle.casual,
             "knoll",
             $item`astral six-pack`,
