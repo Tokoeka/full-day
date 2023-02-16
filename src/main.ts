@@ -75,8 +75,8 @@ function listTasks(engine: Engine): void {
 
 function printFulldaySnapshot() {
   const { meat, items, itemDetails } = Snapshot.current().diff(snapshotStart).value(garboValue);
-  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 10);
-  const losers = itemDetails.sort((a, b) => b.value - a.value).slice(-10);
+  const winners = itemDetails.sort((a, b) => b.value - a.value).slice(0, 5);
+  const losers = itemDetails.sort((a, b) => b.value - a.value).slice(-5);
 
   print("");
   print(
