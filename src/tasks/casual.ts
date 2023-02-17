@@ -1,4 +1,4 @@
-import { ascended, Quest } from "./structure";
+import { ascendedToday, Quest } from "./structure";
 import { cliExecute, getWorkshed, myAdventures, myPath, use } from "kolmafia";
 import {
   $effect,
@@ -25,7 +25,7 @@ export function casualQuest(): Quest {
     tasks: [
       {
         name: "Ascend",
-        completed: () => ascended(),
+        completed: () => ascendedToday(),
         do: (): void => {
           prepareAscension({
             garden: "packet of thanksgarden seeds",

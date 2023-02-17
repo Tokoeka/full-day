@@ -46,7 +46,7 @@ import {
   RetroCape,
   SongBoom,
 } from "libram";
-import { ascended, Quest, Task } from "./structure";
+import { ascendedToday, Quest, Task } from "./structure";
 import { cliExecuteThrow, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, pullAll } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
@@ -111,7 +111,7 @@ export function gyouQuest(): Quest {
     tasks: [
       {
         name: "Ascend",
-        completed: () => ascended(),
+        completed: () => ascendedToday(),
         do: (): void => {
           prepareAscension({
             eudora: "Our Daily Candles™ order form",

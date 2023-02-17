@@ -1,8 +1,20 @@
-import { cliExecute, getStorage, getWorkshed, myPath, myStorageMeat, use } from "kolmafia";
+import {
+  cliExecute,
+  equippedItem,
+  getStorage,
+  getWorkshed,
+  Item,
+  myPath,
+  myStorageMeat,
+  retrieveItem,
+  use,
+  visitUrl,
+} from "kolmafia";
 import {
   $effect,
   $item,
   $path,
+  $slot,
   ascend,
   AsdonMartin,
   get,
@@ -11,13 +23,21 @@ import {
   prepareAscension,
   uneffect,
 } from "libram";
-import { ascended, Quest } from "./structure";
-import { createPermOptions } from "../lib";
+import { ascendedToday, Quest } from "./structure";
+import { byStat, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 import { args } from "../args";
 
 export const csQuestName = "Community Service";
+
+function setBootSkin(skin: Item): boolean {
+  if (!have($item`your cowboy boots`)) {
+    visitUrl("place.php?whichplace=town_right&action=townright_ltt");
+  }
+  if (equippedItem($slot`bootskin`) === skin) return true;
+  return retrieveItem(skin) && use(skin);
+}
 
 export function csQuest(): Quest {
   const strategy = chooseStrategy();
@@ -26,20 +46,31 @@ export function csQuest(): Quest {
     tasks: [
       {
         name: "Ascend",
-        completed: () => ascended(),
+        completed: () => ascendedToday(),
         do: (): void => {
+          setBootSkin(
+            byStat(
+              {
+                Muscle: $item`grizzled bearskin`,
+                Mysticality: $item`frontwinder skin`,
+                Moxie: $item`mountain lion skin`,
+              },
+              args.major.class.primestat
+            )
+          );
           prepareAscension({
             garden: "Peppermint Pip Packet",
             eudora: "Our Daily Candles™ order form",
             chateau: {
               desk: "continental juice bar",
-              nightstand: (
+              nightstand: byStat(
                 {
                   Muscle: "electric muscle stimulator",
                   Mysticality: "foreign language tapes",
                   Moxie: "bowl of potpourri",
-                } as const
-              )[args.major.class.primestat.toString()],
+                },
+                args.major.class.primestat
+              ),
               ceiling: "ceiling fan",
             },
           });

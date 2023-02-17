@@ -14,6 +14,8 @@ import {
   print,
   Skill,
   spleenLimit,
+  Stat,
+  StatType,
 } from "kolmafia";
 import { $familiar, $stat, have, Kmail, Lifestyle } from "libram";
 
@@ -78,4 +80,14 @@ export function cleanInbox(): void {
       )
     )
   );
+}
+
+type StatSwitch<T> = Record<StatType, T> | (Partial<{ [x in StatType]: T }> & { default: T });
+type ClassSwitch<T> = { options: Map<Class, T>; default: T };
+export function byClass<T>(thing: ClassSwitch<T>, class_: Class): T {
+  return thing.options.get(class_) ?? thing.default;
+}
+export function byStat<T>(thing: StatSwitch<T>, primestat: Stat): T {
+  const stat = primestat.toString();
+  return "default" in thing ? thing[stat] ?? thing.default : thing[stat];
 }

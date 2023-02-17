@@ -1,4 +1,4 @@
-import { ascended, Quest } from "./structure";
+import { ascendedToday, Quest } from "./structure";
 import { breakfast, duffo, endOfDay, pvp } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
@@ -6,7 +6,7 @@ export function aftercoreQuest(ascend: boolean): Quest {
   const strategyTasks = chooseStrategy().tasks(ascend);
   return {
     name: "Aftercore",
-    completed: () => ascended(),
+    completed: () => ascendedToday(),
     tasks: [
       ...breakfast([]),
       ...duffo([]),

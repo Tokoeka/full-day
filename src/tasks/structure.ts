@@ -7,6 +7,6 @@ export type Task = BaseTask & {
 };
 export type Quest = BaseQuest<Task>;
 
-export function ascended(): boolean {
+export function ascendedToday(): boolean {
   return myDaycount() === 1;
 }
