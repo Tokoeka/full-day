@@ -62,6 +62,7 @@ export function pullAll(): Task {
 
 export function breakfast(after: string[]): Task[] {
   return [
+    breakStone(),
     {
       name: "Closet Meat",
       after: after,

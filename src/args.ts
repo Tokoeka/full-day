@@ -57,6 +57,10 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     abort: Args.string({
       help: "If given, abort during the prepare() step for the task with matching name.",
     }),
+    confirm: Args.flag({
+      help: "Whether the user must confirm execution of each unique task.",
+      default: false,
+    }),
     completedtasks: Args.string({
       help: "A comma-separated list of task names the should be treated as completed. Can be used as a workaround for script bugs.",
     }),

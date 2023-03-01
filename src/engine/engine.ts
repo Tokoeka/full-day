@@ -1,7 +1,7 @@
 import { Engine as BaseEngine } from "grimoire-kolmafia";
 import { Task } from "../tasks/structure";
 import { printProfits, ProfitTracker } from "./profits";
-import { haveEffect } from "kolmafia";
+import { haveEffect, userConfirm } from "kolmafia";
 import { $effect, have, PropertiesManager, set, uneffect } from "libram";
 import { args } from "../args";
 import { debug } from "../lib";
@@ -46,6 +46,10 @@ export class Engine extends BaseEngine<never, Task> {
 
   execute(task: Task): void {
     try {
+      if (args.debug.confirm && !userConfirm(`Executing ${task.name}, continue?`)) {
+        throw `User rejected execution of task ${task.name}`;
+      }
+
       super.execute(task);
     } finally {
       const questName = task.name.split("/")[0];

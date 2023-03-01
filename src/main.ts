@@ -26,7 +26,7 @@ export function main(command?: string): void {
     const to_abort = tasks.find((task) => task.name === args.debug.abort);
     if (!to_abort) throw `Unable to identify task ${args.debug.abort}`;
     to_abort.prepare = (): void => {
-      throw "Abort requested";
+      throw `Abort requested on task ${to_abort.name}`;
     };
   }
 
