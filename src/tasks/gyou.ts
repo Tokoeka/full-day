@@ -116,6 +116,7 @@ export function gyouQuest(): Quest {
           prepareAscension({
             eudora: "Our Daily Candles™ order form",
           });
+          visitUrl("council.php"); // Collect thwaitgold
           ascend(
             $path`Grey You`,
             $class`Grey Goo`,

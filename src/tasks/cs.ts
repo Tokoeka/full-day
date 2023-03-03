@@ -74,6 +74,7 @@ export function csQuest(): Quest {
               ceiling: "ceiling fan",
             },
           });
+          visitUrl("council.php"); // Collect thwaitgold
           ascend(
             $path`Community Service`,
             args.major.class,

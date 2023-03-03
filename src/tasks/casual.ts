@@ -1,5 +1,5 @@
 import { ascendedToday, Quest } from "./structure";
-import { cliExecute, getWorkshed, myAdventures, myPath, use } from "kolmafia";
+import { cliExecute, getWorkshed, myAdventures, myPath, use, visitUrl } from "kolmafia";
 import {
   $effect,
   $item,
@@ -42,6 +42,7 @@ export function casualQuest(): Quest {
               ceiling: "ceiling fan",
             },
           });
+          visitUrl("council.php"); // Collect thwaitgold
           ascend(
             $path`none`,
             args.major.class,
