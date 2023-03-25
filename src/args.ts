@@ -22,7 +22,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       ],
       default: "cs",
     }),
-    class: Args.class({ help: "", default: $class`Pastamancer` }),
+    class: Args.class({ help: "", default: $class`Seal Clubber` }),
   }),
   minor: Args.group("Minor Options", {
     voa: Args.number({
