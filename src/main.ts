@@ -18,6 +18,10 @@ export function main(command?: string): void {
     return;
   }
 
+  if (args.major.strategy === "freecandy") {
+    args.minor.voa = 15000;
+  }
+
   const quests = getQuests(args.major.path);
   const tasks = getTasks(quests);
 
