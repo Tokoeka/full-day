@@ -16,12 +16,11 @@ import { createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, menagerie } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 import { args } from "../args";
-export const casualQuestName = "Casual";
 
 export function casualQuest(): Quest {
   const strategy = chooseStrategy();
   return {
-    name: casualQuestName,
+    name: "Casual",
     tasks: [
       {
         name: "Ascend",

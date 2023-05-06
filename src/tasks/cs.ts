@@ -29,8 +29,6 @@ import { breakfast, breakStone, duffo, endOfDay } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 import { args } from "../args";
 
-export const csQuestName = "Community Service";
-
 function setBootSkin(skin: Item): boolean {
   if (!have($item`your cowboy boots`)) {
     visitUrl("place.php?whichplace=town_right&action=townright_ltt");
@@ -42,7 +40,7 @@ function setBootSkin(skin: Item): boolean {
 export function csQuest(): Quest {
   const strategy = chooseStrategy();
   return {
-    name: csQuestName,
+    name: "Community Service",
     tasks: [
       {
         name: "Ascend",

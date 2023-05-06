@@ -51,8 +51,6 @@ import { cliExecuteThrow, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, pullAll } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 
-export const gyouQuestName = "Grey You";
-
 function itemsPulled(): Item[] {
   return get("_roninStoragePulls")
     .split(",")
@@ -107,7 +105,7 @@ const gear: Task[] = [
 export function gyouQuest(): Quest {
   const strategy = chooseStrategy();
   return {
-    name: gyouQuestName,
+    name: "Grey You",
     tasks: [
       {
         name: "Ascend",
