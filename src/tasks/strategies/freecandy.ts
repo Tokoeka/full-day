@@ -1,5 +1,5 @@
 import { myAdventures, myInebriety } from "kolmafia";
-import { $familiar, $item, get, withProperty } from "libram";
+import { $familiar, $item, get, set, withProperty } from "libram";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
 import { caldera, stooper } from "./common";
 import { Strategy } from "./strategy";
@@ -9,8 +9,9 @@ export function freecandy(): Strategy {
     tasks: (ascend: boolean) => [
       {
         name: "Garboween",
-        completed: () => get("_garboCompleted", "") !== "" && !canConsume(),
+        completed: () => get("_garboweenCompleted", false) && !canConsume(),
         do: () => cliExecuteThrow(`garboween yachtzeechain ${ascend ? "ascend" : ""}`),
+        post: () => set("_garboweenCompleted", true), // Unlike garbo, garboween doesn't currently track completion
         limit: { tries: 1 },
         tracking: "Garbo",
       },
