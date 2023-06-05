@@ -72,6 +72,18 @@ export class Engine extends BaseEngine<never, Task> {
   initPropertiesManager(manager: PropertiesManager): void {
     super.initPropertiesManager(manager);
     manager.set({ valueOfAdventure: args.minor.voa });
+    // June cleaver choices, sourced from phccs
+    manager.setChoices({
+      1467: 3,
+      1468: 2,
+      1469: 3,
+      1470: 2,
+      1471: 3,
+      1472: 1,
+      1473: 1,
+      1474: 1,
+      1475: 1,
+    });
     set("garbo_yachtzeechain", true);
     set("garbo_candydish", true);
     set("freecandy_treatOutfit", "Ceramic Suit");
