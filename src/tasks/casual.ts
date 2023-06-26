@@ -13,7 +13,7 @@ import {
   prepareAscension,
 } from "libram";
 import { createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay, menagerie } from "./common";
+import { breakfast, breakStone, duffo, endOfDay } from "./common";
 import { chooseStrategy } from "./strategies/strategy";
 import { args } from "../args";
 
@@ -79,10 +79,9 @@ export function casualQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...breakfast([]),
-      ...menagerie([]),
+      ...breakfast(),
       ...strategy.tasks(false),
-      ...endOfDay([]),
+      ...endOfDay(),
     ],
   };
 }

@@ -7,12 +7,6 @@ export function aftercoreQuest(ascend: boolean): Quest {
   return {
     name: "Aftercore",
     completed: () => ascendedToday(),
-    tasks: [
-      ...breakfast([]),
-      ...duffo([]),
-      // ...menagerie(),
-      ...strategyTasks,
-      ...(ascend ? pvp([]) : endOfDay([])),
-    ],
+    tasks: [...breakfast(), ...duffo(), ...strategyTasks, ...(ascend ? pvp() : endOfDay())],
   };
 }

@@ -116,10 +116,10 @@ export function csQuest(): Quest {
         },
         limit: { tries: 1 },
       },
-      ...breakfast([]),
-      ...duffo([]),
+      ...breakfast(),
+      ...duffo(),
       ...strategy.tasks(false),
-      ...endOfDay([]),
+      ...endOfDay(),
     ],
   };
 }

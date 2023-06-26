@@ -25,20 +25,18 @@ export class Engine extends BaseEngine<never, Task> {
   }
 
   public available(task: Task): boolean {
-    for (const after of task.after ?? []) {
-      const after_task = this.tasks_by_name.get(after);
-      if (after_task === undefined) throw `Unknown task dependency ${after} on ${task.name}`;
-      if (!after_task.completed()) return false;
-    }
-    // if (task.ready && !task.ready()) return false;
-    if (task.completed()) return false;
-    return true;
+    return !task.completed();
   }
 
   public run(actions?: number): void {
     for (let i = 0; i < (actions ?? Infinity); i++) {
       const task = this.getNextTask();
       if (!task) return;
+      for (const after of task.after ?? []) {
+        const after_task = this.tasks_by_name.get(after);
+        if (after_task === undefined) throw `Unknown task dependency ${after} on ${task.name}`;
+        if (!after_task.completed()) throw `Task dependency ${after} is not completed`;
+      }
       if (task.ready && !task.ready()) throw `Task ${task.name} is not ready`;
       this.execute(task);
     }

@@ -1,14 +1,9 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import {
-  canAdventure,
-  canEquip,
   cliExecute,
-  familiarWeight,
   getStorage,
   hippyStoneBroken,
-  Item,
   itemAmount,
-  jumpChance,
   maximize,
   myAscensions,
   myClosetMeat,
@@ -28,15 +23,10 @@ import {
   wait,
 } from "kolmafia";
 import {
-  $effect,
-  $effects,
   $familiar,
   $item,
   $items,
   $location,
-  $monster,
-  $skill,
-  Cartography,
   Clan,
   get,
   have,
@@ -46,7 +36,7 @@ import {
 } from "libram";
 import { args } from "../args";
 import { Task } from "./structure";
-import { canPickpocket, cliExecuteThrow } from "../lib";
+import { cliExecuteThrow } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -60,7 +50,7 @@ export function pullAll(): Task {
   };
 }
 
-export function breakfast(after: string[]): Task[] {
+export function breakfast(after: string[] = []): Task[] {
   return [
     breakStone(),
     {
@@ -151,7 +141,7 @@ export function breakfast(after: string[]): Task[] {
   ];
 }
 
-export function duffo(after: string[]): Task[] {
+export function duffo(after: string[] = []): Task[] {
   return [
     {
       name: "Party Fair",
@@ -181,84 +171,6 @@ export function duffo(after: string[]): Task[] {
   ];
 }
 
-function bestPickpocketItem(): Item {
-  return have($item`mime army infiltration glove`) && canEquip($item`mime army infiltration glove`)
-    ? $item`mime army infiltration glove`
-    : $item`tiny black hole`;
-}
-
-export function menagerie(after: string[]): Task[] {
-  return [
-    {
-      name: "Menagerie Key",
-      after: [...after],
-      ready: () =>
-        canAdventure($location`Cobb's Knob Laboratory`) &&
-        get("_monstersMapped") < 3 &&
-        !have($effect`Everything Looks Yellow`),
-      completed: () => have($item`Cobb's Knob Menagerie key`),
-      do: () =>
-        Cartography.mapMonster(
-          $location`Cobb's Knob Laboratory`,
-          $monster`Knob Goblin Very Mad Scientist`
-        ),
-      acquire: [{ item: $item`yellow rocket`, price: 250 }],
-      combat: new CombatStrategy().macro(
-        Macro.item($item`yellow rocket`),
-        $monster`Knob Goblin Very Mad Scientist`
-      ),
-      limit: { tries: 1 },
-    },
-    {
-      name: "Feed Goose",
-      after: [...after, "Menagerie Key"],
-      completed: () =>
-        get("_mayflySummons") >= 30 ||
-        get("gooseDronesRemaining") > 0 ||
-        familiarWeight($familiar`Grey Goose`) > 5,
-      do: () => use($item`Ghost Dog Chow`),
-      acquire: [{ item: $item`Ghost Dog Chow`, price: 5000 }],
-      outfit: { familiar: $familiar`Grey Goose` },
-      limit: { tries: 1 },
-    },
-    {
-      name: "Mayfly Runaways",
-      after: [...after, "Menagerie Key", "Feed Goose"],
-      completed: () => get("_mayflySummons") >= 30,
-      prepare: () => {
-        if (jumpChance($monster`BASIC Elemental`) < 100) {
-          throw `Unable to guarantee winning initiative against BASIC Elemental`;
-        }
-      },
-      do: $location`Cobb's Knob Menagerie, Level 1`,
-      acquire: [
-        { item: $item`Louder Than Bomb`, price: 10_000 },
-        { item: $item`tennis ball`, price: 10_000 },
-      ],
-      outfit: () => {
-        return {
-          equip: canPickpocket() ? [] : [bestPickpocketItem()],
-          acc1: $item`mayfly bait necklace`,
-          familiar: $familiar`Grey Goose`,
-          famequip: $item`tiny stillsuit`,
-          modifier: "pickpocket chance, init 100max",
-        };
-      },
-      effects: $effects`Cletus's Canticle of Celerity, Nearly Silent Hunting, Springy Fusilli, Suspicious Gaze, Walberg's Dim Bulb`,
-      combat: new CombatStrategy()
-        .macro(Macro.item($item`Louder Than Bomb`), $monster`Fruit Golem`)
-        .macro(Macro.item($item`tennis ball`), $monster`Knob Goblin Mutant`)
-        .macro(
-          Macro.step("pickpocket")
-            .trySkill($skill`Emit Matter Duplicating Drones`)
-            .skill($skill`Summon Mayfly Swarm`),
-          $monster`BASIC Elemental`
-        ),
-      limit: { tries: 40 },
-    },
-  ];
-}
-
 export function breakStone(): Task {
   return {
     name: "Break Stone",
@@ -268,7 +180,7 @@ export function breakStone(): Task {
   };
 }
 
-export function pvp(after: string[]): Task[] {
+export function pvp(after: string[] = []): Task[] {
   return [
     {
       name: "Pledge Allegiance",
@@ -292,13 +204,23 @@ export function pvp(after: string[]): Task[] {
   ];
 }
 
-export function endOfDay(after: string[]): Task[] {
+export function endOfDay(after: string[] = []): Task[] {
   return [
     {
       name: "Raffle",
       after: after,
       completed: () => have($item`raffle ticket`),
       do: () => cliExecute(`raffle ${Math.random() * 10 + 1}`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Pajamas",
+      after: after,
+      completed: () =>
+        maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
+        numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
+      prepare: () => cliExecute("refresh all"),
+      do: () => maximize("adv, switch tot, switch left-hand man, switch disembodied hand", false),
       limit: { tries: 1 },
     },
     {
@@ -312,16 +234,6 @@ export function endOfDay(after: string[]): Task[] {
         retrieveItem($item`clockwork maid`);
         use($item`clockwork maid`);
       },
-      limit: { tries: 1 },
-    },
-    {
-      name: "Pajamas",
-      after: after,
-      completed: () =>
-        maximize("adv, switch tot, switch left-hand man, switch disembodied hand", true) &&
-        numericModifier("Generated:_spec", "Adventures") <= numericModifier("Adventures"),
-      prepare: () => cliExecute("refresh all"),
-      do: () => maximize("adv, switch tot, switch left-hand man, switch disembodied hand", false),
       limit: { tries: 1 },
     },
   ];

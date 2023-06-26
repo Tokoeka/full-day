@@ -265,7 +265,7 @@ export function gyouQuest(): Quest {
         ),
         limit: { tries: 1 },
       },
-      ...duffo([]),
+      ...duffo(),
       {
         name: "Workshed",
         completed: () => get("_workshedItemUsed") || getWorkshed() === $item`cold medicine cabinet`,
@@ -278,7 +278,7 @@ export function gyouQuest(): Quest {
         do: () => cliExecute("loopcasual goal=level levelto=14"),
         limit: { tries: 1 },
       },
-      ...breakfast([]),
+      ...breakfast(),
       {
         name: "Steel Organ",
         completed: () => have($skill`Liver of Steel`),
@@ -286,7 +286,7 @@ export function gyouQuest(): Quest {
         limit: { tries: 1 },
       },
       ...strategy.tasks(false),
-      ...endOfDay([]),
+      ...endOfDay(),
     ],
   };
 }
