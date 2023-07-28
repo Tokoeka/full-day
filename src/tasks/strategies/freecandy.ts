@@ -21,7 +21,6 @@ export function freecandy(): Strategy {
         do: () => cliExecuteThrow("freecandy"),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
-          famequip: $item`gnomish housemaid's kgnee`,
         },
         limit: { tries: 1 },
         tracking: "Freecandy",
@@ -45,7 +44,6 @@ export function freecandy(): Strategy {
         do: () => cliExecuteThrow("freecandy"),
         outfit: {
           familiar: $familiar`Reagnimated Gnome`,
-          famequip: $item`gnomish housemaid's kgnee`,
         },
         limit: { tries: 1 },
         tracking: "Freecandy",
