@@ -8,6 +8,7 @@ import { Snapshot } from "./snapshot";
 import { aftercoreQuest } from "./tasks/aftercore";
 import { casualQuest } from "./tasks/casual";
 import { csQuest } from "./tasks/cs";
+import { reposQuest } from "./tasks/repos";
 
 const snapshotStart = Snapshot.importOrCreate("Start");
 
@@ -22,7 +23,7 @@ export function main(command?: string): void {
     args.minor.voa = 15000;
   }
 
-  const quests = getQuests(args.major.path);
+  const quests = [reposQuest, ...getQuests(args.major.path)];
   const tasks = getTasks(quests);
 
   // Abort during the prepare() step of the specified task
