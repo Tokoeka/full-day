@@ -71,10 +71,7 @@ export function freecandy(): Strategy {
       ],
       ronin: {
         do: () => cliExecuteThrow(`freecandy ${Math.ceil((myAdventures() - 40) / 5)}`),
-        outfit: {
-          familiar: $familiar`Reagnimated Gnome`,
-          famequip: $item`gnomish housemaid's kgnee`,
-        },
+        outfit: { familiar: $familiar`Reagnimated Gnome` },
       },
     },
   };
