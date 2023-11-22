@@ -14,7 +14,7 @@ import {
 } from "libram";
 import { createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay } from "./common";
-import { chooseStrategy } from "./strategies/strategy";
+import { chooseStrategy } from "../strategies/strategy";
 import { args } from "../args";
 
 export function casualQuest(): Quest {

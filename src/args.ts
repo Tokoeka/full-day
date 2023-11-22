@@ -22,7 +22,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       ],
       default: "cs",
     }),
-    class: Args.class({ help: "", default: $class`Seal Clubber` }),
+    class: Args.class({ help: "Class to ascend as.", default: $class`Seal Clubber` }),
   }),
   minor: Args.group("Minor Options", {
     voa: Args.number({
@@ -52,6 +52,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       help: "Maximum amount of meat to keep in inventory after breaking the prism.",
       default: 2_000_000,
     }),
+    batfellow: Args.boolean({ help: "Whether to consider batfellow consumables.", default: true }),
   }),
   debug: Args.group("Debug Options", {
     abort: Args.string({

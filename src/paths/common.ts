@@ -1,12 +1,19 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import {
   cliExecute,
+  drink,
+  eat,
+  getPlayerId,
   getStorage,
   hippyStoneBroken,
+  isOnline,
   itemAmount,
+  mallPrice,
   maximize,
   myAscensions,
   myClosetMeat,
+  myFullness,
+  myInebriety,
   myMeat,
   mySign,
   myStorageMeat,
@@ -29,6 +36,8 @@ import {
   $location,
   Clan,
   get,
+  getRemainingLiver,
+  getRemainingStomach,
   have,
   haveInCampground,
   Macro,
@@ -36,7 +45,7 @@ import {
 } from "libram";
 import { args } from "../args";
 import { Task } from "./structure";
-import { cliExecuteThrow } from "../lib";
+import { cliExecuteThrow, withCloseted } from "../lib";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
@@ -126,16 +135,105 @@ export function breakfast(after: string[] = []): Task[] {
     {
       name: "Clan Fortune",
       after: after,
-      completed: () => get("_clanFortuneConsultUses") >= 3,
-      do: () => Clan.with("Bonus Adventures from Hell", () => cliExecute("fortune 3038166")),
+      completed: () => get("_clanFortuneConsultUses") >= 3 || !isOnline("CheeseFax"),
+      do: () =>
+        Clan.with("Bonus Adventures from Hell", () =>
+          cliExecute(`fortune ${getPlayerId("CheeseFax")}`)
+        ),
       post: () => wait(10),
-      limit: { tries: 5 },
+      limit: { tries: 3 },
     },
     {
       name: "Breakfast",
       after: after,
       completed: () => get("breakfastCompleted"),
       do: () => cliExecute("breakfast"),
+      limit: { tries: 1 },
+    },
+  ];
+}
+
+function fullnessToRemove(): number {
+  const drinkDocClock =
+    !get("_docClocksThymeCocktailDrunk") &&
+    have($item`Doc Clock's thyme cocktail`) &&
+    getRemainingLiver() >= 4;
+  const drinkMadLiquor =
+    !get("_madLiquorDrunk") &&
+    have($item`The Mad Liquor`) &&
+    getRemainingLiver() - (drinkDocClock ? 4 : 0) >= 3;
+  return (drinkDocClock ? 2 : 0) + (drinkMadLiquor ? 1 : 0);
+}
+
+export function batfellow(): Task[] {
+  return [
+    {
+      name: "Kickstart Liver",
+      completed: () => myInebriety() >= 2 || get("_mrBurnsgerEaten"),
+      ready: () => args.minor.batfellow && have($item`Mr. Burnsger`) && getRemainingStomach() >= 4,
+      do: () => {
+        withCloseted($items`mime army shotglass`, () => {
+          if (have($item`astral pilsner`, 2)) drink($item`astral pilsner`, 2);
+          else if (mallPrice($item`splendid martini`) < 15_000) drink($item`splendid martini`, 2);
+          else throw `Unable to find a suitable booze to kickstart our liver with.`;
+        });
+      },
+      limit: { tries: 1 },
+    },
+    {
+      name: "Burnsger",
+      completed: () => get("_mrBurnsgerEaten"),
+      ready: () =>
+        args.minor.batfellow &&
+        have($item`Mr. Burnsger`) &&
+        getRemainingStomach() >= 4 &&
+        myInebriety() >= 2,
+      prepare: (): void => {
+        if (!get("_milkOfMagnesiumUsed")) {
+          retrieveItem($item`milk of magnesium`);
+          use($item`milk of magnesium`);
+        }
+      },
+      do: () => eat($item`Mr. Burnsger`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Kickstart Stomach",
+      completed: () => myFullness() >= fullnessToRemove(),
+      ready: () => args.minor.batfellow,
+      prepare: () => {
+        if (!get("_milkOfMagnesiumUsed")) {
+          retrieveItem($item`milk of magnesium`);
+          use($item`milk of magnesium`);
+        }
+      },
+      do: () => {
+        if (mallPrice($item`Yeast of Boris`) < 10_000) {
+          eat($item`Boris's bread`, fullnessToRemove());
+        } else throw `Unable to find a suitable food to kickstart our stomach with.`;
+      },
+      limit: { tries: 1 },
+    },
+    {
+      name: "Doc Clock",
+      completed: () => get("_docClocksThymeCocktailDrunk"),
+      ready: () =>
+        args.minor.batfellow &&
+        have($item`Doc Clock's thyme cocktail`) &&
+        getRemainingLiver() >= 4 &&
+        myFullness() >= 2,
+      do: () => drink($item`Doc Clock's thyme cocktail`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Mad Liquor",
+      completed: () => get("_madLiquorDrunk"),
+      ready: () =>
+        args.minor.batfellow &&
+        have($item`The Mad Liquor`) &&
+        getRemainingLiver() >= 3 &&
+        myFullness() >= 1,
+      do: () => drink($item`The Mad Liquor`),
       limit: { tries: 1 },
     },
   ];

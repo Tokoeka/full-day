@@ -1,6 +1,6 @@
 import { getWorkshed, inebrietyLimit, Item, myAdventures, myInebriety } from "kolmafia";
-import { $effect, $familiar, $item, get, have, set, withProperty } from "libram";
-import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
+import { $effect, $familiar, $item, get, have, withProperty } from "libram";
+import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../lib";
 import { caldera, stooper } from "./common";
 import { Strategy } from "./strategy";
 
@@ -17,12 +17,6 @@ function chooseWorkshed(): Item {
 export function garbo(): Strategy {
   return {
     tasks: (ascend: boolean) => [
-      {
-        name: "Set _gingerbreadCityTurns",
-        completed: () => get("_gingerbreadCityTurns") >= 30,
-        do: () => set("_gingerbreadCityTurns", 30),
-        limit: { tries: 1 },
-      },
       {
         name: "Garbo",
         completed: () =>

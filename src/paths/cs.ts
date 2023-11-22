@@ -1,11 +1,9 @@
 import {
   cliExecute,
   equippedItem,
-  getStorage,
   getWorkshed,
   Item,
   myPath,
-  myStorageMeat,
   retrieveItem,
   use,
   visitUrl,
@@ -25,8 +23,8 @@ import {
 } from "libram";
 import { ascendedToday, Quest } from "./structure";
 import { byStat, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay } from "./common";
-import { chooseStrategy } from "./strategies/strategy";
+import { batfellow, breakfast, breakStone, duffo, endOfDay, pullAll } from "./common";
+import { chooseStrategy } from "../strategies/strategy";
 import { args } from "../args";
 
 function setBootSkin(skin: Item): boolean {
@@ -94,13 +92,7 @@ export function csQuest(): Quest {
         limit: { tries: 1 },
         tracking: "Run",
       },
-      {
-        name: "Pull All",
-        completed: () => Object.keys(getStorage()).length === 0 && myStorageMeat() === 0,
-        do: () => cliExecute("pull all"),
-        post: () => cliExecute("refresh all"),
-        limit: { tries: 1 },
-      },
+      pullAll(),
       {
         name: "Uneffect Lost",
         completed: () => !have($effect`Feeling Lost`),
@@ -118,6 +110,7 @@ export function csQuest(): Quest {
       },
       ...breakfast(),
       ...duffo(),
+      ...batfellow(),
       ...strategy.tasks(false),
       ...endOfDay(),
     ],

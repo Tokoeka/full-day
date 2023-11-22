@@ -1,7 +1,7 @@
 import { myAdventures, myInebriety } from "kolmafia";
 import { $familiar, get, withProperty } from "libram";
-import { Task } from "../structure";
-import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../../lib";
+import { Task } from "../paths/structure";
+import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../lib";
 import { caldera, stooper } from "./common";
 
 function capitalize(word: string): string {

@@ -1,5 +1,5 @@
 import { Engine as BaseEngine } from "grimoire-kolmafia";
-import { Task } from "../tasks/structure";
+import { Task } from "../paths/structure";
 import { printProfits, ProfitTracker } from "./profits";
 import { haveEffect, userConfirm } from "kolmafia";
 import { $effect, have, PropertiesManager, set, uneffect } from "libram";

@@ -1,5 +1,5 @@
 import { $item } from "libram";
-import { cliExecuteThrow } from "../../lib";
+import { cliExecuteThrow } from "../lib";
 import { Strategy } from "./strategy";
 import { createStrategyTasks } from "./util";
 

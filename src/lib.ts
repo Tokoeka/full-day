@@ -5,17 +5,22 @@ import {
   getPermedSkills,
   inebrietyLimit,
   Item,
+  itemAmount,
   itemType,
   myClass,
   myFamiliar,
   myFullness,
   myInebriety,
   mySpleenUse,
+  Path,
   print,
+  putCloset,
   Skill,
   spleenLimit,
   Stat,
   StatType,
+  takeCloset,
+  visitUrl,
 } from "kolmafia";
 import { $familiar, $stat, have, Kmail, Lifestyle } from "libram";
 
@@ -90,4 +95,21 @@ export function byClass<T>(thing: ClassSwitch<T>, class_: Class): T {
 export function byStat<T>(thing: StatSwitch<T>, primestat: Stat): T {
   const stat = primestat.toString();
   return "default" in thing ? thing[stat] ?? thing.default : thing[stat];
+}
+
+export function withCloseted<T>(items: Item[], callback: () => T): T {
+  const closetedItems = new Map(items.map((item) => [item, itemAmount(item)]));
+  closetedItems.forEach((amount, item) => putCloset(amount, item));
+  try {
+    return callback();
+  } finally {
+    closetedItems.forEach((amount, item) => takeCloset(amount, item));
+  }
+}
+
+export function mostRecentPath(): Path | null {
+  const page = visitUrl("ascensionhistory.php?back=self&who=2460823");
+  const pattern = /.+"([\w ]+)"><\/td><\/tr>/;
+  const match = pattern.exec(page);
+  return match !== null ? Path.get(match[1]) : null;
 }

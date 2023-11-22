@@ -1,14 +1,14 @@
 import { Args, getTasks } from "grimoire-kolmafia";
-import { print } from "kolmafia";
+import { cliExecute, print } from "kolmafia";
 import { args } from "./args";
 import { Engine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
 import { cleanInbox, debug, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
-import { aftercoreQuest } from "./tasks/aftercore";
-import { casualQuest } from "./tasks/casual";
-import { csQuest } from "./tasks/cs";
-import { reposQuest } from "./tasks/repos";
+import { aftercoreQuest } from "./paths/aftercore";
+import { casualQuest } from "./paths/casual";
+import { csQuest } from "./paths/cs";
+import { get } from "libram";
 
 const snapshotStart = Snapshot.importOrCreate("Start");
 
@@ -23,7 +23,7 @@ export function main(command?: string): void {
     args.minor.voa = 15000;
   }
 
-  const quests = [reposQuest, ...getQuests(args.major.path)];
+  const quests = getQuests(args.major.path);
   const tasks = getTasks(quests);
 
   // Abort during the prepare() step of the specified task
@@ -41,6 +41,9 @@ export function main(command?: string): void {
       listTasks(engine);
       return;
     }
+
+    if (!get("_svnUpdated")) cliExecute("svn update");
+    if (!get("_gitUpdated")) cliExecute("git update");
 
     engine.run();
   } finally {
@@ -62,7 +65,7 @@ function getQuests(path: string) {
     case "none":
       return [aftercoreQuest(false)];
     default:
-      throw `Unknown path type ${path}`;
+      throw `Unknown path ${path}`;
   }
 }
 

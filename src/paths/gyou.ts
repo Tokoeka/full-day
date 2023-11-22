@@ -49,7 +49,7 @@ import {
 import { ascendedToday, Quest, Task } from "./structure";
 import { cliExecuteThrow, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay, pullAll } from "./common";
-import { chooseStrategy } from "./strategies/strategy";
+import { chooseStrategy } from "../strategies/strategy";
 
 function itemsPulled(): Item[] {
   return get("_roninStoragePulls")
