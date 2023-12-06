@@ -9,6 +9,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
         ["garbo", "Farm meat using garbage-collector"],
         ["freecandy", "Farm Halloween candy using freecandy"],
         ["baggo", "Farm duffel bags and van keys using bag-collector"],
+        ["chrono", "Farm the TTT using chrono-collector"],
       ],
       default: "garbo",
     }),

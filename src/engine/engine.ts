@@ -1,15 +1,17 @@
-import { Engine as BaseEngine } from "grimoire-kolmafia";
-import { Task } from "../paths/structure";
+import { Engine, Quest, Task } from "grimoire-kolmafia";
 import { printProfits, ProfitTracker } from "./profits";
 import { haveEffect, userConfirm } from "kolmafia";
 import { $effect, have, PropertiesManager, set, uneffect } from "libram";
 import { args } from "../args";
 import { debug } from "../lib";
 
-export class Engine extends BaseEngine<never, Task> {
+export type LoopTask = Task & { tracking?: string };
+export type LoopQuest = Quest<Task>;
+
+export class LoopEngine extends Engine<never, LoopTask> {
   profits: ProfitTracker;
 
-  constructor(tasks: Task[], completedTasks: string[], key: string) {
+  constructor(tasks: LoopTask[], completedTasks: string[], key: string) {
     const completed_set = new Set<string>(completedTasks.map((n) => n.trim()));
     // Completed tasks are always completed
     tasks = tasks.map((task) => {
@@ -42,7 +44,7 @@ export class Engine extends BaseEngine<never, Task> {
     }
   }
 
-  execute(task: Task): void {
+  execute(task: LoopTask): void {
     try {
       if (args.debug.confirm && !userConfirm(`Executing ${task.name}, continue?`)) {
         throw `User rejected execution of task ${task.name}`;
@@ -56,7 +58,7 @@ export class Engine extends BaseEngine<never, Task> {
     }
   }
 
-  post(task: Task): void {
+  post(task: LoopTask): void {
     super.post(task);
     if (haveEffect($effect`Beaten Up`) > 3) uneffect($effect`Beaten Up`);
     if (have($effect`Beaten Up`)) throw "Fight was lost; stop.";

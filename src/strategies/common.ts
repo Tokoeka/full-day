@@ -1,14 +1,14 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import { bjornifyFamiliar, cliExecute, myInebriety, useSkill } from "kolmafia";
 import { $effect, $familiar, $item, $location, $skill, get, Macro, uneffect } from "libram";
-import { Task } from "../paths/structure";
 import { canConsume, stooperInebrietyLimit } from "../lib";
+import { LoopTask } from "../engine/engine";
 
 function distillateAdvs(): number {
   return Math.round(get("familiarSweat") ** 0.4);
 }
 
-export function stooper(): Task {
+export function stooper(): LoopTask {
   return {
     name: "Stooper",
     ready: () => distillateAdvs() >= 9 && !canConsume(), // Check organs just to be safe
@@ -18,7 +18,7 @@ export function stooper(): Task {
   };
 }
 
-export function caldera(): Task {
+export function caldera(): LoopTask {
   return {
     name: "Caldera",
     completed: () => get("hallowienerVolcoino"),

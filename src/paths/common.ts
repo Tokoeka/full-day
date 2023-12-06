@@ -44,12 +44,12 @@ import {
   set,
 } from "libram";
 import { args } from "../args";
-import { Task } from "./structure";
 import { cliExecuteThrow, withCloseted } from "../lib";
+import { LoopTask } from "../engine/engine";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
-export function pullAll(): Task {
+export function pullAll(): LoopTask {
   return {
     name: "Pull All",
     completed: () => Object.keys(getStorage()).length === 0 && myStorageMeat() === 0,
@@ -59,7 +59,7 @@ export function pullAll(): Task {
   };
 }
 
-export function breakfast(after: string[] = []): Task[] {
+export function breakfast(after: string[] = []): LoopTask[] {
   return [
     breakStone(),
     {
@@ -165,7 +165,7 @@ function fullnessToRemove(): number {
   return (drinkDocClock ? 2 : 0) + (drinkMadLiquor ? 1 : 0);
 }
 
-export function batfellow(): Task[] {
+export function batfellow(): LoopTask[] {
   return [
     {
       name: "Kickstart Liver",
@@ -239,7 +239,7 @@ export function batfellow(): Task[] {
   ];
 }
 
-export function duffo(after: string[] = []): Task[] {
+export function duffo(after: string[] = []): LoopTask[] {
   return [
     {
       name: "Party Fair",
@@ -269,7 +269,7 @@ export function duffo(after: string[] = []): Task[] {
   ];
 }
 
-export function breakStone(): Task {
+export function breakStone(): LoopTask {
   return {
     name: "Break Stone",
     completed: () => hippyStoneBroken(),
@@ -278,7 +278,7 @@ export function breakStone(): Task {
   };
 }
 
-export function pvp(after: string[] = []): Task[] {
+export function pvp(after: string[] = []): LoopTask[] {
   return [
     {
       name: "Pledge Allegiance",
@@ -302,7 +302,7 @@ export function pvp(after: string[] = []): Task[] {
   ];
 }
 
-export function endOfDay(after: string[] = []): Task[] {
+export function endOfDay(after: string[] = []): LoopTask[] {
   return [
     {
       name: "Raffle",

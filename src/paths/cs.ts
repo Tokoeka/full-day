@@ -21,11 +21,11 @@ import {
   prepareAscension,
   uneffect,
 } from "libram";
-import { ascendedToday, Quest } from "./structure";
-import { byStat, createPermOptions } from "../lib";
+import { ascendedToday, byStat, createPermOptions } from "../lib";
 import { batfellow, breakfast, breakStone, duffo, endOfDay, pullAll } from "./common";
 import { chooseStrategy } from "../strategies/strategy";
 import { args } from "../args";
+import { LoopQuest } from "../engine/engine";
 
 function setBootSkin(skin: Item): boolean {
   if (!have($item`your cowboy boots`)) {
@@ -35,7 +35,7 @@ function setBootSkin(skin: Item): boolean {
   return retrieveItem(skin) && use(skin);
 }
 
-export function csQuest(): Quest {
+export function csQuest(): LoopQuest {
   const strategy = chooseStrategy();
   return {
     name: "Community Service",

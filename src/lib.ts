@@ -8,6 +8,7 @@ import {
   itemAmount,
   itemType,
   myClass,
+  myDaycount,
   myFamiliar,
   myFullness,
   myInebriety,
@@ -105,6 +106,10 @@ export function withCloseted<T>(items: Item[], callback: () => T): T {
   } finally {
     closetedItems.forEach((amount, item) => takeCloset(amount, item));
   }
+}
+
+export function ascendedToday(): boolean {
+  return myDaycount() === 1;
 }
 
 export function mostRecentPath(): Path | null {

@@ -1,8 +1,8 @@
 import { myAdventures, myInebriety } from "kolmafia";
 import { $familiar, get, withProperty } from "libram";
-import { Task } from "../paths/structure";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../lib";
 import { caldera, stooper } from "./common";
+import { LoopTask } from "../engine/engine";
 
 function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1);
@@ -15,7 +15,7 @@ function getScriptName(command: string): string {
 export function createStrategyTasks(
   command: string,
   overdrunk = false
-): (ascend: boolean) => Task[] {
+): (ascend: boolean) => LoopTask[] {
   const commandScriptName = getScriptName(command);
 
   return (ascend: boolean) => [

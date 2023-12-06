@@ -1,4 +1,3 @@
-import { ascendedToday, Quest } from "./structure";
 import { cliExecute, getWorkshed, myAdventures, myPath, use, visitUrl } from "kolmafia";
 import {
   $effect,
@@ -12,12 +11,13 @@ import {
   Lifestyle,
   prepareAscension,
 } from "libram";
-import { createPermOptions } from "../lib";
+import { ascendedToday, createPermOptions } from "../lib";
 import { breakfast, breakStone, duffo, endOfDay } from "./common";
 import { chooseStrategy } from "../strategies/strategy";
 import { args } from "../args";
+import { LoopQuest } from "../engine/engine";
 
-export function casualQuest(): Quest {
+export function casualQuest(): LoopQuest {
   const strategy = chooseStrategy();
   return {
     name: "Casual",

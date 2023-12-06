@@ -1,7 +1,7 @@
 import { Args, getTasks } from "grimoire-kolmafia";
 import { cliExecute, print } from "kolmafia";
 import { args } from "./args";
-import { Engine } from "./engine/engine";
+import { LoopEngine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
 import { cleanInbox, debug, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
@@ -35,7 +35,7 @@ export function main(command?: string): void {
     };
   }
 
-  const engine = new Engine(tasks, args.debug.completedtasks?.split(",") ?? [], "fullday");
+  const engine = new LoopEngine(tasks, args.debug.completedtasks?.split(",") ?? [], "fullday");
   try {
     if (args.debug.list) {
       listTasks(engine);
@@ -69,7 +69,7 @@ function getQuests(path: string) {
   }
 }
 
-function listTasks(engine: Engine): void {
+function listTasks(engine: LoopEngine): void {
   for (const task of engine.tasks) {
     if (task.completed()) {
       debug(`${task.name}: Done`, "blue");

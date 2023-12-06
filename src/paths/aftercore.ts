@@ -1,8 +1,9 @@
-import { ascendedToday, Quest } from "./structure";
 import { batfellow, breakfast, duffo, endOfDay, pullAll, pvp } from "./common";
 import { chooseStrategy } from "../strategies/strategy";
+import { ascendedToday } from "../lib";
+import { LoopQuest } from "../engine/engine";
 
-export function aftercoreQuest(ascend: boolean): Quest {
+export function aftercoreQuest(ascend: boolean): LoopQuest {
   const strategyTasks = chooseStrategy().tasks(ascend);
   return {
     name: "Aftercore",
