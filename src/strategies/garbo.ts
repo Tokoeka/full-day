@@ -22,10 +22,7 @@ export function garbo(): Strategy {
         completed: () =>
           (get("_garboCompleted", "") !== "" && myAdventures() === 0 && !canConsume()) ||
           myInebriety() >= stooperInebrietyLimit(),
-        do: () =>
-          cliExecuteThrow(
-            `garbo yachtzeechain ${ascend ? "ascend" : ""} workshed="${chooseWorkshed()}"`
-          ),
+        do: () => cliExecuteThrow(`garbo ${ascend ? "ascend" : ""} workshed="${chooseWorkshed()}"`),
         limit: { tries: 1 },
         tracking: "Garbo",
       },

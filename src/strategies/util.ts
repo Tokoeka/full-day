@@ -24,7 +24,7 @@ export function createStrategyTasks(
       completed: () =>
         (get("_garboCompleted", "") !== "" && !canConsume()) ||
         myInebriety() >= stooperInebrietyLimit(),
-      do: () => cliExecuteThrow(`garbo yachtzeechain nobarf ${ascend ? "ascend" : ""}`),
+      do: () => cliExecuteThrow(`garbo nobarf ${ascend ? "ascend" : ""}`),
       limit: { tries: 1 },
       tracking: "Garbo",
     },

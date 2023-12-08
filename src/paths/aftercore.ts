@@ -1,10 +1,9 @@
-import { batfellow, breakfast, duffo, endOfDay, pullAll, pvp } from "./common";
-import { chooseStrategy } from "../strategies/strategy";
+import { batfellow, breakfast, duffo, pullAll, pvp } from "./common";
 import { ascendedToday } from "../lib";
 import { LoopQuest } from "../engine/engine";
+import { chosenStrategy } from "../strategies/strategy";
 
-export function aftercoreQuest(ascend: boolean): LoopQuest {
-  const strategyTasks = chooseStrategy().tasks(ascend);
+export function aftercoreQuest(): LoopQuest {
   return {
     name: "Aftercore",
     completed: () => ascendedToday(),
@@ -13,8 +12,8 @@ export function aftercoreQuest(ascend: boolean): LoopQuest {
       ...breakfast(),
       ...duffo(),
       ...batfellow(),
-      ...strategyTasks,
-      ...(ascend ? pvp() : endOfDay()),
+      ...chosenStrategy.tasks(true),
+      ...pvp(),
     ],
   };
 }

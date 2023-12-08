@@ -9,6 +9,9 @@ import { aftercoreQuest } from "./paths/aftercore";
 import { casualQuest } from "./paths/casual";
 import { csQuest } from "./paths/cs";
 import { get } from "libram";
+import { smolQuest } from "./paths/smol";
+import { postQuest } from "./paths/post";
+import { chooseStrategy } from "./strategies/strategy";
 
 const snapshotStart = Snapshot.importOrCreate("Start");
 
@@ -19,10 +22,7 @@ export function main(command?: string): void {
     return;
   }
 
-  if (args.major.strategy === "freecandy") {
-    args.minor.voa = 15000;
-  }
-
+  chooseStrategy();
   const quests = getQuests(args.major.path);
   const tasks = getTasks(quests);
 
@@ -42,9 +42,7 @@ export function main(command?: string): void {
       return;
     }
 
-    if (!get("_svnUpdated")) cliExecute("svn update");
-    if (!get("_gitUpdated")) cliExecute("git update");
-
+    updateScripts();
     engine.run();
   } finally {
     engine.destruct();
@@ -57,15 +55,17 @@ export function main(command?: string): void {
 function getQuests(path: string) {
   switch (path) {
     case "cs":
-      return [aftercoreQuest(true), csQuest()];
+      return [aftercoreQuest(), csQuest(), postQuest()];
     case "casual":
-      return [aftercoreQuest(true), casualQuest()];
+      return [aftercoreQuest(), casualQuest(), postQuest()];
+    case "smol":
+      return [aftercoreQuest(), smolQuest(), postQuest()];
     case "custom":
-      return [aftercoreQuest(true)];
+      return [aftercoreQuest()];
     case "none":
-      return [aftercoreQuest(false)];
+      return [postQuest()];
     default:
-      throw `Unknown path ${path}`;
+      throw `Unknown run type ${path}`;
   }
 }
 
@@ -79,6 +79,11 @@ function listTasks(engine: LoopEngine): void {
       debug(`${task.name}: Not Available`, "red");
     }
   }
+}
+
+function updateScripts(): void {
+  if (!get("_svnUpdated")) cliExecute("svn update");
+  if (!get("_gitUpdated")) cliExecute("git update");
 }
 
 function printFulldaySnapshot() {

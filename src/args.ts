@@ -6,18 +6,19 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     strategy: Args.string({
       help: "Farming strategy to use.",
       options: [
+        ["auto", "Automatically choose based on game state"],
         ["garbo", "Farm meat using garbage-collector"],
         ["freecandy", "Farm Halloween candy using freecandy"],
-        ["baggo", "Farm duffel bags and van keys using bag-collector"],
         ["chrono", "Farm the TTT using chrono-collector"],
       ],
-      default: "garbo",
+      default: "auto",
     }),
     path: Args.string({
       help: "Path to ascend into.",
       options: [
         ["cs", "Community Service"],
         ["casual", "Casual"],
+        ["smol", "A Shrunken Adventurer am I"],
         ["custom", "Jump the gash manually"],
         ["none", "Stay in aftercore"],
       ],
@@ -27,8 +28,12 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
   }),
   minor: Args.group("Minor Options", {
     voa: Args.number({
-      help: "Value of an adventure in meat.",
+      help: "Value of an adventure in meat to use for garbo.",
       default: 6500,
+    }),
+    halloweenvoa: Args.number({
+      help: "Value of an adventure in meat to use for halloween.",
+      default: 15000,
     }),
     tune: Args.string({
       help: "Which moon sign to tune using the hewn moon-rune spoon.",
@@ -54,6 +59,10 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       default: 2_000_000,
     }),
     batfellow: Args.boolean({ help: "Whether to consider batfellow consumables.", default: true }),
+    skipholiday: Args.flag({
+      help: "If given, ignore the fact that today is a holiday.",
+      default: false,
+    }),
   }),
   debug: Args.group("Debug Options", {
     abort: Args.string({
@@ -72,5 +81,3 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
     }),
   }),
 });
-
-export const metadata = Args.getMetadata(args);

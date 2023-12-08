@@ -1,24 +1,11 @@
-import { cliExecute, getWorkshed, myAdventures, myPath, use, visitUrl } from "kolmafia";
-import {
-  $effect,
-  $item,
-  $path,
-  $skill,
-  ascend,
-  AsdonMartin,
-  get,
-  have,
-  Lifestyle,
-  prepareAscension,
-} from "libram";
-import { ascendedToday, createPermOptions } from "../lib";
-import { breakfast, breakStone, duffo, endOfDay } from "./common";
-import { chooseStrategy } from "../strategies/strategy";
+import { cliExecute, myAdventures, myPath, visitUrl } from "kolmafia";
+import { $item, $path, $skill, ascend, get, have, Lifestyle, prepareAscension } from "libram";
+import { ascendedToday, byAscendingStat, createPermOptions } from "../lib";
+import { breakStone, duffo } from "./common";
 import { args } from "../args";
 import { LoopQuest } from "../engine/engine";
 
 export function casualQuest(): LoopQuest {
-  const strategy = chooseStrategy();
   return {
     name: "Casual",
     tasks: [
@@ -31,26 +18,24 @@ export function casualQuest(): LoopQuest {
             eudora: "New-You Club Membership Form",
             chateau: {
               desk: "Swiss piggy bank",
-              nightstand: (
-                {
-                  Muscle: "electric muscle stimulator",
-                  Mysticality: "foreign language tapes",
-                  Moxie: "bowl of potpourri",
-                } as const
-              )[args.major.class.primestat.toString()],
+              nightstand: byAscendingStat({
+                Muscle: "electric muscle stimulator",
+                Mysticality: "foreign language tapes",
+                Moxie: "bowl of potpourri",
+              }),
               ceiling: "ceiling fan",
             },
           });
           visitUrl("council.php"); // Collect thwaitgold
-          ascend(
-            $path`none`,
-            args.major.class,
-            Lifestyle.casual,
-            "knoll",
-            $item`astral six-pack`,
-            $item`astral pet sweater`,
-            createPermOptions()
-          );
+          ascend({
+            path: $path`none`,
+            playerClass: args.major.class,
+            lifestyle: Lifestyle.casual,
+            moon: "knoll",
+            consumable: $item`astral six-pack`,
+            pet: $item`astral pet sweater`,
+            permOptions: createPermOptions(),
+          });
         },
         limit: { tries: 1 },
       },
@@ -70,18 +55,6 @@ export function casualQuest(): LoopQuest {
         limit: { tries: 1 },
         tracking: "Run",
       },
-      {
-        name: "Workshed",
-        completed: () => get("_workshedItemUsed") || getWorkshed() === $item`cold medicine cabinet`,
-        do: (): void => {
-          AsdonMartin.drive($effect`Driving Observantly`, 1000);
-          use($item`cold medicine cabinet`);
-        },
-        limit: { tries: 1 },
-      },
-      ...breakfast(),
-      ...strategy.tasks(false),
-      ...endOfDay(),
     ],
   };
 }

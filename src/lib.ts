@@ -3,6 +3,7 @@ import {
   cliExecute,
   fullnessLimit,
   getPermedSkills,
+  holiday,
   inebrietyLimit,
   Item,
   itemAmount,
@@ -18,12 +19,11 @@ import {
   putCloset,
   Skill,
   spleenLimit,
-  Stat,
-  StatType,
   takeCloset,
   visitUrl,
 } from "kolmafia";
-import { $familiar, $stat, have, Kmail, Lifestyle } from "libram";
+import { $familiar, $stat, have, Kmail, Lifestyle, makeByXFunction } from "libram";
+import { args } from "./args";
 
 export function debug(message: string, color?: string): void {
   if (color) {
@@ -64,10 +64,11 @@ export function numberWithCommas(x: number): string {
 }
 
 export function createPermOptions(): { permSkills: Map<Skill, Lifestyle>; neverAbort: boolean } {
+  const permedSkills = getPermedSkills();
   return {
     permSkills: new Map(
       Skill.all()
-        .filter((skill) => have(skill) && skill.permable && !getPermedSkills()[skill.name])
+        .filter((skill) => have(skill) && skill.permable && !permedSkills[skill.name])
         .map((skill) => [skill, Lifestyle.hardcore])
     ),
     neverAbort: false,
@@ -88,15 +89,7 @@ export function cleanInbox(): void {
   );
 }
 
-type StatSwitch<T> = Record<StatType, T> | (Partial<{ [x in StatType]: T }> & { default: T });
-type ClassSwitch<T> = { options: Map<Class, T>; default: T };
-export function byClass<T>(thing: ClassSwitch<T>, class_: Class): T {
-  return thing.options.get(class_) ?? thing.default;
-}
-export function byStat<T>(thing: StatSwitch<T>, primestat: Stat): T {
-  const stat = primestat.toString();
-  return "default" in thing ? thing[stat] ?? thing.default : thing[stat];
-}
+export const byAscendingStat = makeByXFunction(() => args.major.class.primestat.toString());
 
 export function withCloseted<T>(items: Item[], callback: () => T): T {
   const closetedItems = new Map(items.map((item) => [item, itemAmount(item)]));
@@ -110,6 +103,10 @@ export function withCloseted<T>(items: Item[], callback: () => T): T {
 
 export function ascendedToday(): boolean {
   return myDaycount() === 1;
+}
+
+export function isHalloween(): boolean {
+  return holiday() === "Halloween" && !args.minor.skipholiday;
 }
 
 export function mostRecentPath(): Path | null {

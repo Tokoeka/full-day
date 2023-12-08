@@ -39,7 +39,6 @@ export function caldera(): LoopTask {
       acc2: $item`mafia thumb ring`,
       acc3: $item`Mr. Screege's spectacles`,
       familiar: $familiar`Puck Man`,
-      famequip: $item`orange boxing gloves`,
       modifier: "mainstat",
     },
     combat: new CombatStrategy().macro(Macro.attack().repeat()),

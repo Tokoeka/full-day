@@ -49,6 +49,18 @@ import { LoopTask } from "../engine/engine";
 
 const astralContainers = $items`astral hot dog dinner, astral six-pack, [10882]carton of astral energy drinks`;
 
+export function checkForTimeTower(): LoopTask {
+  return {
+    name: "Check for Time Tower",
+    completed: () => get("_fullday_timeTowerChecked", false),
+    do: (): void => {
+      visitUrl("town.php");
+      set("_fullday_timeTowerChecked", true);
+    },
+    limit: { tries: 1 },
+  };
+}
+
 export function pullAll(): LoopTask {
   return {
     name: "Pull All",
@@ -62,6 +74,7 @@ export function pullAll(): LoopTask {
 export function breakfast(after: string[] = []): LoopTask[] {
   return [
     breakStone(),
+    checkForTimeTower(),
     {
       name: "Closet Meat",
       after: after,

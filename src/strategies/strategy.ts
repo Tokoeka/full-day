@@ -1,30 +1,40 @@
-import { Item } from "kolmafia";
 import { freecandy } from "./freecandy";
 import { garbo } from "./garbo";
-import { baggo } from "./baggo";
 import { args } from "../args";
 import { chrono } from "./chrono";
 import { LoopTask } from "../engine/engine";
+import { visitUrl } from "kolmafia";
+import { get } from "libram";
+import { isHalloween } from "../lib";
 
 export type Strategy = {
   tasks: (ascend: boolean) => LoopTask[];
-  gyou?: {
-    pulls: Item[];
-    ronin: Pick<LoopTask, "do" | "outfit">;
-  };
 };
 
-export function chooseStrategy(): Strategy {
+export let chosenStrategy: Strategy = {
+  tasks: () => {
+    throw "A strategy has not been chosen";
+  },
+};
+
+export function chooseStrategy(): void {
   switch (args.major.strategy) {
+    case "auto":
+      visitUrl("town.php");
+      if (get("timeTowerAvailable")) chosenStrategy = chrono();
+      else if (isHalloween()) chosenStrategy = freecandy();
+      else chosenStrategy = garbo();
+      break;
     case "garbo":
-      return garbo();
+      chosenStrategy = garbo();
+      break;
     case "freecandy":
-      return freecandy();
-    case "baggo":
-      return baggo();
+      chosenStrategy = freecandy();
+      break;
     case "chrono":
-      return chrono();
+      chosenStrategy = chrono();
+      break;
     default:
-      throw `Unsupported strategy: ${args.major.strategy}`;
+      throw `Unknown strategy name ${args.major.strategy}`;
   }
 }

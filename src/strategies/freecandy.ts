@@ -1,17 +1,24 @@
 import { myAdventures, myInebriety } from "kolmafia";
-import { $familiar, $item, get, set, withProperty } from "libram";
+import { $familiar, get, set, withProperty } from "libram";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../lib";
 import { caldera, stooper } from "./common";
 import { Strategy } from "./strategy";
+import { args } from "../args";
+
+const garboweenCompletedPref = "_fullday_garboweenCompleted"; // Unlike garbo, garboween doesn't currently track completion
 
 export function freecandy(): Strategy {
   return {
     tasks: (ascend: boolean) => [
       {
         name: "Garboween",
-        completed: () => get("_garboweenCompleted", false) && !canConsume(),
+        completed: () => get(garboweenCompletedPref, false) && !canConsume(),
+        prepare: () => set("valueOfAdventure", args.minor.halloweenvoa),
         do: () => cliExecuteThrow(`garboween yachtzeechain ${ascend ? "ascend" : ""}`),
-        post: () => set("_garboweenCompleted", true), // Unlike garbo, garboween doesn't currently track completion
+        post: () => {
+          set(garboweenCompletedPref, true);
+          set("valueOfAdventure", args.minor.voa);
+        },
         limit: { tries: 1 },
         tracking: "Garbo",
       },
@@ -31,7 +38,9 @@ export function freecandy(): Strategy {
         completed: () => myInebriety() > stooperInebrietyLimit(),
         do: () =>
           withProperty("spiceMelangeUsed", true, () =>
-            cliExecuteThrow(`CONSUME NIGHTCAP ${ascend ? "NOMEAT" : ""}`)
+            cliExecuteThrow(
+              `CONSUME VALUE ${args.minor.halloweenvoa} NIGHTCAP ${ascend ? "NOMEAT" : ""}`
+            )
           ),
         outfit: { familiar: $familiar`Stooper` },
         limit: { tries: 1 },
@@ -59,20 +68,5 @@ export function freecandy(): Strategy {
           ]
         : []),
     ],
-    gyou: {
-      pulls: [
-        $item`porcelain porkpie`,
-        $item`porcelain pelerine`,
-        $item`porcelain police baton`,
-        $item`porcelain pepper mill`,
-        $item`porcelain plus-fours`,
-        $item`porcelain phantom mask`,
-        $item`beholed bedsheet`,
-      ],
-      ronin: {
-        do: () => cliExecuteThrow(`freecandy ${Math.ceil((myAdventures() - 40) / 5)}`),
-        outfit: { familiar: $familiar`Reagnimated Gnome` },
-      },
-    },
   };
 }

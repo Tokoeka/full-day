@@ -1,29 +1,18 @@
-import {
-  cliExecute,
-  equippedItem,
-  getWorkshed,
-  Item,
-  myPath,
-  retrieveItem,
-  use,
-  visitUrl,
-} from "kolmafia";
+import { cliExecute, equippedItem, Item, myPath, retrieveItem, use, visitUrl } from "kolmafia";
 import {
   $effect,
   $item,
   $path,
   $slot,
   ascend,
-  AsdonMartin,
   get,
   have,
   Lifestyle,
   prepareAscension,
   uneffect,
 } from "libram";
-import { ascendedToday, byStat, createPermOptions } from "../lib";
-import { batfellow, breakfast, breakStone, duffo, endOfDay, pullAll } from "./common";
-import { chooseStrategy } from "../strategies/strategy";
+import { ascendedToday, byAscendingStat, createPermOptions } from "../lib";
+import { breakStone } from "./common";
 import { args } from "../args";
 import { LoopQuest } from "../engine/engine";
 
@@ -36,7 +25,6 @@ function setBootSkin(skin: Item): boolean {
 }
 
 export function csQuest(): LoopQuest {
-  const strategy = chooseStrategy();
   return {
     name: "Community Service",
     tasks: [
@@ -45,41 +33,35 @@ export function csQuest(): LoopQuest {
         completed: () => ascendedToday(),
         do: (): void => {
           setBootSkin(
-            byStat(
-              {
-                Muscle: $item`grizzled bearskin`,
-                Mysticality: $item`frontwinder skin`,
-                Moxie: $item`mountain lion skin`,
-              },
-              args.major.class.primestat
-            )
+            byAscendingStat({
+              Muscle: $item`grizzled bearskin`,
+              Mysticality: $item`frontwinder skin`,
+              Moxie: $item`mountain lion skin`,
+            })
           );
           prepareAscension({
             garden: "Peppermint Pip Packet",
             eudora: "Our Daily Candles™ order form",
             chateau: {
               desk: "continental juice bar",
-              nightstand: byStat(
-                {
-                  Muscle: "electric muscle stimulator",
-                  Mysticality: "foreign language tapes",
-                  Moxie: "bowl of potpourri",
-                },
-                args.major.class.primestat
-              ),
+              nightstand: byAscendingStat({
+                Muscle: "electric muscle stimulator",
+                Mysticality: "foreign language tapes",
+                Moxie: "bowl of potpourri",
+              }),
               ceiling: "ceiling fan",
             },
           });
           visitUrl("council.php"); // Collect thwaitgold
-          ascend(
-            $path`Community Service`,
-            args.major.class,
-            Lifestyle.softcore,
-            "knoll",
-            $item`astral six-pack`,
-            $item`astral chapeau`,
-            createPermOptions()
-          );
+          ascend({
+            path: $path`Community Service`,
+            playerClass: args.major.class,
+            lifestyle: Lifestyle.softcore,
+            moon: "knoll",
+            consumable: $item`astral six-pack`,
+            pet: $item`astral chapeau`,
+            permOptions: createPermOptions(),
+          });
         },
         limit: { tries: 1 },
       },
@@ -92,27 +74,12 @@ export function csQuest(): LoopQuest {
         limit: { tries: 1 },
         tracking: "Run",
       },
-      pullAll(),
       {
         name: "Uneffect Lost",
         completed: () => !have($effect`Feeling Lost`),
         do: () => uneffect($effect`Feeling Lost`),
         limit: { tries: 1 },
       },
-      {
-        name: "Workshed",
-        completed: () => get("_workshedItemUsed") || getWorkshed() === $item`cold medicine cabinet`,
-        do: (): void => {
-          AsdonMartin.drive($effect`Driving Observantly`, 1000);
-          use($item`cold medicine cabinet`);
-        },
-        limit: { tries: 1 },
-      },
-      ...breakfast(),
-      ...duffo(),
-      ...batfellow(),
-      ...strategy.tasks(false),
-      ...endOfDay(),
     ],
   };
 }
