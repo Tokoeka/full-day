@@ -2,12 +2,13 @@ import { getWorkshed, use } from "kolmafia";
 import { $effect, $item, AsdonMartin, get } from "libram";
 import { LoopQuest } from "../engine/engine";
 import { chosenStrategy } from "../strategies/strategy";
-import { batfellow, breakfast, duffo, endOfDay } from "./common";
+import { batfellow, breakfast, duffo, endOfDay, pullAll } from "./common";
 
 export function postQuest(): LoopQuest {
   return {
     name: "Post",
     tasks: [
+      pullAll(),
       {
         name: "Workshed",
         completed: () => getWorkshed() === $item`cold medicine cabinet` || get("_workshedItemUsed"),
