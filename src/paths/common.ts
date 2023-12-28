@@ -22,14 +22,13 @@ import {
   pvpAttacksLeft,
   retrieveItem,
   retrievePrice,
-  runChoice,
   toInt,
-  toUrl,
   use,
   visitUrl,
   wait,
 } from "kolmafia";
 import {
+  $effects,
   $familiar,
   $item,
   $items,
@@ -191,6 +190,7 @@ export function batfellow(): LoopTask[] {
           else throw `Unable to find a suitable booze to kickstart our liver with.`;
         });
       },
+      effects: $effects`Ode to Booze`,
       limit: { tries: 1 },
     },
     {
@@ -236,6 +236,7 @@ export function batfellow(): LoopTask[] {
         getRemainingLiver() >= 4 &&
         myFullness() >= 2,
       do: () => drink($item`Doc Clock's thyme cocktail`),
+      effects: $effects`Ode to Booze`,
       limit: { tries: 1 },
     },
     {
@@ -247,36 +248,7 @@ export function batfellow(): LoopTask[] {
         getRemainingLiver() >= 3 &&
         myFullness() >= 1,
       do: () => drink($item`The Mad Liquor`),
-      limit: { tries: 1 },
-    },
-  ];
-}
-
-export function duffo(after: string[] = []): LoopTask[] {
-  return [
-    {
-      name: "Party Fair",
-      after: [...after],
-      completed: () => get("_questPartyFair") !== "unstarted",
-      do: (): void => {
-        visitUrl(toUrl($location`The Neverending Party`));
-        if (["food", "booze"].includes(get("_questPartyFairQuest"))) {
-          runChoice(1); // Accept quest
-        } else {
-          runChoice(2); // Decline quest
-        }
-      },
-      limit: { tries: 1 },
-    },
-    {
-      name: "Duffo",
-      after: [...after, "Party Fair"],
-      completed: () =>
-        get("_questPartyFairProgress") !== "" ||
-        ["", "finished"].includes(get("_questPartyFair")) ||
-        !["food", "booze"].includes(get("_questPartyFairQuest")),
-      do: () => cliExecuteThrow("duffo go"),
-      post: () => Clan.join("Margaretting Tye"),
+      effects: $effects`Ode to Booze`,
       limit: { tries: 1 },
     },
   ];

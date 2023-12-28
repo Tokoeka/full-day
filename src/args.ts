@@ -10,6 +10,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
         ["garbo", "Farm meat using garbage-collector"],
         ["freecandy", "Farm Halloween candy using freecandy"],
         ["chrono", "Farm the TTT using chrono-collector"],
+        ["crimbo", "Farm Crimbo Town using crimbo"],
       ],
       default: "auto",
     }),
@@ -63,6 +64,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
       help: "If given, ignore the fact that today is a holiday.",
       default: false,
     }),
+    crimbostring: Args.string({ help: "String to use when farming crimbo.", default: "crimbo" }),
   }),
   debug: Args.group("Debug Options", {
     abort: Args.string({
