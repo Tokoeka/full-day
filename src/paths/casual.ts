@@ -1,7 +1,7 @@
 import { cliExecute, myAdventures, myPath, visitUrl } from "kolmafia";
 import { $item, $path, $skill, ascend, get, have, Lifestyle, prepareAscension } from "libram";
 import { ascendedToday, byAscendingStat, createPermOptions } from "../lib";
-import { breakStone } from "./common";
+import { breakStone, duffo } from "./common";
 import { args } from "../args";
 import { LoopQuest } from "../engine/engine";
 
@@ -40,6 +40,7 @@ export function casualQuest(): LoopQuest {
         limit: { tries: 1 },
       },
       breakStone(),
+      ...duffo([]),
       {
         name: "Run",
         ready: () => myPath() === $path`none`,
