@@ -82,7 +82,7 @@ export function cliExecuteThrow(command: string): void {
 export function cleanInbox(): void {
   Kmail.delete(
     Kmail.inbox().filter((k) =>
-      ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax"].includes(
+      ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax", "OnlyFax"].includes(
         k.senderName
       )
     )

@@ -1,24 +1,26 @@
 import { myAdventures, myInebriety } from "kolmafia";
-import { $familiar, get, set, withProperty } from "libram";
+import { $familiar, get, withProperty } from "libram";
 import { canConsume, cliExecuteThrow, stooperInebrietyLimit } from "../lib";
 import { caldera, stooper } from "./common";
 import { Strategy } from "./strategy";
 import { args } from "../args";
 
-const garboweenCompletedPref = "_fullday_garboweenCompleted"; // Unlike garbo, garboween doesn't currently track completion
-
 export function freecandy(): Strategy {
   return {
     tasks: (ascend: boolean) => [
       {
-        name: "Garboween",
-        completed: () => get(garboweenCompletedPref, false) && !canConsume(),
-        prepare: () => set("valueOfAdventure", args.minor.halloweenvoa),
-        do: () => cliExecuteThrow(`garboween yachtzeechain ${ascend ? "ascend" : ""}`),
-        post: () => {
-          set(garboweenCompletedPref, true);
-          set("valueOfAdventure", args.minor.voa);
-        },
+        name: "CONSUME",
+        completed: () => !canConsume(),
+        do: () => cliExecuteThrow(`consume ALL VALUE ${args.minor.halloweenvoa} NOMEAT`),
+        limit: { tries: 1 },
+        tracking: "Garbo",
+      },
+      {
+        name: "Garbo Nobarf",
+        completed: () =>
+          (get("_garboCompleted", "") !== "" && !canConsume()) ||
+          myInebriety() >= stooperInebrietyLimit(),
+        do: () => cliExecuteThrow(`garbo nobarf ${ascend ? "ascend" : ""}`),
         limit: { tries: 1 },
         tracking: "Garbo",
       },
