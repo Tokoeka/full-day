@@ -1,7 +1,7 @@
 import { batfellow, breakfast, duffo, pullAll, pvp } from "./common";
 import { ascendedToday } from "../lib";
 import { LoopQuest } from "../engine/engine";
-import { chosenStrategy } from "../strategies/strategy";
+import { getStrategy } from "../strategies/strategy";
 
 export function aftercoreQuest(): LoopQuest {
   return {
@@ -12,7 +12,7 @@ export function aftercoreQuest(): LoopQuest {
       ...breakfast(),
       ...duffo(),
       ...batfellow(),
-      ...chosenStrategy.tasks(true),
+      ...getStrategy().tasks(true),
       ...pvp(),
     ],
   };

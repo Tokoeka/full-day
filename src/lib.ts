@@ -22,7 +22,7 @@ import {
   takeCloset,
   visitUrl,
 } from "kolmafia";
-import { $familiar, $stat, have, Kmail, Lifestyle, makeByXFunction } from "libram";
+import { $familiar, $stat, have, Lifestyle, makeByXFunction } from "libram";
 import { args } from "./args";
 
 export function debug(message: string, color?: string): void {
@@ -79,16 +79,6 @@ export function cliExecuteThrow(command: string): void {
   if (!cliExecute(command)) throw `Failed to execute ${command}`;
 }
 
-export function cleanInbox(): void {
-  Kmail.delete(
-    Kmail.inbox().filter((k) =>
-      ["Lady Spookyraven's Ghost", "The Loathing Postal Service", "CheeseFax", "OnlyFax"].includes(
-        k.senderName
-      )
-    )
-  );
-}
-
 export const byAscendingStat = makeByXFunction(() => args.major.class.primestat.toString());
 
 export function withCloseted<T>(items: Item[], callback: () => T): T {
@@ -105,8 +95,16 @@ export function ascendedToday(): boolean {
   return myDaycount() === 1;
 }
 
+export function holidays(): string[] {
+  return holiday().split("/");
+}
+
 export function isHalloween(): boolean {
-  return holiday() === "Halloween" && !args.minor.skipholiday;
+  return holidays().includes("Halloween") && !args.minor.skipholiday;
+}
+
+export function isAprilFools(): boolean {
+  return holidays().includes("April Fool's Day");
 }
 
 export function mostRecentPath(): Path | null {

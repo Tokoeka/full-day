@@ -1,6 +1,3 @@
-import { Strategy } from "./strategy";
-import { createStrategyTasks } from "./util";
+import { createNoBarfStrategy } from "./util";
 
-export function chrono(): Strategy {
-  return { tasks: createStrategyTasks("chrono mode=future", true) };
-}
+export const chrono = createNoBarfStrategy("chrono mode=future", true);

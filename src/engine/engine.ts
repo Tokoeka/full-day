@@ -1,7 +1,7 @@
 import { Engine, Quest, Task } from "grimoire-kolmafia";
 import { printProfits, ProfitTracker } from "./profits";
 import { haveEffect, userConfirm } from "kolmafia";
-import { $effect, have, PropertiesManager, set, uneffect } from "libram";
+import { $effect, have, Kmail, PropertiesManager, set, uneffect } from "libram";
 import { args } from "../args";
 import { debug } from "../lib";
 
@@ -65,6 +65,17 @@ export class LoopEngine extends Engine<never, LoopTask> {
   }
 
   destruct(): void {
+    Kmail.delete(
+      Kmail.inbox().filter((k) =>
+        [
+          "Lady Spookyraven's Ghost",
+          "The Loathing Postal Service",
+          "CheeseFax",
+          "OnlyFax",
+        ].includes(k.senderName)
+      )
+    );
+
     super.destruct();
     printProfits(this.profits.all());
   }

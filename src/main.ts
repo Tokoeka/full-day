@@ -3,7 +3,7 @@ import { cliExecute, print } from "kolmafia";
 import { args } from "./args";
 import { LoopEngine } from "./engine/engine";
 import { garboValue } from "./engine/profits";
-import { cleanInbox, debug, numberWithCommas } from "./lib";
+import { debug, numberWithCommas } from "./lib";
 import { Snapshot } from "./snapshot";
 import { aftercoreQuest } from "./paths/aftercore";
 import { casualQuest } from "./paths/casual";
@@ -11,7 +11,7 @@ import { csQuest } from "./paths/cs";
 import { get } from "libram";
 import { smolQuest } from "./paths/smol";
 import { postQuest } from "./paths/post";
-import { chooseStrategy } from "./strategies/strategy";
+import { setStrategy } from "./strategies/strategy";
 
 const snapshotStart = Snapshot.importOrCreate("Start");
 
@@ -22,7 +22,7 @@ export function main(command?: string): void {
     return;
   }
 
-  chooseStrategy();
+  setStrategy();
   const quests = getQuests(args.major.path);
   const tasks = getTasks(quests);
 
@@ -46,7 +46,6 @@ export function main(command?: string): void {
     engine.run();
   } finally {
     engine.destruct();
-    cleanInbox();
   }
 
   printFulldaySnapshot();

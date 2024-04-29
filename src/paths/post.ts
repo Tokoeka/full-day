@@ -1,7 +1,7 @@
 import { getWorkshed, use } from "kolmafia";
 import { $effect, $item, AsdonMartin, get } from "libram";
 import { LoopQuest } from "../engine/engine";
-import { chosenStrategy } from "../strategies/strategy";
+import { getStrategy } from "../strategies/strategy";
 import { batfellow, breakfast, duffo, endOfDay, pullAll } from "./common";
 
 export function postQuest(): LoopQuest {
@@ -21,7 +21,7 @@ export function postQuest(): LoopQuest {
       ...breakfast(),
       ...duffo(),
       ...batfellow(),
-      ...chosenStrategy.tasks(false),
+      ...getStrategy().tasks(false),
       ...endOfDay(),
     ],
   };

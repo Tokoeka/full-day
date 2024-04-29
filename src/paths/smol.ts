@@ -34,12 +34,10 @@ import {
 } from "libram";
 import { args } from "../args";
 import { LoopQuest } from "../engine/engine";
-// import { chooseStrategy } from "../strategies/strategy";
 import { ascendedToday, byAscendingStat } from "../lib";
 import { breakStone, pullAll } from "./common";
 
 export function smolQuest(): LoopQuest {
-  // const strategy = chooseStrategy();
   return {
     name: "Community Service",
     tasks: [

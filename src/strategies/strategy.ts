@@ -3,38 +3,43 @@ import { garbo } from "./garbo";
 import { args } from "../args";
 import { chrono } from "./chrono";
 import { LoopTask } from "../engine/engine";
-import { visitUrl } from "kolmafia";
+import { print, visitUrl, wait } from "kolmafia";
 import { get } from "libram";
 import { isHalloween } from "../lib";
 
 export type Strategy = {
+  name: string;
   tasks: (ascend: boolean) => LoopTask[];
 };
 
-export let chosenStrategy: Strategy = {
-  tasks: () => {
-    throw "A strategy has not been chosen";
-  },
-};
+let _strategy: Strategy | null = null;
 
-export function chooseStrategy(): void {
+export function setStrategy(): void {
   switch (args.major.strategy) {
     case "auto":
       visitUrl("town.php");
-      if (get("timeTowerAvailable")) chosenStrategy = chrono();
-      else if (isHalloween()) chosenStrategy = freecandy();
-      else chosenStrategy = garbo();
+      if (get("timeTowerAvailable")) _strategy = chrono;
+      else if (isHalloween()) _strategy = freecandy;
+      else _strategy = garbo;
+
+      print(`Auto-selecting ${_strategy.name} strategy`, "blue");
+      wait(5);
       break;
     case "garbo":
-      chosenStrategy = garbo();
+      _strategy = garbo;
       break;
     case "freecandy":
-      chosenStrategy = freecandy();
+      _strategy = freecandy;
       break;
     case "chrono":
-      chosenStrategy = chrono();
+      _strategy = chrono;
       break;
     default:
       throw `Unknown strategy name ${args.major.strategy}`;
   }
+}
+
+export function getStrategy(): Strategy {
+  if (_strategy === null) throw "a strategy has not been set";
+  return _strategy;
 }
