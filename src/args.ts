@@ -22,7 +22,7 @@ export const args = Args.create("fullday", "A full-day wrapper script.", {
         ["custom", "Jump the gash manually"],
         ["none", "Stay in aftercore"],
       ],
-      default: "cs",
+      default: "smol",
     }),
     class: Args.class({ help: "Class to ascend as.", default: $class`Seal Clubber` }),
   }),

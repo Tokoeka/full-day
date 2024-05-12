@@ -1,9 +1,8 @@
-import { cliExecute, equippedItem, Item, myPath, retrieveItem, use, visitUrl } from "kolmafia";
+import { cliExecute, myPath, visitUrl } from "kolmafia";
 import {
   $effect,
   $item,
   $path,
-  $slot,
   ascend,
   get,
   have,
@@ -16,13 +15,13 @@ import { breakStone } from "./common";
 import { args } from "../args";
 import { LoopQuest } from "../engine/engine";
 
-function setBootSkin(skin: Item): boolean {
+/* function setBootSkin(skin: Item): boolean {
   if (!have($item`your cowboy boots`)) {
     visitUrl("place.php?whichplace=town_right&action=townright_ltt");
   }
   if (equippedItem($slot`bootskin`) === skin) return true;
   return retrieveItem(skin) && use(skin);
-}
+} */
 
 export function csQuest(): LoopQuest {
   return {
@@ -32,13 +31,13 @@ export function csQuest(): LoopQuest {
         name: "Ascend",
         completed: () => ascendedToday(),
         do: (): void => {
-          setBootSkin(
+          /*           setBootSkin(
             byAscendingStat({
               Muscle: $item`grizzled bearskin`,
               Mysticality: $item`frontwinder skin`,
               Moxie: $item`mountain lion skin`,
             })
-          );
+          ); */
           prepareAscension({
             garden: "Peppermint Pip Packet",
             eudora: "Our Daily Candles™ order form",
@@ -70,7 +69,7 @@ export function csQuest(): LoopQuest {
         name: "Run",
         ready: () => myPath() === $path`Community Service`,
         completed: () => get("kingLiberated"),
-        do: () => cliExecute("loopcs"),
+        do: () => cliExecute("asmohccs"),
         limit: { tries: 1 },
         tracking: "Run",
       },
